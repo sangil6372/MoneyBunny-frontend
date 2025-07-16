@@ -27,10 +27,4 @@ export default defineConfig({
       },
     },
   },
-
-  // 빌드 설정
-  build: {
-    outDir:
-      'E:/2_LectureData/KB/workspace/09_SPRING_VUE/100_donghyeon/BoardProject/backend/src/main/webapp/resources',
-  },
 });
