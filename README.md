@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 머니버니 :rabbit:
 
 안녕하세요, MZ 세대를 위한 맞춤형 금융 생활 플랫폼 "머니버니"입니다.
@@ -190,4 +191,34 @@ Databases <br>
 
 ```
 
+=======
+# frontend
+
+This template should help get you started developing with Vue 3 in Vite.
+
+## Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+
+## Customize configuration
+
+See [Vite Configuration Reference](https://vite.dev/config/).
+
+## Project Setup
+
+```sh
+npm install
+```
+
+### Compile and Hot-Reload for Development
+
+```sh
+npm run dev
+```
+
+### Compile and Minify for Production
+
+```sh
+npm run build
+>>>>>>> c27924b (Init: 프로젝트 초기 세팅)
 ```
