@@ -13,10 +13,18 @@ import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue(),
+    VitePWA({
+      registerType: 'autoUpdate', // 🔄 새 서비스워커 감지 시 자동 업데이트
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'], // 캐시할 정적 파일
+      },
+    }),
+  ],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
   server: {
