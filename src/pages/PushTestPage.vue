@@ -1,54 +1,43 @@
-<!-- push-test.vue -->
 <template>
   <div style="padding: 40px">
     <h1>알림 구독 테스트</h1>
-    <button @click="subscribeToPush">🔔 알림 받기</button>
+    <button @click="toggleSubscription">
+      {{ isSubscribed ? "🔕 구독 해제" : "🔔 알림 받기" }}
+    </button>
     <p v-if="msg">{{ msg }}</p>
   </div>
 </template>
 
 <script setup>
 import { ref } from "vue";
+import {
+  subscribeToPush,
+  unsubscribeFromPush,
+} from "@/firebase/notificationPermission";
 
 const msg = ref("");
+const isSubscribed = ref(false);
 
-async function subscribeToPush() {
-  if (!("serviceWorker" in navigator)) {
-    msg.value = "서비스 워커 미지원 브라우저입니다.";
-    return;
-  }
-
+const checkSubscription = async () => {
   const registration = await navigator.serviceWorker.ready;
-  const applicationServerKey = urlBase64ToUint8Array(
-    "BKodvh3r5E72nXeA2GlatVYMPf0Ey159zQaMEvQUXWtXPqDd0IuQav-J_PyKm0Kr39kBrDS87TbdWi5FxxnaHJY"
-  );
+  const subscription = await registration.pushManager.getSubscription();
+  isSubscribed.value = !!subscription;
+};
 
+const toggleSubscription = async () => {
   try {
-    const subscription = await registration.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey,
-    });
-
-    const res = await fetch("http://localhost:8080/api/push/subscribe", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(subscription),
-    });
-
-    if (res.ok) {
-      msg.value = "✅ 알림 구독 성공!";
+    if (isSubscribed.value) {
+      await unsubscribeFromPush();
+      msg.value = "🔕 구독 해제 완료";
     } else {
-      msg.value = "❌ 서버 응답 오류";
+      await subscribeToPush();
+      msg.value = "✅ 구독 완료";
     }
+    isSubscribed.value = !isSubscribed.value;
   } catch (err) {
-    msg.value = "구독 실패: " + err;
+    msg.value = "오류: " + err.message;
   }
-}
+};
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const rawData = window.atob(base64);
-  return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
-}
+checkSubscription();
 </script>

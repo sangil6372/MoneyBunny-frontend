@@ -13,29 +13,17 @@ import vue from "@vitejs/plugin-vue";
 import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    VitePWA({
-      rstrategies: "injectManifest", // 자동 대신 직접 작성한 SW 사용
-      srcDir: "src",
-      filename: "service-worker.js", // 작성한 서비스 워커 경로
-      injectRegister: "auto", // 자동 등록
-      devOptions: {
-        enabled: true, // 개발 모드에서도 활성화
-      },
-    }),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
-
-  // 개발 서버 설정
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080", // 백엔드 서버 연결
+        target: "http://localhost:8080", // 백엔드 API 주소
+        changeOrigin: true,
       },
     },
   },
