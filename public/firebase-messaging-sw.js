@@ -25,12 +25,12 @@ self.addEventListener("activate", (e) => {
 
 // 🚀 Firebase 프로젝트 설정 정보
 const firebaseConfig = {
-  apiKey: "AIzaSyDfk91-8xf4eJH5TRLaPui3vDT3Mt6jTbA", // Firebase API 키
-  authDomain: "moneybunny.firebaseapp.com", // 인증 도메인
-  projectId: "moneybunny", // 프로젝트 ID
-  storageBucket: "moneybunny.appspot.com", // 저장소 버킷
-  messagingSenderId: "51947749964", // 메시징 발신자 ID
-  appId: "1:51947749964:web:595b2bf4c3bbcc42886ae9", // 앱 ID
+  apiKey: "AIzaSyDfk91-8xf4eJH5TRLaPui3vDT3Mt6jTbA",
+  authDomain: "moneybunny-93467.firebaseapp.com",
+  projectId: "moneybunny-93467",
+  storageBucket: "moneybunny-93467.firebasestorage.app",
+  messagingSenderId: "51947749964",
+  appId: "1:51947749964:web:595b2bf4c3bbcc42886ae9",
 };
 
 // 🔧 Firebase 초기화
