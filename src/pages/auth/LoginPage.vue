@@ -1,89 +1,196 @@
 <script setup>
-import { computed, reactive, ref } from 'vue';
-import { useAuthStore } from '@/stores/auth';
-import { useRoute, useRouter } from 'vue-router';
+import { ref } from 'vue';
+import AttendanceCheckModal from './AttendanceCheckModal.vue';
 
-const cr = useRoute();
-const router = useRouter();
-const auth = useAuthStore();
+const showModal = ref(false);
+const id = ref('');
+const password = ref('');
 
-// 폼 데이터 관리
-const member = reactive({
-  username: '',
-  password: '',
-});
-
-const error = ref('');
-const disableSubmit = computed(() => !(member.username && member.password));
-
-// 로그인 로직
-const login = async () => {
-  console.log(member);
-  try {
-    await auth.login(member); // 인증 스토어의 login 액션 호출
-
-    //router.push('/'); // 성공 시 홈페이지로 이동
-
-    // 리다이렉트 로직
-    if (cr.query.next) {
-      // 원래 접근하려던 페이지가 있는 경우
-      router.push({ name: cr.query.next });
-    } else {
-      // 일반 로그인인 경우 메인 페이지로
-      router.push('/');
-    }
-  } catch (e) {
-    console.log('에러=======', e);
-    error.value = e.response.data; // 에러 메시지 표시
+const handleLogin = () => {
+  if (!id.value.trim()) {
+    alert('아이디를 입력해주세요.');
+    return;
   }
+  if (!password.value.trim()) {
+    alert('비밀번호를 입력해주세요.');
+    return;
+  }
+
+  // 🔐 서버 로그인 로직 생략
+  showModal.value = true;
+};
+
+const closeModal = () => {
+  showModal.value = false;
 };
 </script>
 
 <template>
-  <div class="mt-5 mx-auto" style="width: 500px">
-    <h1 class="my-5">
-      <i class="fa-solid fa-right-to-bracket"></i>
-      로그인
-    </h1>
+  <div class="loginContainer">
+    <div class="loginWrapper">
+      <!-- 🐰 토끼 이미지 추가 -->
+      <img
+        src="@/assets/images/icons/signup/login_main.png"
+        alt="login-bunny"
+        class="bunnyImage"
+      />
 
-    <form @submit.prevent="login">
-      <!-- 사용자 ID 입력 -->
-      <div class="mb-3 mt-3">
-        <label for="username" class="form-label">
-          <i class="fa-solid fa-user"></i> 사용자 ID:
-        </label>
-        <input
-          type="text"
-          class="form-control"
-          placeholder="사용자 ID"
-          v-model="member.username"
-        />
+      <div class="loginCard">
+        <h1 class="loginTitle font-28 font-extrabold">MoneyBunny</h1>
+        <p class="loginSubtitle font-15 font-regular">
+          아이디와 비밀번호를 입력해주세요
+        </p>
+
+        <div class="formGroup">
+          <label for="id" class="font-15 font-bold">아이디</label>
+          <input
+            type="text"
+            id="id"
+            v-model="id"
+            placeholder="아이디를 입력하세요"
+          />
+        </div>
+
+        <div class="formGroup">
+          <label for="password" class="font-15 font-bold">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            v-model="password"
+            placeholder="비밀번호를 입력하세요"
+          />
+        </div>
+
+        <button class="loginButton font-15 font-bold" @click="handleLogin">
+          로그인
+        </button>
+
+        <div class="loginLinks font-13">
+          <router-link to="/findId">아이디 찾기</router-link>
+          <span>|</span>
+          <router-link to="/findPassword">비밀번호 찾기</router-link>
+        </div>
+
+        <div class="signupLink font-13">
+          계정이 없으신가요?
+          <router-link to="/signUpEmailVerify">회원가입</router-link>
+        </div>
       </div>
+    </div>
 
-      <!-- 비밀번호 입력 -->
-      <div class="mb-3">
-        <label for="password" class="form-label">
-          <i class="fa-solid fa-lock"></i> 비밀번호:
-        </label>
-        <input
-          type="password"
-          class="form-control"
-          placeholder="비밀번호"
-          v-model="member.password"
-        />
-      </div>
-
-      <!-- 에러 메시지 표시 -->
-      <div v-if="error" class="text-danger">{{ error }}</div>
-
-      <!-- 로그인 버튼 -->
-      <button
-        type="submit"
-        class="btn btn-primary mt-4"
-        :disabled="disableSubmit"
-      >
-        <i class="fa-solid fa-right-to-bracket"></i> 로그인
-      </button>
-    </form>
+    <!-- ✅ 출석체크 모달 -->
+    <AttendanceCheckModal v-if="showModal" @close="closeModal" />
   </div>
 </template>
+
+<style scoped>
+.loginContainer {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--input-bg-2);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.loginCard {
+  width: 100%;
+  max-width: 350px;
+  background-color: white;
+  padding: 24px;
+  border-radius: 16px;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
+}
+
+.loginTitle {
+  text-align: center;
+  color: var(--text-login);
+  margin-bottom: 9px;
+}
+
+.loginSubtitle {
+  text-align: center;
+  color: var(--text-bluegray);
+  margin-top: 9px;
+  margin-bottom: 36px;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  /* margin-bottom: 16px; */
+}
+
+input {
+  margin-top: 9px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  padding: 12px 16px;
+  border: 1px solid var(--input-outline);
+  border-radius: 8px;
+  background-color: transparent;
+  outline: none;
+}
+
+.loginButton {
+  width: 100%;
+  background-color: var(--base-blue-dark);
+  color: white;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  margin-top: 8px;
+  cursor: pointer;
+}
+
+.loginLinks {
+  margin-top: 13px;
+  text-align: center;
+  color: var(--text-bluegray);
+}
+
+.loginLinks a {
+  color: var(--text-bluegray);
+  text-decoration: none;
+  margin: 0 6px;
+}
+
+.signupLink {
+  text-align: center;
+  margin-top: 16px;
+  color: var(--text-lightgray);
+}
+
+.signupLink a {
+  color: var(--base-lavender);
+  text-decoration: none;
+  margin-left: 10px;
+}
+.loginWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 350px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.bunnyImage {
+  width: 90px;
+  height: auto;
+  position: absolute;
+  top: -30px;
+  z-index: 2;
+}
+
+.loginCard {
+  background-color: white;
+  padding: 24px;
+  border-radius: 16px;
+  margin-top: 40px; /* 토끼 머리 공간 확보 */
+  width: 100%;
+  box-sizing: border-box;
+}
+</style>

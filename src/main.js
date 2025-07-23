@@ -1,4 +1,7 @@
-import "./assets/main.css";
+import "./assets/styles/fonts.css";
+import "./assets/styles/colors.css";
+import "./assets/styles/main.css";
+
 import "bootstrap/dist/css/bootstrap.css";
 import "vue-awesome-paginate/dist/style.css"; // 페이지네이션 스타일
 

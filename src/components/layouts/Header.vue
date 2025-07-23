@@ -1,31 +1,70 @@
-<!-- 헤더 레이아웃 컴포넌트 -->
-
-<script setup>
-import config from '@/config';
-
-// @ : './src' 경로 별칭 (vite.config.js 에서 설정)
-// 경로 별칭 사용 이유: 상대 경로 사용 시 경로 변경 시 수정 번거로움
-// 경로 별칭 사용 방법: @/config 와 같이 사용
-</script>
-
 <template>
-  <div class="jumbotron p-5 bg-primary text-white">
-    <!-- config/index.js 에서 설정한 타이틀 및 서브타이틀 -->
-    <h1>{{ config.title }}</h1>
-    <p>{{ config.subtitle }}</p>
-  </div>
+  <header class="top-header">
+    <div class="header-inner">
+      <h1 class="logo-text font-28 font-bold">MoneyBunny</h1>
+      <!--알림 이동-->
+      <RouterLink to="/notification">
+        <img
+          src="@/assets/images/icons/bunny/notification_bunny_background.png"
+          alt="MoneyBunny Logo"
+          class="logo-img"
+        />
+      </RouterLink>
+    </div>
+  </header>
 </template>
 
-<!-- 
-  <style scoped> : 현재 컴포넌트에서만 적용되는 스타일
- -->
+<script setup>
+// Composition API 사용 중
+</script>
+
 <style scoped>
-.jumbotron {
-  background-image: url('@/assets/images/background.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  color: white;
-  padding: 2rem;
+/* ✅ NavBar의 bottom-nav와 동일하게 상단 고정 + 너비 제한 */
+.top-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  max-width: 474px;
+  margin: 0 auto;
+  height: 60px;
+  border-bottom: 1px solid var(--base-lavender);
+  background: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* 내부 정렬 구조 (NavBar의 nav-item 정렬 참고) */
+.header-inner {
+  width: 100%;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+/* 텍스트 가운데 정렬 */
+.logo-text {
+  color: var(--base-blue-dark);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* 이미지 오른쪽 고정 */
+.logo-img {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
 }
 </style>

@@ -1,0 +1,64 @@
+@import './colors.css';
+@import './fonts.css';
+
+body {
+  font-family: 'NanumSquareNeo', sans-serif;
+  background-color: #f9f9f9;
+  display: flex;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+}
+
+/* app 사이즈 */
+#app {
+  width: 474px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--input-bg-2);
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+/* 공통 레이아웃 박스 */
+.container {
+  width: 100%;
+  max-width: 474px;
+  margin: 0 auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+}
+
+/* 공통 고정 헤더/푸터 */
+.fixed-header,
+.fixed-footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.fixed-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+
+  display: flex;
+  justify-content: center;
+
+  border-bottom: 1px solid var(--base-lavender);
+  background-color: transparent; /* 필요 시 삭제 */
+
+  z-index: 1000;
+}
+
+.fixed-footer {
+  bottom: 0;
+  height: 60px;
+  background-color: white;
+  border-top: 1px solid #ddd;
+}

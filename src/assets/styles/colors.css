@@ -1,0 +1,48 @@
+:root {
+  /* =============================
+     Base Colors (Main Theme)
+  ============================== */
+  --base-blue-dark: #304663;
+  --base-lavender: #a1a6c6;
+  --base-blue-light: #cbd1e8;
+  --base-pink: #ffe6eb;
+  --base-white-pink: #fef2f2;
+
+  /* =============================
+     Sub Colors
+  ============================== */
+  --sub-mint: #a5d6d3;
+  --sub-skyblue: #a3c6df;
+
+  /* =============================
+     Input Backgrounds
+  ============================== */
+  --input-bg-1: #f2f4fb;
+  --input-bg-2: #f8fafc;
+  --input-bg-3: #e3e6f2;
+
+  /* =============================
+     Disabled Inputs
+  ============================== */
+  --input-disabled-1: #c9ced6;
+  --input-disabled-2: #b0b4bb;
+
+  /* =============================
+     Text Colors
+  ============================== */
+  --text-green: #10b981;
+  --text-darkgray: #666666;
+  --text-bluegray: #6b7280;
+  --text-lightgray: #999999;
+  --text-login: #1f2937;
+
+  /* =============================
+     Alert / Notification Colors
+  ============================== */
+  --alert-red: #ef4444;
+  --alert-strong: #cf5959;
+  --alert-light-1: #f2a9a9;
+  --alert-light-2: #f9dada;
+
+  --input-outline: #f1f5f9;
+}
