@@ -18,8 +18,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate', // 🔄 새 서비스워커 감지 시 자동 업데이트
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'], // 캐시할 정적 파일
-      },
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+    },
     }),
   ],
   resolve: {
