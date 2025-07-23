@@ -10,7 +10,10 @@ export const setupForegroundMessageListener = () => {
 
     const title = payload.notification?.title || "머니버니 알림";
     const body = payload.notification?.body || "새 알림이 도착했습니다.";
-    if (Notification.permission === "granted") {
+    if (
+      Notification.permission === "granted" &&
+      document.visibilityState === "visible"
+    ) {
       new Notification(title, { body });
     }
   });
