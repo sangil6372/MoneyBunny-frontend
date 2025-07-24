@@ -16,22 +16,22 @@ export default defineConfig({
   plugins: [
     vue(),
     VitePWA({
-      registerType: 'autoUpdate', // 🔄 새 서비스워커 감지 시 자동 업데이트
+      registerType: "autoUpdate", // 🔄 새 서비스워커 감지 시 자동 업데이트
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
-    },
+      },
     }),
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8080", // 백엔드 API 주소
+        target: "http://13.124.226.44", // 백엔드 API 주소
         changeOrigin: true,
       },
     },
