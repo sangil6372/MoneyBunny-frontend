@@ -8,7 +8,7 @@
         :class="{ on: notificationEnabled, off: !notificationEnabled }"
         @click="toggleNotification"
       >
-        {{ notificationEnabled ? "ON" : "OFF" }}
+        {{ notificationEnabled ? 'ON' : 'OFF' }}
       </button>
     </div>
 
@@ -57,13 +57,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   subscribeToPush,
   unsubscribeFromPush,
-} from "@/firebase/notificationPermission";
-import LogoutConfirmModal from "./LogoutConfirmModal.vue";
+} from '@/firebase/notificationPermission.js';
+import LogoutConfirmModal from './LogoutConfirmModal.vue';
 
 const router = useRouter();
 const notificationEnabled = ref(false);
@@ -86,7 +86,7 @@ const toggleNotification = async () => {
     }
     notificationEnabled.value = !notificationEnabled.value;
   } catch (err) {
-    console.error("알림 토글 중 오류 발생:", err.message);
+    console.error('알림 토글 중 오류 발생:', err.message);
   }
 };
 
@@ -96,16 +96,16 @@ const handleLogout = () => {
 
 const confirmLogout = () => {
   // 로그아웃 처리 로직 (예: localStorage 제거, router 이동 등)
-  localStorage.removeItem("currentUser");
-  router.push("/login");
+  localStorage.removeItem('currentUser');
+  router.push('/login');
 };
 
 const goToChangePassword = () => {
-  router.push({ name: "changePassword" });
+  router.push({ name: 'changePassword' });
 };
 
 const logout = () => {
-  alert("로그아웃 되었습니다.");
+  alert('로그아웃 되었습니다.');
 };
 
 onMounted(() => {

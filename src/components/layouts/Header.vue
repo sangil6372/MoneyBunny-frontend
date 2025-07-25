@@ -19,7 +19,7 @@
 </script>
 
 <style scoped>
-/* ✅ NavBar의 bottom-nav와 동일하게 상단 고정 + 너비 제한 */
+/* NavBar의 bottom-nav와 동일하게 상단 고정 + 너비 제한 */
 .top-header {
   position: fixed;
   top: 0;
@@ -29,7 +29,7 @@
   width: 100%;
   max-width: 474px;
   margin: 0 auto;
-  height: 60px;
+  height: 70px;
   border-bottom: 1px solid var(--base-lavender);
   background: white;
   display: flex;
@@ -38,7 +38,7 @@
   z-index: 1000;
 }
 
-/* 내부 정렬 구조 (NavBar의 nav-item 정렬 참고) */
+/* 내부 정렬 구조*/
 .header-inner {
   width: 100%;
   padding: 0 20px;

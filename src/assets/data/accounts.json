@@ -1,0 +1,50 @@
+[
+  {
+    "bank": "신한은행",
+    "accountName": "주거래 통장",
+    "number": "110-123-456789",
+    "balance": 2847500,
+    "type": "입출금통장"
+  },
+  {
+    "bank": "KB국민은행",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000,
+    "type": "적금"
+  },
+  {
+    "bank": "우리은행",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000
+  },
+  {
+    "bank": "하나은행",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000,
+    "type": "적금"
+  },
+  {
+    "bank": "시티은행",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000,
+    "type": "적금"
+  },
+  {
+    "bank": "토스뱅크",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000,
+    "type": "적금"
+  },
+  {
+    "bank": "KB국민은행",
+    "accountName": "적금",
+    "number": "123-456-789012",
+    "balance": 15600000,
+    "type": "적금"
+  }
+]

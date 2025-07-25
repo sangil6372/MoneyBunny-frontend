@@ -1,18 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 
-// 라우터 모듈 import
-// import authRoutes from './auth';
-// import assetRoutes from './asset';
-// import homeRoutes from './home';
-// import mypageRoutes from './mypage';
-// import notificationRoutes from './notification';
-// import policyRoutes from './policy';
-
-// 레이아웃 컴포넌트
+// 레이아웃
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
 
-//페이지 컴포넌트
-//로그인
+// 공통
 import LoginPage from '@/pages/auth/LoginPage.vue';
 import FindIdPage from '@/pages/auth/FindIdPage.vue';
 import FindPasswordPage from '@/pages/auth/FindPasswordPage.vue';
@@ -21,45 +12,29 @@ import SignUpProfilePage from '@/pages/auth/SignUpProfilePage.vue';
 import FindIdResultPage from '@/pages/auth/FindIdResultPage.vue';
 import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue';
 import AttendanceCheckModal from '@/pages/auth/AttendanceCheckModal.vue';
+
 import SettingMain from '@/pages/mypage/settings/SettingMain.vue';
-import MypageMain from '@/pages/mypage/MypageMain.vue';
 import ChangePassword from '@/pages/mypage/settings/ChangePassword.vue';
+import MypageMain from '@/pages/mypage/MypageMain.vue';
 
-//페이지
-//홈 화면-하위
-import HomeMainPage from '@/pages/home/HomeMainPage.vue';
+// 탭
 import HomeTotalTab from '@/pages/home/tabs/HomeTotalTab.vue';
-
 import AssetMainTab from '@/pages/asset/tabs/AssetMainTab.vue';
 import PolicyMainTab from '@/pages/policy/tabs/PolicyMainTab.vue';
-import NotificationCenter from '@/pages/notification/NotificationCenter.vue'; // 알림
+import NotificationCenter from '@/pages/notification/NotificationCenter.vue';
 
-// const router = createRouter({
-//   history: createWebHistory(import.meta.env.BASE_URL),
-//   routes: [
-//     { path: '/', name: 'login', component: LoginPage }, // 첫 화면을 로그인 페이지로
-//     ...authRoutes,
-//     ...assetRoutes,
-//     ...homeRoutes,
-//     ...mypageRoutes,
-//     ...notificationRoutes,
-//     ...policyRoutes,
-//   ],
-// });
+// 정책 추천 흐름
+import PolicyIntroForm from '@/pages/policy/recommend/PolicyIntroForm.vue';
+import PolicyQuizStep1 from '@/pages/policy/recommend/PolicyQuizStep1.vue';
+import PolicyQuizStep2 from '@/pages/policy/recommend/PolicyQuizStep2.vue';
+import PolicyQuizStep3 from '@/pages/policy/recommend/PolicyQuizStep3.vue';
+import PolicyResultSummary from '@/pages/policy/recommend/PolicyResultSummary.vue';
 
 const routes = [
+  // 인증 관련
   { path: '/', name: 'login', component: LoginPage },
-
-  {
-    path: '/findId',
-    name: 'findId',
-    component: FindIdPage,
-  },
-  {
-    path: '/findPassword',
-    name: 'findPassword',
-    component: FindPasswordPage,
-  },
+  { path: '/findId', name: 'findId', component: FindIdPage },
+  { path: '/findPassword', name: 'findPassword', component: FindPasswordPage },
   {
     path: '/signUpEmailVerify',
     name: 'signUpEmailVerify',
@@ -75,67 +50,70 @@ const routes = [
     name: 'resetPassword',
     component: ResetPasswordPage,
   },
-  {
-    path: '/findIdResult',
-    name: 'findIdResult',
-    component: FindIdResultPage,
-  },
+  { path: '/findIdResult', name: 'findIdResult', component: FindIdResultPage },
   {
     path: '/attendanceCheck',
     name: 'attendanceCheck',
     component: AttendanceCheckModal,
   },
-  // 하단 네비게이션 바 탭들
+
+  // 마이페이지 단일 라우터
   {
-    path: '/', // DefaultLayout을 사용하는 페이지들
-    component: DefaultLayout,
-    children: [
-      {
-        path: '', // 기본 진입 시
-        redirect: 'home', // 자동으로 /home 으로 이동
-      },
-      {
-        path: 'home', // 홈 탭
-        name: 'home',
-        component: HomeTotalTab,
-      },
-      {
-        path: 'asset', // 자산 탭
-        name: 'asset',
-        component: AssetMainTab,
-      },
-      {
-        path: 'policy', // 정책 탭
-        name: 'policy',
-        component: PolicyMainTab,
-      },
-      {
-        path: 'mypage', // 마이페이지 탭
-        name: 'mypage',
-        component: MypageMain,
-      },
-      {
-        path: 'notification',
-        name: 'notification',
-        component: NotificationCenter,
-      },
-    ],
-  },
-  {
-    path: '/mypage',
-    component: MypageMain,
-    children: [
-      {
-        path: 'settings',
-        name: 'myPageSettings',
-        component: SettingMain,
-      },
-    ],
+    path: '/mypage/settings',
+    name: 'myPageSettings',
+    component: SettingMain,
   },
   {
     path: '/mypage/settings/changePassword',
     name: 'changePassword',
     component: ChangePassword,
+  },
+
+  // 기본 탭 구조
+  {
+    path: '/',
+    component: DefaultLayout,
+    children: [
+      { path: '', redirect: '/home' },
+      { path: 'home', name: 'home', component: HomeTotalTab },
+      { path: 'asset', name: 'asset', component: AssetMainTab },
+      { path: 'mypage', name: 'mypage', component: MypageMain },
+      {
+        path: 'notification',
+        name: 'notification',
+        component: NotificationCenter,
+      },
+
+      // 정책 탭 진입 시 intro 또는 메인으로 라우팅됨
+      { path: 'policy', name: 'policyIntroForm', component: PolicyIntroForm },
+      { path: 'policy/main', name: 'policyMain', component: PolicyMainTab }, // 정책 추천 퀴즈 흐름
+      {
+
+        path: 'home', // 홈 탭
+        name: 'home',
+        component: HomeMainPage,
+      },
+      {  path: '/policy/quiz/step1',
+        name: 'policyQuizStep1',
+        component: PolicyQuizStep1,
+
+      },
+      {
+        path: '/policy/quiz/step2',
+        name: 'policyQuizStep2',
+        component: PolicyQuizStep2,
+      },
+      {
+        path: '/policy/quiz/step3',
+        name: 'policyQuizStep3',
+        component: PolicyQuizStep3,
+      },
+      {
+        path: '/policy/quiz/result',
+        name: 'policyResultSummary',
+        component: PolicyResultSummary,
+      },
+    ],
   },
 ];
 
@@ -143,4 +121,5 @@ const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 });
+
 export default router;
