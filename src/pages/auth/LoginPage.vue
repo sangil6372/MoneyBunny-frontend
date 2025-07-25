@@ -1,28 +1,104 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import AttendanceCheckModal from './AttendanceCheckModal.vue';
+
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
 const showModal = ref(false);
 const id = ref('');
 const password = ref('');
+const isLoading = ref(false);
+const errorMessage = ref('');
 
-const handleLogin = () => {
+// 🔐 실제 서버 로그인 로직 구현
+const handleLogin = async () => {
+  // 입력값 검증
   if (!id.value.trim()) {
-    alert('아이디를 입력해주세요.');
+    errorMessage.value = '아이디를 입력해주세요.';
     return;
   }
   if (!password.value.trim()) {
-    alert('비밀번호를 입력해주세요.');
+    errorMessage.value = '비밀번호를 입력해주세요.';
     return;
   }
 
-  // 🔐 서버 로그인 로직 생략
-  showModal.value = true;
+  try {
+    isLoading.value = true;
+    errorMessage.value = '';
+    
+    // auth store의 login 메서드 호출
+    console.log('로그인 시도:', id.value.trim());
+    await authStore.login({
+      username: id.value.trim(),
+      password: password.value
+    });
+    
+    console.log('로그인 성공, 출석체크 모달 표시');
+    // 로그인 성공 시 출석체크 모달 표시
+    showModal.value = true;
+    
+  } catch (error) {
+    console.error('로그인 에러:', error);
+    
+    // 에러 상태별 메시지 처리
+    if (error.response?.status === 401) {
+      errorMessage.value = '아이디 또는 비밀번호가 잘못되었습니다.';
+    } else if (error.response?.status >= 500) {
+      errorMessage.value = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+    } else if (error.code === 'ECONNABORTED') {
+      errorMessage.value = '요청 시간이 초과되었습니다. 네트워크를 확인해주세요.';
+    } else {
+      errorMessage.value = '로그인에 실패했습니다. 다시 시도해주세요.';
+    }
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const closeModal = () => {
   showModal.value = false;
+  // 출석체크 모달 닫힌 후 홈으로 이동
+  router.push('/home');
 };
+
+// 엔터키 입력 처리
+const handleKeyPress = (event) => {
+  if (event.key === 'Enter' && !isLoading.value) {
+    handleLogin();
+  }
+};
+
+// 에러 메시지 자동 삭제 (3초 후)
+const clearErrorMessage = () => {
+  if (errorMessage.value) {
+    setTimeout(() => {
+      errorMessage.value = '';
+    }, 3000);
+  }
+};
+
+// 💪(상일) URL 파라미터로 전달된 에러 메시지 처리
+onMounted(() => {
+  if (route.query.error === 'auth_required') {
+    errorMessage.value = '로그인이 필요한 페이지입니다.';
+  } else if (route.query.error === 'login_required') {
+    errorMessage.value = '세션이 만료되었습니다. 다시 로그인해주세요.';
+  } else if (route.query.error === 'token_expired') {
+    errorMessage.value = 'JWT 토큰이 만료되었습니다. 다시 로그인해주세요.';
+  }
+});
+
+// 에러 메시지 변경 감지
+import { watch } from 'vue';
+watch(errorMessage, () => {
+  if (errorMessage.value) {
+    clearErrorMessage();
+  }
+});
 </script>
 
 <template>
@@ -41,6 +117,11 @@ const closeModal = () => {
           아이디와 비밀번호를 입력해주세요
         </p>
 
+        <!-- 💪(상일) 에러 메시지 표시 영역 추가 -->
+        <div v-if="errorMessage" class="errorMessage font-13">
+          {{ errorMessage }}
+        </div>
+
         <div class="formGroup">
           <label for="id" class="font-15 font-bold">아이디</label>
           <input
@@ -48,6 +129,8 @@ const closeModal = () => {
             id="id"
             v-model="id"
             placeholder="아이디를 입력하세요"
+            @keypress="handleKeyPress"
+            :disabled="isLoading"
           />
         </div>
 
@@ -58,11 +141,18 @@ const closeModal = () => {
             id="password"
             v-model="password"
             placeholder="비밀번호를 입력하세요"
+            @keypress="handleKeyPress"
+            :disabled="isLoading"
           />
         </div>
 
-        <button class="loginButton font-15 font-bold" @click="handleLogin">
-          로그인
+        <button 
+          class="loginButton font-15 font-bold" 
+          @click="handleLogin"
+          :disabled="isLoading"
+        >
+          <span v-if="isLoading">로그인 중...</span>
+          <span v-else>로그인</span>
         </button>
 
         <div class="loginLinks font-13">
@@ -192,5 +282,27 @@ input {
   margin-top: 40px; /* 토끼 머리 공간 확보 */
   width: 100%;
   box-sizing: border-box;
+}
+
+/* 💪(상일) 에러 메시지 및 로딩 상태 스타일 추가 */
+.errorMessage {
+  background-color: #fee;
+  color: #c33;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  text-align: center;
+  border: 1px solid #fcc;
+}
+
+.loginButton:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
 }
 </style>

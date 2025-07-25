@@ -2,6 +2,7 @@
 
 import { getToken, deleteToken } from 'firebase/messaging';
 import { messaging } from './initFirebase';
+import axios from '@/api'; // JWT 토큰 자동 추가를 위한 axios 인터셉터 사용
 
 // 🔔 알림 구독 함수
 export const subscribeToPush = async () => {
@@ -20,13 +21,14 @@ export const subscribeToPush = async () => {
   }
   console.log('🪪 내 FCM 토큰: ', token);
 
-  const res = await fetch('/api/push/subscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token }),
-  });
-
-  if (!res.ok) throw new Error('서버 응답 오류');
+  try {
+    // 💪(상일) 새로운 백엔드 엔드포인트에 맞춰 수정
+    await axios.post('/api/push/subscriptions', { token });
+  } catch (error) {
+    console.warn('푸시 알림 구독 실패 (백엔드 서버 확인 필요):', error.message);
+    // 푸시 알림 구독 실패해도 토큰은 반환 (로그인 진행 가능)
+  }
+  
   return token;
 };
 
@@ -35,10 +37,11 @@ export const unsubscribeFromPush = async () => {
   const token = localStorage.getItem('fcm_token');
   // token이 null이면 서버에 보내봤자 무의미
   if (!token) return false;
-  await fetch('/api/push/unsubscribe', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token }),
-  });
+  try {
+    // 💪(상일) 새로운 백엔드 엔드포인트에 맞춰 수정 (DELETE 방식)
+    await axios.delete(`/api/push/subscriptions/${token}`);
+  } catch (error) {
+    console.warn('푸시 알림 구독 해제 실패 (백엔드 서버 확인 필요):', error.message);
+  }
   return true;
 };

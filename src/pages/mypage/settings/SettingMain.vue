@@ -59,6 +59,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 import {
   subscribeToPush,
   unsubscribeFromPush,
@@ -66,6 +67,7 @@ import {
 import LogoutConfirmModal from './LogoutConfirmModal.vue';
 
 const router = useRouter();
+const authStore = useAuthStore();
 const notificationEnabled = ref(false);
 const showLogoutModal = ref(false);
 
@@ -94,19 +96,17 @@ const handleLogout = () => {
   showLogoutModal.value = true;
 };
 
+// 💪(상일) auth store를 통한 실제 로그아웃 처리 
 const confirmLogout = () => {
-  // 로그아웃 처리 로직 (예: localStorage 제거, router 이동 등)
-  localStorage.removeItem('currentUser');
-  router.push('/login');
+  showLogoutModal.value = false;
+  authStore.logout(); // auth store의 logout 메서드 사용
+  router.push('/'); // 로그인 페이지로 이동
 };
 
 const goToChangePassword = () => {
   router.push({ name: 'changePassword' });
 };
 
-const logout = () => {
-  alert('로그아웃 되었습니다.');
-};
 
 onMounted(() => {
   checkSubscription();

@@ -1,116 +1,118 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from '@/stores/auth';
 
 //
 // ─── 레이아웃 ────────────────────────────────────────
-import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
+import DefaultLayout from "@/components/layouts/DefaultLayout.vue";
 
 //
 // ─── 인증 / 회원 관련 페이지 ───────────────────────────
-import LoginPage from '@/pages/auth/LoginPage.vue';
-import FindIdPage from '@/pages/auth/FindIdPage.vue';
-import FindPasswordPage from '@/pages/auth/FindPasswordPage.vue';
-import SignUpEmailVerifyPage from '@/pages/auth/SignUpEmailVerifyPage.vue';
-import SignUpProfilePage from '@/pages/auth/SignUpProfilePage.vue';
-import FindIdResultPage from '@/pages/auth/FindIdResultPage.vue';
-import ResetPasswordPage from '@/pages/auth/ResetPasswordPage.vue';
-import AttendanceCheckModal from '@/pages/auth/AttendanceCheckModal.vue';
+import LoginPage from "@/pages/auth/LoginPage.vue";
+import FindIdPage from "@/pages/auth/FindIdPage.vue";
+import FindPasswordPage from "@/pages/auth/FindPasswordPage.vue";
+import SignUpEmailVerifyPage from "@/pages/auth/SignUpEmailVerifyPage.vue";
+import SignUpProfilePage from "@/pages/auth/SignUpProfilePage.vue";
+import FindIdResultPage from "@/pages/auth/FindIdResultPage.vue";
+import ResetPasswordPage from "@/pages/auth/ResetPasswordPage.vue";
+import AttendanceCheckModal from "@/pages/auth/AttendanceCheckModal.vue";
 
 //
 // ─── 마이페이지 관련 ──────────────────────────────────
-import MypageMain from '@/pages/mypage/MypageMain.vue';
-import SettingMain from '@/pages/mypage/settings/SettingMain.vue';
-import ChangePassword from '@/pages/mypage/settings/ChangePassword.vue';
+import MypageMain from "@/pages/mypage/MypageMain.vue";
+import SettingMain from "@/pages/mypage/settings/SettingMain.vue";
+import ChangePassword from "@/pages/mypage/settings/ChangePassword.vue";
 
 //
 // ─── 탭 메인 페이지 ────────────────────────────────────
-import HomeMainPage from '@/pages/home/HomeMainPage.vue'; // 홈메인
-import AssetMainTab from '@/pages/asset/tabs/AssetMainTab.vue';
-import PolicyMainTab from '@/pages/policy/tabs/PolicyMainTab.vue';
-import NotificationCenter from '@/pages/notification/NotificationCenter.vue';
+import HomeMainPage from "@/pages/home/HomeMainPage.vue"; // 홈메인
+import AssetMainTab from "@/pages/asset/tabs/AssetMainTab.vue";
+import PolicyMainTab from "@/pages/policy/tabs/PolicyMainTab.vue";
+import NotificationCenter from "@/pages/notification/NotificationCenter.vue";
 
 //
 // ─── 정책 추천 흐름 ────────────────────────────────────
-import PolicyIntroForm from '@/pages/policy/recommend/PolicyIntroForm.vue';
-import PolicyQuizStep1 from '@/pages/policy/recommend/PolicyQuizStep1.vue';
-import PolicyQuizStep2 from '@/pages/policy/recommend/PolicyQuizStep2.vue';
-import PolicyQuizStep3 from '@/pages/policy/recommend/PolicyQuizStep3.vue';
-import PolicyResultSummary from '@/pages/policy/recommend/PolicyResultSummary.vue';
+import PolicyIntroForm from "@/pages/policy/recommend/PolicyIntroForm.vue";
+import PolicyQuizStep1 from "@/pages/policy/recommend/PolicyQuizStep1.vue";
+import PolicyQuizStep2 from "@/pages/policy/recommend/PolicyQuizStep2.vue";
+import PolicyQuizStep3 from "@/pages/policy/recommend/PolicyQuizStep3.vue";
+import PolicyResultSummary from "@/pages/policy/recommend/PolicyResultSummary.vue";
+
 
 const routes = [
   //
   // ─── 인증 관련 ──────────────────────────────────────
-  { path: '/', name: 'login', component: LoginPage },
-  { path: '/findId', name: 'findId', component: FindIdPage },
-  { path: '/findPassword', name: 'findPassword', component: FindPasswordPage },
+  { path: "/", name: "login", component: LoginPage },
+  { path: "/findId", name: "findId", component: FindIdPage },
+  { path: "/findPassword", name: "findPassword", component: FindPasswordPage },
   {
-    path: '/signUpEmailVerify',
-    name: 'signUpEmailVerify',
+    path: "/signUpEmailVerify",
+    name: "signUpEmailVerify",
     component: SignUpEmailVerifyPage,
   },
   {
-    path: '/signUpProfile',
-    name: 'signUpProfile',
+    path: "/signUpProfile",
+    name: "signUpProfile",
     component: SignUpProfilePage,
   },
   {
-    path: '/resetPassword',
-    name: 'resetPassword',
+    path: "/resetPassword",
+    name: "resetPassword",
     component: ResetPasswordPage,
   },
-  { path: '/findIdResult', name: 'findIdResult', component: FindIdResultPage },
+  { path: "/findIdResult", name: "findIdResult", component: FindIdResultPage },
   {
-    path: '/attendanceCheck',
-    name: 'attendanceCheck',
+    path: "/attendanceCheck",
+    name: "attendanceCheck",
     component: AttendanceCheckModal,
   },
 
   //
   // ─── 마이페이지 ─────────────────────────────────────
-  { path: '/mypage/settings', name: 'myPageSettings', component: SettingMain },
+  { path: "/mypage/settings", name: "myPageSettings", component: SettingMain },
   {
-    path: '/mypage/settings/changePassword',
-    name: 'changePassword',
+    path: "/mypage/settings/changePassword",
+    name: "changePassword",
     component: ChangePassword,
   },
 
   //
   // ─── 기본 레이아웃 하위 라우트 ──────────────────────
   {
-    path: '/',
+    path: "/",
     component: DefaultLayout,
     children: [
-      { path: '', redirect: '/home' },
-      { path: 'home', name: 'home', component: HomeMainPage }, //수정
-      { path: 'asset', name: 'asset', component: AssetMainTab },
-      { path: 'mypage', name: 'mypage', component: MypageMain },
+      { path: "", redirect: "/home" },
+      { path: "home", name: "home", component: HomeMainPage }, //수정
+      { path: "asset", name: "asset", component: AssetMainTab },
+      { path: "mypage", name: "mypage", component: MypageMain },
       {
-        path: 'notification',
-        name: 'notification',
+        path: "notification",
+        name: "notification",
         component: NotificationCenter,
       },
 
       //
       // ─── 정책 추천 흐름 ──────────────────────────────
-      { path: 'policy', name: 'policyIntroForm', component: PolicyIntroForm },
-      { path: 'policy/main', name: 'policyMain', component: PolicyMainTab },
+      { path: "policy", name: "policyIntroForm", component: PolicyIntroForm },
+      { path: "policy/main", name: "policyMain", component: PolicyMainTab },
       {
-        path: 'policy/quiz/step1',
-        name: 'policyQuizStep1',
+        path: "policy/quiz/step1",
+        name: "policyQuizStep1",
         component: PolicyQuizStep1,
       },
       {
-        path: 'policy/quiz/step2',
-        name: 'policyQuizStep2',
+        path: "policy/quiz/step2",
+        name: "policyQuizStep2",
         component: PolicyQuizStep2,
       },
       {
-        path: 'policy/quiz/step3',
-        name: 'policyQuizStep3',
+        path: "policy/quiz/step3",
+        name: "policyQuizStep3",
         component: PolicyQuizStep3,
       },
       {
-        path: 'policy/quiz/result',
-        name: 'policyResultSummary',
+        path: "policy/quiz/result",
+        name: "policyResultSummary",
         component: PolicyResultSummary,
       },
     ],
@@ -120,6 +122,40 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+});
+
+// 💪(상일) 인증 가드 활성화 - 로그인하지 않은 사용자는 보호된 페이지 접근 차단
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  
+  // 인증이 필요없는 공개 페이지
+  const publicPages = [
+    '/', 
+    '/findId', 
+    '/findPassword', 
+    '/signUpEmailVerify', 
+    '/signUpProfile',
+    '/resetPassword',
+    '/findIdResult'
+  ];
+  
+  const authRequired = !publicPages.includes(to.path);
+  
+  console.log(`라우터 이동: ${from.path} → ${to.path}, 로그인 상태: ${authStore.isLogin}, 인증 필요: ${authRequired}`);
+  
+  if (authRequired && !authStore.isLogin) {
+    // 로그인이 필요한 페이지인데 로그인하지 않은 경우
+    console.log('인증되지 않은 접근 - 로그인 페이지로 리다이렉트');
+    return next('/?error=auth_required');
+  }
+  
+  if (to.path === '/' && authStore.isLogin) {
+    // 이미 로그인한 사용자가 로그인 페이지에 접근하는 경우 홈으로 리다이렉트
+    console.log('이미 로그인된 사용자 - 홈으로 리다이렉트');
+    return next('/home');
+  }
+  
+  next();
 });
 
 export default router;
