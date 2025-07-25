@@ -87,12 +87,6 @@ const routes = [
       // 정책 탭 진입 시 intro 또는 메인으로 라우팅됨
       { path: 'policy', name: 'policyIntroForm', component: PolicyIntroForm },
       { path: 'policy/main', name: 'policyMain', component: PolicyMainTab }, // 정책 추천 퀴즈 흐름
-      {
-
-        path: 'home', // 홈 탭
-        name: 'home',
-        component: HomeMainPage,
-      },
       {  path: '/policy/quiz/step1',
         name: 'policyQuizStep1',
         component: PolicyQuizStep1,
