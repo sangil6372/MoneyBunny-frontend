@@ -1,5 +1,0 @@
-<template>
-  <div>
-    <h2>소비요약 카드</h2>
-  </div>
-</template>

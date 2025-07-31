@@ -1,14 +1,17 @@
+<script setup>
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const loginId = route.query.loginId || "unknown";
+</script>
 <template>
   <div class="findIdResultContainer">
     <div class="card">
       <h1 class="title font-28 font-extrabold">MoneyBunny</h1>
-      <p class="subtitle font-15 font-regular">
-        아이디를 찾기 위해 이메일을 입력해주세요
-      </p>
 
       <div class="resultBox">
         <p class="font-15 font-bold">찾은 아이디</p>
-        <p class="foundEmail font-18 font-bold">user123@example.com</p>
+        <p class="foundEmail font-18 font-bold">{{ loginId }}</p>
       </div>
 
       <div class="linkGroup font-13">
@@ -23,11 +26,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 실제 사용자 이메일은 라우터 state나 props로 받을 수 있음
-</script>
-
 <style scoped>
 .findIdResultContainer {
   width: 100%;

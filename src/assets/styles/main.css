@@ -9,6 +9,12 @@ body {
   margin: 0;
   padding: 0;
 }
+/* 모달이 열려 있을 때 body 스크롤 막기 */
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
 
 /* app 사이즈 */
 #app {
@@ -17,7 +23,11 @@ body {
   min-height: 100vh;
   background-color: var(--input-bg-2);
   overflow-x: hidden;
+  padding: 20px;
   overflow-y: auto;
+  /*빈: 스크롤 숨기기*/
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 /* 공통 레이아웃 박스 */

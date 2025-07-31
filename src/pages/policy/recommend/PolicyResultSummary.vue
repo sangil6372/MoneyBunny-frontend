@@ -11,15 +11,29 @@
   </header>
   <div class="resultContainer" style="font-family: 'NanumSquareNeo'">
     <section class="summarySection">
-      <h3 class="font-20 font-bold">당신의 응답 결과</h3>
+      <h3 class="font-18 font-bold">당신의 응답 결과</h3>
       <div class="summaryRow" v-for="(value, label) in summary" :key="label">
         <span class="summaryLabel">{{ label }}</span>
         <span class="summaryValue">{{ value }}</span>
       </div>
     </section>
 
+    <div class="prioritySection">
+      <div class="font-18 font-bold">정책 신청 시 중요하게 여긴 항목</div>
+      <ul class="priorityList">
+        <li
+          v-for="(item, index) in priorityOrder"
+          :key="index"
+          class="priorityItem"
+        >
+          <span class="priorityRank"> {{ index + 1 }}순위 </span>
+          <span class="priorityLabel"> {{ item }} </span>
+        </li>
+      </ul>
+    </div>
+
     <section class="recommendSection">
-      <h3 class="font-20 font-bold">추천 정책 미리보기</h3>
+      <h3 class="font-18 font-bold">추천 정책 미리보기</h3>
       <div
         class="policyCard"
         v-for="policy in previewPolicies"
@@ -50,8 +64,9 @@ export default {
     const router = useRouter();
 
     const summary = {
+      학력: '대학 졸업',
+      '전공 요건': '공학계열',
       '현재 상황': '취업 준비 중',
-      '관심 분야': '창업/취업',
       '필요한 지원': '전셋집 보증금 지원',
     };
 
@@ -77,12 +92,13 @@ export default {
     const goToAllPolicies = () => {
       router.push({ name: 'policyMain' });
     };
-
+    const priorityOrder = ['조회수', '만료일', '금액']; // 실제 선택된 순서로 동적으로 받아오면 여기에 바인딩
     return {
       summary,
       previewPolicies,
       redoQuiz,
       goToAllPolicies,
+      priorityOrder,
     };
   },
 };
@@ -137,8 +153,8 @@ export default {
 }
 
 .recommendSection {
-  margin-top: 32px; /* 위쪽 간격 */
-  margin-bottom: 32px; /* 아래쪽 간격 (선택) */
+  margin-top: 32px;
+  margin-bottom: 32px;
 }
 
 .summaryRow {
@@ -159,10 +175,10 @@ export default {
 }
 
 .policyCard {
-  padding: 16px;
+  padding: 16px 16px 8px 16px;
   border: 1px solid var(--input-outline);
   border-radius: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 8px;
   background-color: white;
 }
 
@@ -195,21 +211,20 @@ export default {
 .buttonGroup {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin-top: 32px;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .btn-grey,
 .btn-blue {
   padding: 12px 0;
-  font-size: 16px;
-  font-weight: bold;
+  font-size: 18px;
   border-radius: 10px;
   width: 100%;
 }
 
 .btn-grey {
-  background-color: var(--input-disabled-1);
+  background-color: var(--input-bg-3);
   color: var(--text-login);
   border: none;
 }
@@ -218,5 +233,43 @@ export default {
   background-color: var(--base-blue-dark);
   color: white;
   border: none;
+}
+
+.prioritySection {
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.priorityList {
+  list-style: none;
+  padding: 0;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.priorityItem {
+  display: flex;
+  align-items: center;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background-color: var(--input-bg-2);
+}
+
+.priorityRank {
+  background-color: var(--base-blue-dark);
+  color: white;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 20px;
+  padding: 4px 12px;
+  margin-right: 10px;
+}
+
+.priorityLabel {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-login);
 }
 </style>

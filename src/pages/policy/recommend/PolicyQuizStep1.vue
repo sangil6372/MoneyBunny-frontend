@@ -8,15 +8,13 @@
   <div class="quizContainer" style="font-family: 'NanumSquareNeo'">
     <section class="quizContent">
       <div class="progressBarWrapper">
-        <span class="font-13 font-regular">질문 1 / 3</span>
+        <span class="font-13 font-regular">질문 1 / 4</span>
         <div class="progressBar">
-          <div class="progress" :style="{ width: '33%' }"></div>
+          <div class="progress" :style="{ width: '25%' }"></div>
         </div>
       </div>
 
-      <h3 class="question font-22 font-bold">
-        현재 나는 어떤 상황에 속하나요?
-      </h3>
+      <h3 class="question font-22 font-bold">최종 학력을 선택해주세요</h3>
 
       <ul class="options">
         <li
@@ -32,11 +30,9 @@
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-20 font-bold" @click="goToPrevStep">
-        이전
-      </button>
+      <button class="prevButton font-20" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-20 font-bold"
+        class="nextButton font-20"
         :disabled="!selectedOption"
         @click="goToNextStep"
       >
@@ -56,12 +52,15 @@ export default {
     const router = useRouter();
     const selectedOption = ref('');
     const options = [
-      '대학(원) 재학',
-      '취업 준비 중',
-      '근로 중',
-      '창업 중',
-      '육아 중',
-      '군복무 중',
+      '제한없음',
+      '고졸 미만',
+      '고교 재학',
+      '고졸 예정',
+      '고교 졸업',
+      '대학 재학',
+      '대졸 예정',
+      '대학 졸업',
+      '석·박사',
       '기타',
     ];
     const goToPrevStep = () => {

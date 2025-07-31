@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import AttendanceCheckModal from './AttendanceCheckModal.vue';
@@ -29,34 +29,41 @@ const handleLogin = async () => {
   try {
     isLoading.value = true;
     errorMessage.value = '';
-    
+
     // auth store의 login 메서드 호출
     console.log('로그인 시도:', id.value.trim());
     await authStore.login({
       username: id.value.trim(),
-      password: password.value
+      password: password.value,
     });
-    
+
     console.log('로그인 성공, 출석체크 모달 표시');
     // 로그인 성공 시 출석체크 모달 표시
     showModal.value = true;
-    
   } catch (error) {
     console.error('로그인 에러:', error);
-    
+
     // 에러 상태별 메시지 처리
     if (error.response?.status === 401) {
       errorMessage.value = '아이디 또는 비밀번호가 잘못되었습니다.';
     } else if (error.response?.status >= 500) {
-      errorMessage.value = '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
+      errorMessage.value =
+        '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
     } else if (error.code === 'ECONNABORTED') {
-      errorMessage.value = '요청 시간이 초과되었습니다. 네트워크를 확인해주세요.';
+      errorMessage.value =
+        '요청 시간이 초과되었습니다. 네트워크를 확인해주세요.';
     } else {
       errorMessage.value = '로그인에 실패했습니다. 다시 시도해주세요.';
     }
   } finally {
     isLoading.value = false;
   }
+  // 🔐 서버 로그인 로직 생략
+  showModal.value = true;
+
+  setTimeout(() => {
+    router.push('/home'); // ✅ HomeTotalTab 으로 이동
+  }, 1000); // 1초 후 이동 (원하는 시간으로 조절 가능)
 };
 
 const closeModal = () => {
@@ -93,7 +100,6 @@ onMounted(() => {
 });
 
 // 에러 메시지 변경 감지
-import { watch } from 'vue';
 watch(errorMessage, () => {
   if (errorMessage.value) {
     clearErrorMessage();
@@ -146,8 +152,8 @@ watch(errorMessage, () => {
           />
         </div>
 
-        <button 
-          class="loginButton font-15 font-bold" 
+        <button
+          class="loginButton font-15 font-bold"
           @click="handleLogin"
           :disabled="isLoading"
         >

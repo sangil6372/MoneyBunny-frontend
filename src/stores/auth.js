@@ -1,14 +1,14 @@
-import { ref, computed } from 'vue';
-import { defineStore } from 'pinia';
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
 
-import axios from 'axios'; // axios 임포트 // <- 추가
+import axios from "axios"; // axios 임포트 // <- 추가
 
 // 초기 상태 템플릿
 const initState = {
-  token: '', // JWT 접근 토큰
+  token: "", // JWT 접근 토큰
   user: {
-    username: '', // 사용자 ID
-    email: '', // 이메일
+    username: "", // 사용자 ID
+    email: "", // 이메일
     roles: [], // 권한 목록
   },
 
@@ -17,7 +17,7 @@ const initState = {
 };
 
 // 스토어 정의
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const state = ref({ ...initState });
 
   // Computed 속성들
@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('auth', () => {
   // (3) 아바타 업데이트 액션 추가
   const updateAvatar = () => {
     state.value.avatarTimestamp = Date.now();
-    localStorage.setItem('auth', JSON.stringify(state.value));
+    localStorage.setItem("auth", JSON.stringify(state.value));
   };
 
   // 로그인 액션
@@ -54,22 +54,22 @@ export const useAuthStore = defineStore('auth', () => {
     // };
 
     // 💪(상일) 백엔드 MemberController의 정확한 엔드포인트 사용
-    const { data } = await axios.post('/api/member/login', {
+    const { data } = await axios.post("/api/auth/login", {
       username: member.username,
-      password: member.password
+      password: member.password,
     });
-    
+
     // 💪(상일) AuthResultDTO 응답 구조에 맞춰 상태 업데이트
     // 응답 형태: { token: "JWT토큰", user: { loginId, email, createdAt } }
     state.value.token = data.token;
     state.value.user = {
       username: data.user?.loginId || member.username, // UserInfoDTO의 loginId 필드 사용
-      email: data.user?.email || '',
-      roles: [] // 현재 백엔드에서 roles 미구현
+      email: data.user?.email || "",
+      roles: [], // 현재 백엔드에서 roles 미구현
     };
 
     // localStorage에 상태 저장
-    localStorage.setItem('auth', JSON.stringify(state.value));
+    localStorage.setItem("auth", JSON.stringify(state.value));
   };
 
   // 로그아웃 액션
@@ -84,16 +84,16 @@ export const useAuthStore = defineStore('auth', () => {
   // 💪(상일) JWT 토큰 만료 확인 함수
   const isTokenExpired = () => {
     if (!state.value.token) return true;
-    
+
     try {
       // JWT 토큰의 payload 부분 디코딩 (base64)
-      const payload = JSON.parse(atob(state.value.token.split('.')[1]));
+      const payload = JSON.parse(atob(state.value.token.split(".")[1]));
       const currentTime = Math.floor(Date.now() / 1000); // 현재 시간을 초 단위로 변환
-      
+
       // exp 필드와 현재 시간 비교 (5분 여유 시간 고려)
-      return payload.exp && payload.exp < (currentTime + 300);
+      return payload.exp && payload.exp < currentTime + 300;
     } catch (error) {
-      console.error('토큰 디코딩 에러:', error);
+      console.error("토큰 디코딩 에러:", error);
       return true; // 디코딩 실패 시 만료된 것으로 간주
     }
   };
@@ -101,7 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 상태 복원 로직
   // - localStorage에 인증 정보(auth)가 저장되어 있을 경우 상태 복원
   const load = () => {
-    const auth = localStorage.getItem('auth');
+    const auth = localStorage.getItem("auth");
     if (auth != null) {
       state.value = JSON.parse(auth); // JSON 문자열을 객체로 변환
       console.log(state.value);
@@ -111,7 +111,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 프로필 변경 후 로컬 상태 동기화 액션
   const changeProfile = (member) => {
     state.value.user.email = member.email; // 이메일 업데이트
-    localStorage.setItem('auth', JSON.stringify(state.value)); // 로컬스토리지 동기화
+    localStorage.setItem("auth", JSON.stringify(state.value)); // 로컬스토리지 동기화
   };
 
   // 스토어 초기화 시 자동 실행

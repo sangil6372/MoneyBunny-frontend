@@ -40,17 +40,6 @@ const allNotifications = [
     date: '1월 20일',
     action: true,
   },
-  {
-    id: 101,
-    type: 'feedback',
-    title: '경기 청년 지원금 신청 마감 임박',
-    message:
-      '북마크하신 경기 청년 지원금 신청이 3일 후 마감됩니다. 놓치지 마세요!',
-    benefit: '월 10만원 × 6개월',
-    dday: 3,
-    date: '1월 20일',
-    action: true,
-  },
 ];
 
 // 선택된 탭에 따라 알림 필터링

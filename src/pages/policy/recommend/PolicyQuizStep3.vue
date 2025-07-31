@@ -8,13 +8,13 @@
   <div class="quizContainer" style="font-family: 'NanumSquareNeo'">
     <section class="quizContent">
       <div class="progressBarWrapper">
-        <span class="font-13 font-regular">질문 3 / 3</span>
+        <span class="font-13 font-regular">질문 3 / 4</span>
         <div class="progressBar">
-          <div class="progress" :style="{ width: '100%' }"></div>
+          <div class="progress" :style="{ width: '75%' }"></div>
         </div>
       </div>
 
-      <h3 class="question font-22 font-bold">현재 본인의 소득은?</h3>
+      <h3 class="question font-22 font-bold">현재 어떤 상황에 계신가요?</h3>
 
       <ul class="options">
         <li
@@ -22,91 +22,60 @@
           :key="option"
           class="optionItem"
           :class="{ selected: selectedOption === option }"
-          @click="selectOption(option)"
+          @click="selectedOption = option"
         >
-          <template
-            v-if="option === '직접 입력' && selectedOption === '직접 입력'"
-          >
-            <input
-              v-model="customIncome"
-              type="text"
-              placeholder="직접 입력"
-              class="inlineInput"
-              @click.stop
-            />
-          </template>
-          <template v-else>
-            {{ option }}
-          </template>
+          {{ option }}
         </li>
       </ul>
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-20 font-bold" @click="goToPrevStep">
-        이전
-      </button>
+      <button class="prevButton font-20" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-20 font-bold"
-        :disabled="!isFormValid"
+        class="nextButton font-20"
+        :disabled="!selectedOption"
         @click="goToNextStep"
       >
-        결과 보기
+        다음
       </button>
     </footer>
   </div>
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export default {
   name: 'PolicyQuizStep3',
   setup() {
     const router = useRouter();
-    const options = [
-      '2천만원 미만',
-      '2천만원~4천만원 미만',
-      '4천만원~6천만원 미만',
-      '6천만원 이상',
-      '모르겠어요',
-      '직접 입력',
-    ];
     const selectedOption = ref('');
-    const customIncome = ref('');
-
-    const isFormValid = computed(() => {
-      return (
-        selectedOption.value !== '' &&
-        (selectedOption.value !== '직접 입력' ||
-          customIncome.value.trim() !== '')
-      );
-    });
-
-    const selectOption = (option) => {
-      selectedOption.value = option;
-      if (option !== '직접 입력') {
-        customIncome.value = '';
-      }
-    };
-
+    const options = [
+      '제한없음',
+      '재직자',
+      '자영업자',
+      '미취업자',
+      '프리랜서',
+      '일용근로자',
+      '(예비)창업자',
+      '단기근로자',
+      '영농종사자',
+      '기타',
+    ];
     const goToPrevStep = () => {
       router.push({ name: 'policyQuizStep2' });
     };
 
     const goToNextStep = () => {
-      if (!isFormValid.value) return;
-      // 추후 저장 로직 필요 시 여기에
-      router.push({ name: 'policyResultSummary' });
+      if (selectedOption.value) {
+        router.push({ name: 'policyQuizStep4' });
+      }
     };
 
     return {
       options,
       selectedOption,
-      customIncome,
-      isFormValid,
-      selectOption,
       goToNextStep,
       goToPrevStep,
     };
@@ -131,7 +100,6 @@ export default {
   max-width: 390px;
   width: 100%;
 }
-
 .quizContainer {
   max-width: 390px;
   margin: 0 auto;
@@ -198,33 +166,22 @@ export default {
   padding: 12px 0;
   border-radius: 10px;
   border: none;
-  cursor: pointer;
+  font-weight: bold;
 }
 
 .prevButton {
-  background-color: var(--input-bg-1);
+  background-color: var(--input-bg-2);
   color: var(--text-login);
 }
 
 .nextButton {
   background-color: var(--base-blue-dark);
   color: white;
+  cursor: pointer;
 }
 
 .nextButton:disabled {
   background-color: var(--input-disabled-1);
   cursor: default;
-}
-
-.inlineInput {
-  width: 100%;
-  height: 100%;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 16px;
-  font-family: inherit;
-  color: var(--text-login);
-  padding: 0;
 }
 </style>

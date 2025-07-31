@@ -1,3 +1,38 @@
+<script setup>
+import { ref } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
+
+const route = useRoute();
+const email = ref(route.query.email || "");
+
+const router = useRouter();
+const code = ref("");
+const errorMsg = ref("");
+
+// 2단계: 인증코드 확인 및 아이디 조회
+const verify = async () => {
+  if (!email.value || !code.value) {
+    errorMsg.value = "이메일과 인증코드를 모두 입력해주세요.";
+    return;
+  }
+
+  try {
+    await axios.post("/api/auth/verify", {
+      email: email.value,
+      code: code.value,
+    });
+
+    // 인증 성공 → 아이디 조회
+    const res = await axios.post("/api/auth/find-id", { email: email.value });
+    const loginId = res.data;
+    router.push({ name: "findIdResult", query: { loginId } });
+  } catch (err) {
+    errorMsg.value =
+      "인증 실패: " + (err.response?.data?.message || "코드를 확인해주세요");
+  }
+};
+</script>
 <template>
   <div class="codeContainer">
     <div class="card">
@@ -13,6 +48,7 @@
           type="email"
           placeholder="이메일을 입력하세요"
           class="input"
+          v-model="email"
         />
       </div>
 
@@ -24,12 +60,15 @@
             type="text"
             placeholder="인증코드를 입력하세요"
             class="input"
+            v-model="code"
           />
           <span class="timer font-13">2:56</span>
         </div>
       </div>
 
-      <button class="submitButton font-15 font-bold">인증하기</button>
+      <button class="submitButton font-15 font-bold" @click="verify">
+        인증하기
+      </button>
 
       <div class="links font-13">
         <a href="/findPassword">비밀번호 찾기</a>
@@ -43,10 +82,6 @@
     </div>
   </div>
 </template>
-
-<script setup>
-// 추후 이메일 인증 로직 및 타이머 구현 가능
-</script>
 
 <style scoped>
 .codeContainer {

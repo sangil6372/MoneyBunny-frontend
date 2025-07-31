@@ -1,8 +1,7 @@
 <template>
   <div class="layout">
     <!--조건부: 알림 센터 헤더-->
-    <component :is="isNotificationPage ? NotificationHeader : Header" />
-
+    <component :is="activeHeader" />
     <main class="main">
       <router-view v-slot="{ Component }">
         <component :is="Component" />
@@ -19,7 +18,7 @@ import { computed } from 'vue';
 import Header from '@/components/layouts/Header.vue';
 import NavBar from '@/components/layouts/NavBar.vue';
 import NotificationHeader from '@/pages/notification/common/NotificationHeader.vue'; //알림센터 헤더
-
+import PolicySearchHeader from '@/pages/policy/search/PolicySearchHeader.vue'; // 새로 만듦!
 //현재 라우트 정보 가져오기
 const route = useRoute();
 
@@ -30,9 +29,17 @@ const isNotificationPage = computed(
     route.path.startsWith('/notification')
 );
 
-const activeHeader = computed(() =>
-  isNotificationPage.value ? NotificationHeader : Header
+// ★ 검색페이지 조건 추가!
+const isSearchPage = computed(
+  () =>
+    route.name === 'policySearchPage' || route.path.startsWith('/policy/search')
 );
+
+const activeHeader = computed(() => {
+  if (isNotificationPage.value) return NotificationHeader;
+  if (isSearchPage.value) return PolicySearchHeader;
+  return Header;
+});
 </script>
 
 <style scoped>

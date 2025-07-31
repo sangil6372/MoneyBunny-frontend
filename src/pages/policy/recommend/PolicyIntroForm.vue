@@ -1,3 +1,43 @@
+<script setup>
+import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import RegionSelectModal from './RegionSelectModal.vue';
+import rightArrow from '@/assets/images/icons/policy/right_arrow.png';
+import Dropdown from '../component/CustomDropdown.vue';
+
+const router = useRouter();
+
+const birth = ref({ year: '', month: '', day: '' });
+const address = ref('');
+const openDropdown = ref(null); // 열려 있는 드롭다운 id 저장
+
+const years = Array.from({ length: 2025 - 1990 + 1 }, (_, i) => 2025 - i);
+const months = Array.from({ length: 12 }, (_, i) => i + 1);
+const days = Array.from({ length: 31 }, (_, i) => i + 1);
+const showRegionModal = ref(false);
+
+const handleRegionSelected = (value) => {
+  address.value = value;
+  showRegionModal.value = false;
+};
+
+const isFormValid = computed(() => {
+  return (
+    birth.value.year && birth.value.month && birth.value.day && address.value
+  );
+});
+
+const goToPolicyQuiz1 = () => {
+  if (!isFormValid.value) return;
+  router.push({ name: 'policyQuizStep1' });
+};
+
+// 열려 있는 드롭다운 ID만 유지
+const handleDropdownOpen = (id) => {
+  openDropdown.value = id;
+};
+</script>
+
 <template>
   <header class="introHeader">
     <div class="headerCard">
@@ -6,48 +46,57 @@
     </div>
   </header>
 
-  <div class="introContainer" style="font-family: 'NanumSquareNeo'">
+  <div class="introContainer">
     <section class="formSection">
       <label class="label font-20 font-regular">생년월일을 입력해주세요</label>
       <div class="birthSelects">
-        <select v-model="birth.year" class="selectBox">
-          <option disabled value="">년도</option>
-          <option v-for="year in years" :key="year">{{ year }}</option>
-        </select>
-        <select v-model="birth.month" class="selectBox">
-          <option disabled value="">월</option>
-          <option v-for="month in 12" :key="month">{{ month }}</option>
-        </select>
-        <select v-model="birth.day" class="selectBox">
-          <option disabled value="">일</option>
-          <option v-for="day in 31" :key="day">{{ day }}</option>
-        </select>
-      </div>
-
-      <label class="label font-20 font-regular">주소를 입력해주세요</label>
-      <div class="addressInput">
-        <input
-          v-model="address"
-          type="text"
-          placeholder="주소를 검색해주세요"
-          class="addressField font-15 font-regular"
+        <Dropdown
+          v-model="birth.year"
+          placeholder="년도"
+          :options="years"
+          id="year"
+          @open="handleDropdownOpen"
         />
-        <button class="searchButton font-14 font-regular">주소찾기</button>
+        <Dropdown
+          v-model="birth.month"
+          placeholder="월"
+          :options="months"
+          id="month"
+          @open="handleDropdownOpen"
+        />
+        <Dropdown
+          v-model="birth.day"
+          placeholder="일"
+          :options="days"
+          id="day"
+          @open="handleDropdownOpen"
+        />
       </div>
 
-      <input
-        v-model="detailAddress"
-        type="text"
-        placeholder="상세주소 (선택사항)"
-        class="detailAddress font-15 font-regular"
-      />
+      <label class="label font-20 font-regular regionLabel">
+        지역을 선택해주세요
+        <img
+          :src="rightArrow"
+          alt="지역 선택"
+          class="arrowIcon"
+          @click="showRegionModal = true"
+        />
+      </label>
 
-      <p class="disclaimer font-12 font-regular">
-        입력하신 정보는 맞춤형 정책 추천을 위해서만 사용되며, 안전하게
-        보호됩니다.
+      <!-- 선택된 주소 미리보기 -->
+      <p v-if="address" class="selectedAddress font-15 font-regular">
+        {{ address }}
       </p>
+
+      <!-- 지역 선택 모달 -->
+      <RegionSelectModal
+        v-if="showRegionModal"
+        @close="showRegionModal = false"
+        @selected="handleRegionSelected"
+      />
     </section>
   </div>
+
   <div class="footer">
     <button
       class="nextButton font-18 font-bold"
@@ -60,57 +109,13 @@
   </div>
 </template>
 
-<script>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-
-export default {
-  name: 'PolicyIntroForm',
-  setup() {
-    const router = useRouter();
-
-    const birth = ref({ year: '', month: '', day: '' });
-    const address = ref('');
-    const detailAddress = ref('');
-
-    const years = computed(() => {
-      const currentYear = new Date().getFullYear();
-      return Array.from({ length: 100 }, (_, i) => currentYear - i);
-    });
-
-    const isFormValid = computed(() => {
-      return (
-        birth.value.year &&
-        birth.value.month &&
-        birth.value.day &&
-        address.value
-      );
-    });
-
-    const goToPolicyQuiz1 = () => {
-      if (!isFormValid.value) return;
-      router.push({ name: 'policyQuizStep1' });
-    };
-
-    return {
-      birth,
-      address,
-      detailAddress,
-      years,
-      goToPolicyQuiz1,
-      isFormValid,
-    };
-  },
-};
-</script>
-
 <style scoped>
 .introContainer {
   padding: 24px;
   background-color: #fff;
   border-radius: 12px;
   max-width: 390px;
-  margin: 0 42px;
+  margin: 0 20px;
 }
 
 .introHeader {
@@ -141,23 +146,6 @@ export default {
   display: flex;
   gap: 10px;
   margin-bottom: 35px;
-}
-
-.selectBox,
-.addressField,
-.detailAddress {
-  flex: 1;
-  padding: 10px 15px;
-  border: 1.5px solid var(--input-outline);
-  border-radius: 8px;
-  appearance: none;
-  background-position: calc(100% - 10px) center;
-  background-repeat: no-repeat;
-  background-size: 20px;
-}
-
-.selectBox {
-  background-image: url('@/assets/images/icons/policy/select_down.png');
 }
 
 .addressInput {
@@ -200,5 +188,21 @@ export default {
   background-color: var(--input-disabled-1);
   color: var(--text1);
   cursor: default;
+}
+.regionLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.arrowIcon {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+}
+
+.selectedAddress {
+  margin-top: 6px;
+  color: var(--text-bluegray);
 }
 </style>

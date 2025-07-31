@@ -8,42 +8,32 @@
   <div class="quizContainer" style="font-family: 'NanumSquareNeo'">
     <section class="quizContent">
       <div class="progressBarWrapper">
-        <span class="font-13 font-regular">질문 2 / 3</span>
+        <span class="font-13 font-regular">질문 2 / 4</span>
         <div class="progressBar">
-          <div class="progress" :style="{ width: '66%' }"></div>
+          <div class="progress" :style="{ width: '50%' }"></div>
         </div>
       </div>
 
-      <h3 class="question font-22 font-bold">
-        관심 있는 정책 분야를 선택해주세요
-      </h3>
-      <p class="font-12 font-regular">다중선택 가능</p>
+      <h3 class="question font-22 font-bold">전공 분야를 선택해주세요</h3>
 
-      <div
-        v-for="(group, index) in policyGroups"
-        :key="index"
-        style="margin-bottom: 24px"
-      >
-        <p class="font-16 font-bold">{{ index + 1 }}. {{ group.title }}</p>
-        <ul class="options">
-          <li
-            v-for="item in group.items"
-            :key="item"
-            class="optionItem"
-            :class="{ selected: selectedOptions.includes(item) }"
-            @click="toggleOption(item)"
-          >
-            {{ item }}
-          </li>
-        </ul>
-      </div>
+      <ul class="options">
+        <li
+          v-for="option in options"
+          :key="option"
+          class="optionItem"
+          :class="{ selected: selectedOption === option }"
+          @click="selectedOption = option"
+        >
+          {{ option }}
+        </li>
+      </ul>
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-20 font-bold" @click="goBack">이전</button>
+      <button class="prevButton font-20" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-20 font-bold"
-        :disabled="selectedOptions.length === 0"
+        class="nextButton font-20"
+        :disabled="!selectedOption"
         @click="goToNextStep"
       >
         다음
@@ -60,59 +50,33 @@ export default {
   name: 'PolicyQuizStep2',
   setup() {
     const router = useRouter();
-    const selectedOptions = ref([]);
-
-    const policyGroups = [
-      {
-        title: '취업 및 창업 지원',
-        items: ['교육지원', '인턴', '중소기업', '벤처', '장기미취업청년'],
-      },
-      {
-        title: '금융 지원',
-        items: [
-          '바우처',
-          '보조금',
-          '대출',
-          '금리혜택',
-          '맞춤형상담서비스',
-          '신용회복',
-        ],
-      },
-      {
-        title: '주거 지원',
-        items: ['공공임대주택', '주거지원'],
-      },
-      {
-        title: '가정 및 생계 지원',
-        items: ['청년가장', '출산'],
-      },
+    const selectedOption = ref('');
+    const options = [
+      '제한없음',
+      '인문계열',
+      '사회계열',
+      '상경계열',
+      '이학계열',
+      '공학계열',
+      '예체능계열',
+      '농산업계열',
+      '기타',
     ];
-
-    const toggleOption = (item) => {
-      const index = selectedOptions.value.indexOf(item);
-      if (index === -1) {
-        selectedOptions.value.push(item);
-      } else {
-        selectedOptions.value.splice(index, 1);
-      }
-    };
-
-    const goBack = () => {
-      router.back();
+    const goToPrevStep = () => {
+      router.push({ name: 'policyQuizStep1' });
     };
 
     const goToNextStep = () => {
-      if (selectedOptions.value.length > 0) {
+      if (selectedOption.value) {
         router.push({ name: 'policyQuizStep3' });
       }
     };
 
     return {
-      selectedOptions,
-      policyGroups,
-      toggleOption,
+      options,
+      selectedOption,
       goToNextStep,
-      goBack,
+      goToPrevStep,
     };
   },
 };
@@ -162,14 +126,14 @@ export default {
 }
 
 .question {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   color: var(--text-login);
 }
 
 .options {
   list-style: none;
   padding: 0;
-  margin-top: 10px;
+  margin: 0;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -189,9 +153,10 @@ export default {
 }
 
 .quizFooter {
+  margin-top: 32px;
   display: flex;
   gap: 12px;
-  margin-top: 32px;
+  justify-content: center;
 }
 
 .prevButton,
