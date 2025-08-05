@@ -15,13 +15,6 @@
     <!-- 💪(상일) 알림 권한 안내 -->
     <div v-if="showPermissionNotice" class="permission-notice">
       <p class="font-14">{{ permissionMessage }}</p>
-      <button
-        v-if="showPermissionButton"
-        class="permission-btn font-14 font-bold"
-        @click="requestPermission"
-      >
-        알림 권한 허용하기
-      </button>
     </div>
 
     <!-- 💪(상일) 알림 설정 리스트 -->
@@ -131,7 +124,6 @@ const {
 
 const hasNotificationPermission = ref(false);
 const showPermissionNotice = ref(false);
-const showPermissionButton = ref(false);
 const permissionMessage = ref("");
 
 // 💪(상일) 뒤로가기
@@ -143,7 +135,6 @@ const goBack = () => {
 const checkNotificationPermission = async () => {
   if (!("Notification" in window)) {
     showPermissionNotice.value = true;
-    showPermissionButton.value = false;
     permissionMessage.value = "이 브라우저는 알림을 지원하지 않습니다.";
     return;
   }
@@ -154,18 +145,15 @@ const checkNotificationPermission = async () => {
   if (permission === "default") {
     // 권한 요청 전인 경우
     showPermissionNotice.value = true;
-    showPermissionButton.value = true;
     permissionMessage.value =
       "알림을 받으려면 브라우저 알림 권한이 필요합니다.";
   } else if (permission === "denied") {
     // 권한이 거부된 경우
     showPermissionNotice.value = true;
-    showPermissionButton.value = false;
     permissionMessage.value = "브라우저 설정에서 알림 권한을 허용해주세요.";
   } else {
     // 권한이 있는 경우
     showPermissionNotice.value = false;
-
     // 💪(상일) 권한이 있지만 FCM 토큰이 없는 경우 발급 및 초기 구독
     const token = localStorage.getItem("fcm_token");
     if (!token) {
@@ -245,9 +233,20 @@ const toggleNotification = async (type) => {
   }
 };
 
-// 💪(상일) 컴포넌트 마운트 시 초기화
+// 💪(상일) 컴포넌트 마운트 시 초기화 및 자동 권한 요청
 onMounted(async () => {
   await checkNotificationPermission();
+
+  // 💪(상일) 권한이 default 상태면 자동으로 권한 요청
+  if (Notification.permission === "default") {
+    console.log("🔔 설정 페이지 진입 - 자동 알림 권한 요청");
+    try {
+      await requestPermission();
+    } catch (error) {
+      console.log("⚠️ 자동 권한 요청 실패 또는 사용자 거부:", error.message);
+      // 실패해도 페이지는 정상 로드
+    }
+  }
 
   if (hasNotificationPermission.value) {
     await fetchSubscriptionStatus();
@@ -296,7 +295,7 @@ onMounted(async () => {
 
 .permission-notice p {
   color: #856404;
-  margin-bottom: 12px;
+  margin: 0;
 }
 
 .permission-btn {

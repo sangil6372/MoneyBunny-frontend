@@ -12,6 +12,7 @@ import VueAwesomePaginate from 'vue-awesome-paginate'; // 페이지네이션 컴
 import App from './App.vue';
 import router from './router';
 import { registerServiceWorker } from './firebase/registerServiceWorker';
+import { checkPermissionOnAppStart } from './firebase/notificationPermission';
 
 const app = createApp(App);
 
@@ -21,5 +22,8 @@ app.use(router);
 
 app.mount('#app');
 
-// 서비스 워커 등록!
+// 💪(상일) 서비스 워커 등록
 registerServiceWorker();
+
+// 💪(상일) 앱 시작 시 알림 권한 체크 및 토큰 정리
+checkPermissionOnAppStart();

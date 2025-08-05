@@ -55,24 +55,24 @@ const routes = [
   { path: '/findId', name: 'findId', component: FindIdPage },
   { path: '/findPassword', name: 'findPassword', component: FindPasswordPage },
   {
-    path: '/signUpEmailVerify',
-    name: 'signUpEmailVerify',
+    path: "/signUpEmailVerify",
+    name: "signUpEmailVerify",
     component: SignUpEmailVerifyPage,
   },
   {
-    path: '/signUpProfile',
-    name: 'signUpProfile',
+    path: "/signUpProfile",
+    name: "signUpProfile",
     component: SignUpProfilePage,
   },
   {
-    path: '/resetPassword',
-    name: 'resetPassword',
+    path: "/resetPassword",
+    name: "resetPassword",
     component: ResetPasswordPage,
   },
-  { path: '/findIdResult', name: 'findIdResult', component: FindIdResultPage },
+  { path: "/findIdResult", name: "findIdResult", component: FindIdResultPage },
   {
-    path: '/attendanceCheck',
-    name: 'attendanceCheck',
+    path: "/attendanceCheck",
+    name: "attendanceCheck",
     component: AttendanceCheckModal,
   },
   {
@@ -84,14 +84,14 @@ const routes = [
   // ─── 마이페이지 ─────────────────────────────────────
   { path: '/mypage/settings', name: 'myPageSettings', component: SettingMain },
   {
-    path: '/mypage/settings/changePassword',
-    name: 'changePassword',
+    path: "/mypage/settings/changePassword",
+    name: "changePassword",
     component: ChangePassword,
   },
 
   // ─── 기본 레이아웃 하위 라우트 ─────────
   {
-    path: '/',
+    path: "/",
     component: DefaultLayout,
     children: [
       { path: '', redirect: '/home' },
