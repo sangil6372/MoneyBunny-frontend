@@ -1,21 +1,21 @@
 <template>
   <div class="tabHeader">
     <span
-      class="tabItem font-15 font-bold"
+      class="tabItem font-14"
       :class="{ active: currentTab === 'profile' }"
       @click="$emit('changeTab', 'profile')"
     >
       프로필
     </span>
     <span
-      class="tabItem font-15 font-bold"
+      class="tabItem font-14"
       :class="{ active: currentTab === 'bookmark' }"
       @click="$emit('changeTab', 'bookmark')"
     >
       북마크
     </span>
     <span
-      class="tabItem font-15 font-bold"
+      class="tabItem font-14"
       :class="{ active: currentTab === 'settings' }"
       @click="$emit('changeTab', 'settings')"
     >

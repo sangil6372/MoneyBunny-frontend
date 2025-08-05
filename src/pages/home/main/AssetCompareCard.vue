@@ -43,26 +43,26 @@ const increaseAmount = ref(null);
 const increaseRate = ref(null);
 
 //컴포넌트 마운트 시 화면
-onMounted(async () => {
-  try {
-    //백엔드 서버에서 계좌 정보 가져오기
-    const res = await axios.get('http://localhost:3000/accounts?userId=1');
-    const accounts = res.data;
-    const total = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+// onMounted(async () => {
+// try {
+//백엔드 서버에서 계좌 정보 가져오기
+// const res = await axios.get('http://localhost:3000/accounts?userId=1');
+// const accounts = res.data;
+// const total = accounts.reduce((sum, acc) => sum + acc.balance, 0);
 
-    //계좌 잔액 총합
-    currentAsset.value = total;
-    //변경 예정: 정책 적용 시 자산 증가
-    expectedAsset.value = Math.round(total * 1.1);
+//   //계좌 잔액 총합
+//   currentAsset.value = total;
+//   //변경 예정: 정책 적용 시 자산 증가
+//   expectedAsset.value = Math.round(total * 1.1);
 
-    //증가 금액과 증가율 계산
-    increaseAmount.value = expectedAsset.value - total;
-    increaseRate.value = ((increaseAmount.value / total) * 100).toFixed(1);
-  } catch (e) {
-    //오류 발생시
-    console.error('자산 불러오기 실패', e);
-  }
-});
+//   //증가 금액과 증가율 계산
+//   increaseAmount.value = expectedAsset.value - total;
+//   increaseRate.value = ((increaseAmount.value / total) * 100).toFixed(1);
+// } catch (e) {
+//   //오류 발생시
+//   console.error('자산 불러오기 실패', e);
+// }
+// });
 
 // fallback display용
 const format = (val, suffix = '원') =>

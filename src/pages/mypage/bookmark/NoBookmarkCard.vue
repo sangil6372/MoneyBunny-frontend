@@ -5,8 +5,8 @@
       alt="북마크 없음 아이콘"
       class="noBookmarkIcon"
     />
-    <p class="noBookmarkTitle font-20 font-bold">저장된 북마크가 없습니다</p>
-    <p class="noBookmarkSub font-15 font-regular">
+    <p class="noBookmarkTitle font-18 font-bold">저장된 북마크가 없습니다</p>
+    <p class="noBookmarkSub font-14 font-regular">
       관심있는 정책이나 상품을 북마크해보세요
     </p>
   </div>

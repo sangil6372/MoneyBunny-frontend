@@ -33,16 +33,21 @@ firebase.initializeApp(firebaseConfig);
 // 🔔 FCM Messaging 인스턴스 생성
 const messaging = firebase.messaging();
 
+// 💪(상일) 백그라운드 메시지 처리 - data-only 메시지로 커스텀 알림
 messaging.onBackgroundMessage((payload) => {
-  console.log("🌙 [백그라운드 메시지 수신]", payload); // 수신된 데이터 로그 확인
+  console.log("🌙 [백그라운드 메시지 수신]", payload);
 
-  // 🔔 알림 제목과 내용 설정 (payload가 없을 경우 기본값 사용)
-  const notificationTitle = payload.notification?.title || "머니버니 알림";
+  // 💪(상일) data 필드에서 알림 정보 추출 (notification 필드 없으면 기본 알림 생성 안됨)
+  const notificationTitle = payload.data?.title || "머니버니 알림";
   const notificationOptions = {
-    body: payload.notification?.body || "새 알림이 도착했어요!",
-    icon: "/icons/icon-192x192.png", // PWA 알림에 표시될 아이콘 경로
+    body: payload.data?.body || "새 알림이 도착했어요!",
+    icon: "/icons/icon-192x192.png", // 메인 알림 아이콘 (192x192px)
+    badge: "/icons/icon-72x72.png", // 배지 아이콘 (72x72px)
+    tag: "moneybunny-notification",
+    renotify: false,
+    data: payload.data || {},
   };
 
-  // 🔔 알림 표시
+  // 💪(상일) 커스텀 알림 표시
   self.registration.showNotification(notificationTitle, notificationOptions);
 });

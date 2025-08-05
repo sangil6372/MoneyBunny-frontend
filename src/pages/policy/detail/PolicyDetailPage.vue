@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 
 import PolicyHeader from './PolicyHeader.vue';
@@ -8,90 +8,89 @@ import PolicyTabContent from './PolicyTabContent.vue';
 import PolicyConditionTab from './PolicyConditionTab.vue';
 import PolicyApplyTab from './PolicyApplyTab.vue';
 
-import PolicyFooter from './PolicyFooter.vue';
-
-// 라우터에서 id 가져오기
-const route = useRoute();
-const selectedTab = ref('정책 개요');
-
-// 예시 정책 데이터 (id로 필터링할 수 있도록 배열 형태)
-const policyList = [
+// 실제 데이터(예시)
+const ALL_POLICIES = [
   {
-    id: 1,
-    title: '청년 주택드림 청약통장',
-    description: '청년층의 주거안정을 지원하는 청약통장',
-    tags: ['주택', '청년'],
-    supportAmount: '최대 5,000만원',
-    objective: '청년의 주거안정을 돕기 위해...',
-    supportDetails: [
-      {
-        title: '우대 금리 제공',
-        desc: '연 2.5% 금리 혜택 제공',
-      },
+    policyId: 202,
+    title: '2025년 청년사회진입 활동지원사업',
+    description: '청년 사회진입 활동을 지원하는 정책',
+    tags: ['청년'],
+    supportAmount: '일시금 30만원 지급',
+    objective: '청년의 사회진입을 돕기 위한 지원사업입니다.',
+    supportDetails: [{ title: '현금 지원', desc: '30만원 일시금 지급' }],
+    relatedPolicies: [
+      { title: '청년내일채움공제', desc: '청년 장기근속 지원' },
     ],
-    relatedPolicies: [],
   },
   {
-    id: 2,
-    title: '청년 내일채움공제',
-    description: '청년층의 장기근속과 목돈마련을 지원하는 정책',
-    tags: ['취업', '청년'],
-    supportAmount: '최대 3,000만원',
-    objective:
-      '청년층의 장기근속을 유도하고 목돈마련을 지원하여 청년 고용안정과 사회진출을 촉진하는 정부 정책입니다.',
-    supportDetails: [
-      {
-        title: '적립금 지원',
-        desc: '근로자 본인 적립금 + 기업 적립금 + 정부 지원금',
-      },
-      {
-        title: '이자 지원',
-        desc: '연 1.8% 이자율 적용 (일반 적금 대비 우대금리)',
-      },
-      {
-        title: '취업 연계',
-        desc: '우수기업 취업 기회 제공 및 장기근속 유도',
-      },
-    ],
+    policyId: 5,
+    title: '2025년 청년도전지원사업(원주시)',
+    description: '청년의 도전을 지원하는 원주시 청년 대상 정책',
+    tags: ['청년'],
+    supportAmount: '최대 35만원 일시금 지급',
+    objective: '청년들의 자기계발 및 사회진입을 위한 일시금 지원 정책',
+    supportDetails: [{ title: '일시금 지원', desc: '최대 35만원 일시금 지급' }],
     relatedPolicies: [
       {
-        title: '국민취업지원제도',
-        desc: '취업취약계층 및 청년층 취업지원',
-      },
-      {
-        title: '청년 전세자금 대출',
-        desc: '무주택 청년의 주거안정을 위한 전세 자금 대출',
+        title: '청년사회진입 활동지원사업',
+        desc: '청년 사회진입을 위한 활동 지원',
       },
     ],
+    endDate: '20250721 ~ 20250930',
+  },
+  {
+    policyId: 1135,
+    title:
+      '[밀알복지재단] 경기도 저출생 위기극복 지원사업  ‘우리가족, 함께 기대’',
+    description: '경기도 내 저출생 위기 극복을 위한 임산부 건강검진 지원사업',
+    tags: ['육아'],
+    supportAmount: '임산부 건강검진비 최대 100만원 지원',
+    objective: '저출생 위기 가정에 건강검진비 지원을 통해 출산을 장려하는 사업',
+    supportDetails: [
+      { title: '건강검진비 지원', desc: '임산부 건강검진비 최대 100만원 지원' },
+    ],
+    relatedPolicies: [
+      { title: '임신축하금 지원사업', desc: '임신 가정에 축하금 10만원 지급' },
+    ],
+    endDate: '20240911 ~ 20250831',
   },
 ];
 
-// 현재 id에 맞는 정책 데이터 가져오기
-const policyId = parseInt(route.params.id);
-const policy = policyList.find((p) => p.id === policyId);
+const route = useRoute();
+const selectedTab = ref('정책 개요');
+
+// 라우터 param에서 policyId 추출 (문자일 수도 있으니 숫자 변환)
+const policyId = computed(() =>
+  Number(route.params.policyId || route.params.id)
+);
+const policy = computed(() =>
+  ALL_POLICIES.find((p) => p.policyId === policyId.value)
+);
+// 기간 문자열 추출 (endDate 필드)
+const period = computed(() => policy.value?.endDate || '');
 </script>
 
 <template>
   <div class="policyDetailPage" v-if="policy">
     <PolicyHeader :policy="policy" />
 
-    <!-- ✅ 탭 콘텐츠를 감싸는 공통 박스 -->
     <div class="contentBox">
       <PolicyTab v-model:selectedTab="selectedTab" />
       <PolicyTabContent :policy="policy" :tab="selectedTab">
-        <template #overview><PolicyTabContent /> </template>
-
+        <template #overview>
+          <PolicyTabContent
+            :policy="policy"
+            :period="policy.endDate"
+            :tab="selectedTab"
+          />
+        </template>
         <template #condition>
-          <PolicyConditionTab />
+          <PolicyConditionTab :policy="policy" />
         </template>
-
-        <template #apply>
-          <PolicyApplyTab />
-        </template>
+        <template #apply> <PolicyApplyTab :policy="policy" /> </template>
       </PolicyTabContent>
     </div>
   </div>
-
   <div v-else class="noData">정책 정보를 찾을 수 없습니다.</div>
 </template>
 

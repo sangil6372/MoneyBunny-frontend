@@ -1,21 +1,19 @@
 <template>
   <div class="settingMain">
-    <!-- 알림 설정 (settingItem으로 통일) -->
-    <div class="settingItem">
-      <span class="text font-18 font-regular">알림 설정</span>
-      <button
-        class="toggleBtn font-14 font-bold"
-        :class="{ on: notificationEnabled, off: !notificationEnabled }"
-        @click="toggleNotification"
-      >
-        {{ notificationEnabled ? 'ON' : 'OFF' }}
-      </button>
+    <!-- 💪(상일) 알림 설정 항목 수정 -->
+    <div class="settingItem" @click="goToNotificationSettings">
+      <span class="text font-16">알림 설정</span>
+      <img
+        src="@/assets/images/icons/mypage/right_arrow.png"
+        alt="arrow"
+        class="arrowIcon"
+      />
     </div>
 
     <!-- 설정 리스트 -->
     <div class="settingList">
       <div class="settingItem">
-        <span class="text font-18 font-regular">비밀번호 변경</span>
+        <span class="text font-16">비밀번호 변경</span>
         <img
           src="@/assets/images/icons/mypage/right_arrow.png"
           alt="arrow"
@@ -24,26 +22,35 @@
         />
       </div>
       <div class="settingItem">
-        <span class="text font-18 font-regular">개인정보 처리 방침</span>
+        <span class="text font-16">정책유형 재설정</span>
+        <img
+          src="@/assets/images/icons/mypage/right_arrow.png"
+          class="arrowIcon"
+          @click="goToPolicyRetest"
+        />
+      </div>
+
+      <div class="settingItem">
+        <span class="text font-16">개인정보 처리 방침</span>
         <img
           src="@/assets/images/icons/mypage/right_arrow.png"
           class="arrowIcon"
         />
       </div>
       <div class="settingItem">
-        <span class="text font-18 font-regular">서비스 이용약관</span>
+        <span class="text font-16">서비스 이용약관</span>
         <img
           src="@/assets/images/icons/mypage/right_arrow.png"
           class="arrowIcon"
         />
       </div>
       <div class="settingItem">
-        <span class="text font-18 font-regular">버전 정보</span>
-        <span class="version font-15 font-regular">v1.2.3</span>
+        <span class="text font-16">버전 정보</span>
+        <span class="version font-14">v1.2.3</span>
       </div>
       <!-- ✅ 로그아웃 항목 (리스트처럼 보이게) -->
       <div class="settingItem logoutItem" @click="handleLogout">
-        <span class="text font-18 font-regular logout">로그아웃</span>
+        <span class="text font-16 logout">로그아웃</span>
       </div>
     </div>
 
@@ -57,60 +64,50 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import {
-  subscribeToPush,
-  unsubscribeFromPush,
-} from '@/firebase/notificationPermission.js';
-import LogoutConfirmModal from './LogoutConfirmModal.vue';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import LogoutConfirmModal from "./LogoutConfirmModal.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const notificationEnabled = ref(false);
 const showLogoutModal = ref(false);
 
-// 현재 FCM 구독 상태를 확인
-const checkSubscription = async () => {
-  const registration = await navigator.serviceWorker.ready;
-  const subscription = await registration.pushManager.getSubscription();
-  notificationEnabled.value = !!subscription;
-};
-
-// 토글 시 FCM 구독/해제
-const toggleNotification = async () => {
-  try {
-    if (notificationEnabled.value) {
-      await unsubscribeFromPush();
-    } else {
-      await subscribeToPush();
-    }
-    notificationEnabled.value = !notificationEnabled.value;
-  } catch (err) {
-    console.error('알림 토글 중 오류 발생:', err.message);
-  }
+// 💪(상일) 알림 설정 페이지로 이동
+const goToNotificationSettings = () => {
+  router.push({ name: "notificationSettings" });
 };
 
 const handleLogout = () => {
   showLogoutModal.value = true;
 };
 
-// 💪(상일) auth store를 통한 실제 로그아웃 처리 
-const confirmLogout = () => {
+// 💪(상일) auth store를 통한 실제 로그아웃 처리
+// 🎵(유정) router 변경
+const confirmLogout = async () => {
   showLogoutModal.value = false;
-  authStore.logout(); // auth store의 logout 메서드 사용
-  router.push('/'); // 로그인 페이지로 이동
+  await authStore.logout();
+
+  // Vue next tick 사용하여 상태 반영 이후 이동
+  await new Promise((resolve) => setTimeout(resolve)); // 상태 반영 기다림
+
+  // 로그 확인
+  console.log("[Logout] isLogin 상태:", authStore.isLogin); // false 나와야 정상
+
+  if (!authStore.isLogin) {
+    router.replace({ path: "/" }); // 로그인 페이지로 이동
+  } else {
+    console.warn("[Logout] 상태 반영이 아직 안 됨");
+  }
 };
 
 const goToChangePassword = () => {
-  router.push({ name: 'changePassword' });
+  router.push({ name: "changePassword" });
 };
 
-
-onMounted(() => {
-  checkSubscription();
-});
+const goToPolicyRetest = () => {
+  router.push({ name: "myPageSettingsPolicy" });
+};
 </script>
 
 <style scoped>
@@ -132,9 +129,9 @@ onMounted(() => {
 }
 
 .toggleBtn {
-  width: 56px;
-  height: 30px;
-  border-radius: 20px;
+  width: 50px;
+  height: 28px;
+  border-radius: 10px;
   border: none;
   color: white;
   cursor: pointer;
@@ -171,8 +168,8 @@ onMounted(() => {
 }
 
 .arrowIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 

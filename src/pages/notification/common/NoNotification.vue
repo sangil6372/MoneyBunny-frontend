@@ -29,7 +29,6 @@ const goToSettings = () => {
 //알림 새로고침
 const refreshList = () => {
   // 알림 목록 새로고침 기능
-  console.log('알림 새로고침');
 };
 </script>
 

@@ -1,6 +1,6 @@
 <script setup>
 import { useRoute } from "vue-router";
-
+// 🎵(유정) 이메일 인증 후 아이디 결과 반환 페이지
 const route = useRoute();
 const loginId = route.query.loginId || "unknown";
 </script>

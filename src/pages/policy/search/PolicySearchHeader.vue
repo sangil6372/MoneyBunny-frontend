@@ -18,6 +18,14 @@ function handleConfirm(selected) {
   filterData.value = selected;
   showFilterModal.value = false;
 }
+function onSearch() {
+  if (searchQuery.value.trim()) {
+    router.push({
+      name: 'policySearchResult',
+      query: { q: searchQuery.value },
+    });
+  }
+}
 </script>
 <template>
   <div class="policySearchHeader">
@@ -80,9 +88,10 @@ function handleConfirm(selected) {
 
 .searchInput {
   width: 100%;
+  height: 40px;
   padding: 12px 44px 12px 16px;
-  border: 1.5px solid var(--input-outline-2);
-  border-radius: 12px;
+  border: 1px solid var(--input-outline-2);
+  border-radius: 8px;
   background: #fff;
   font-size: 16px;
   outline: none;
@@ -91,7 +100,7 @@ function handleConfirm(selected) {
 }
 
 .searchInput:focus {
-  border: 1.5px solid var(--text-bluegray);
+  border: 2px solid var(--gray-medium);
 }
 
 .searchIconBtn {

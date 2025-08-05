@@ -1,3 +1,75 @@
+<script setup>
+import { ref, watch } from 'vue';
+import ProfileImagePicker from './ProfileImagePicker.vue';
+
+// 프로필 이미지 import (경로 확인!)
+import imgSprout from '@/assets/images/icons/profile/profile_edit_sprout.png';
+import imgBeard from '@/assets/images/icons/profile/profile_edit_beard.png';
+import imgEyelash from '@/assets/images/icons/profile/profile_edit_eyelash.png';
+import imgCarrot from '@/assets/images/icons/profile/profile_edit_carrot.png';
+
+const profileImages = [imgSprout, imgBeard, imgEyelash, imgCarrot];
+
+// props로 기존 유저 정보 받기
+const props = defineProps({
+  name: String,
+  email: String,
+  phone: String,
+  profileImage: String,
+});
+
+const emit = defineEmits(['close', 'update']);
+
+// state 정의
+const name = ref('');
+const email = ref('');
+const phone = ref('');
+const profileImage = ref(props.profileImage || imgBeard);
+
+const pickerOpen = ref(false);
+
+const errors = ref({ name: false, email: false, phone: false });
+
+// watch로 값 반영
+watch(
+  () => props,
+  () => {
+    name.value = props.name;
+    email.value = props.email;
+    phone.value = props.phone;
+    profileImage.value = props.profileImage || imgBeard;
+  },
+  { immediate: true, deep: true }
+);
+
+const close = () => emit('close');
+
+const save = () => {
+  errors.value.name = name.value.trim() === '';
+  errors.value.email = email.value.trim() === '';
+  errors.value.phone = phone.value.trim() === '';
+
+  if (!errors.value.name && !errors.value.email && !errors.value.phone) {
+    emit('update', {
+      name: name.value.trim(),
+      email: email.value.trim(),
+      phone: phone.value.trim(),
+      profileImage: profileImage.value,
+    });
+    emit('close');
+  }
+};
+
+const changeProfile = () => {
+  pickerOpen.value = true;
+};
+
+const onProfileSelect = (img) => {
+  profileImage.value = img;
+  pickerOpen.value = false;
+};
+</script>
+
 <template>
   <div class="modalOverlay" @click.self="close">
     <div class="modalContainer">
@@ -7,17 +79,19 @@
       </div>
 
       <div class="profileImageSection">
-        <div class="imageWrapper" @click="changeProfile">
+        <div class="imageWrapper">
           <img
-            src="@/assets/images/icons/profile/profile_edit_beard.png"
+            :src="profileImage"
             alt="프로필"
             class="profileImage"
+            @click="changeProfile"
           />
-          <img
-            src="@/assets/images/icons/mypage/edit.png"
-            alt="수정 아이콘"
-            class="editBadge"
-          />
+          <button class="editBadgeBtn" @click="changeProfile">
+            <img
+              src="@/assets/images/icons/mypage/edit.png"
+              alt="수정 아이콘"
+            />
+          </button>
         </div>
         <p class="imageHint font-13 font-regular">
           프로필 사진을 변경하려면 클릭하세요
@@ -25,9 +99,9 @@
       </div>
 
       <div class="formGroup">
-        <label for="name" class="font-14 font-bold"
-          >이름<span class="required">*</span></label
-        >
+        <label for="name" class="font-14 font-bold">
+          이름<span class="required">*</span>
+        </label>
         <input
           id="name"
           v-model="name"
@@ -40,9 +114,9 @@
       </div>
 
       <div class="formGroup">
-        <label for="email" class="font-14 font-bold"
-          >이메일<span class="required">*</span></label
-        >
+        <label for="email" class="font-14 font-bold">
+          이메일<span class="required">*</span>
+        </label>
         <input
           id="email"
           v-model="email"
@@ -55,9 +129,9 @@
       </div>
 
       <div class="formGroup">
-        <label for="phone" class="font-14 font-bold"
-          >전화번호<span class="required">*</span></label
-        >
+        <label for="phone" class="font-14 font-bold">
+          전화번호<span class="required">*</span>
+        </label>
         <input
           id="phone"
           v-model="phone"
@@ -70,92 +144,47 @@
       </div>
 
       <div class="buttonGroup">
-        <button class="cancelButton font-14 font-regular" @click="close">
+        <button class="cancelButton font-15 font-regular" @click="close">
           취소
         </button>
-        <button class="saveButton font-14 font-bold" @click="save">저장</button>
+        <button class="saveButton font-15 font-regular" @click="save">
+          저장
+        </button>
       </div>
+      <!-- 프로필 선택 팝업 -->
+      <ProfileImagePicker
+        v-if="pickerOpen"
+        :model-value="profileImage"
+        @close="pickerOpen = false"
+        @select="onProfileSelect"
+      />
     </div>
   </div>
 </template>
-
-<script setup>
-import { ref, watch } from 'vue';
-
-// props로 기존 유저 정보 받기
-const props = defineProps({
-  name: String,
-  email: String,
-  phone: String,
-});
-
-const emit = defineEmits(['close']);
-
-const name = ref('');
-const email = ref('');
-const phone = ref('');
-
-const errors = ref({
-  name: false,
-  email: false,
-  phone: false,
-});
-
-// props 값 → ref로 세팅 (모달 열릴 때 자동으로 반영)
-watch(
-  () => props,
-  () => {
-    name.value = props.name;
-    email.value = props.email;
-    phone.value = props.phone;
-  },
-  { immediate: true, deep: true }
-);
-
-const close = () => emit('close');
-
-const save = () => {
-  // 유효성 검사
-  errors.value.name = name.value.trim() === '';
-  errors.value.email = email.value.trim() === '';
-  errors.value.phone = phone.value.trim() === '';
-
-  if (!errors.value.name && !errors.value.email && !errors.value.phone) {
-    emit('update', {
-      name: name.value.trim(),
-      email: email.value.trim(),
-      phone: phone.value.trim(),
-    });
-    emit('close');
-  }
-};
-
-const changeProfile = () => {
-  alert('프로필 이미지 변경 기능은 추후 구현됩니다.');
-};
-</script>
 
 <style scoped>
 .modalOverlay {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-color: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 999;
+  z-index: 9999;
 }
 
 .modalContainer {
   background-color: white;
   border-radius: 16px;
   padding: 24px;
-  width: 90%;
-  max-width: 420px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 400px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
 
 .modalHeader {
@@ -184,28 +213,44 @@ const changeProfile = () => {
 
 .imageWrapper {
   position: relative;
-  width: 84px;
-  height: 84px;
+  width: 110px;
+  height: 110px;
+  margin: 0 auto;
 }
 
 .profileImage {
-  width: 84px;
-  height: 84px;
+  width: 110px;
+  height: 110px;
   border-radius: 50%;
-  background-color: var(--input-bg-3);
+  /* background: var(--input-bg-3); */
+  cursor: pointer;
+  display: block;
+}
+.editBadgeBtn {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--reset-button);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
 }
 
-.editBadge {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 24px;
-  height: 24px;
+.editBadgeBtn img {
+  width: 20px;
+  height: 20px;
+  display: block;
 }
 
 .imageHint {
   color: var(--text-bluegray);
-  margin-top: 8px;
+  margin-top: 13px;
 }
 
 .formGroup {
@@ -213,13 +258,18 @@ const changeProfile = () => {
 }
 
 .inputField {
+  margin-top: 5px;
   width: 100%;
   padding: 12px;
-  font-size: 14px;
-  background-color: var(--input-bg-1);
-  border: 1px solid transparent;
+  font-size: 15px;
+  background-color: #fff;
+  border: 1.5px solid var(--input-bg-1);
   border-radius: 8px;
   outline: none;
+}
+
+.inputField:focus {
+  border-color: var(--input-bg-3);
 }
 
 .inputField.error {

@@ -17,8 +17,11 @@ import { computed } from 'vue';
 
 import Header from '@/components/layouts/Header.vue';
 import NavBar from '@/components/layouts/NavBar.vue';
-import NotificationHeader from '@/pages/notification/common/NotificationHeader.vue'; //알림센터 헤더
-import PolicySearchHeader from '@/pages/policy/search/PolicySearchHeader.vue'; // 새로 만듦!
+import NotificationHeader from '@/pages/notification/common/NotificationHeader.vue';
+import PolicySearchHeader from '@/pages/policy/search/PolicySearchHeader.vue';
+import ChangePasswordHeader from '@/pages/mypage/settings/ChangePasswordHeader.vue';
+import PolicyDetailHeader from '@/pages/policy/detail/PolicyDetailHeader.vue';
+
 //현재 라우트 정보 가져오기
 const route = useRoute();
 
@@ -34,10 +37,23 @@ const isSearchPage = computed(
   () =>
     route.name === 'policySearchPage' || route.path.startsWith('/policy/search')
 );
+// ★ 비밀번호 변경 라우트 추가! (라우트 name에 따라)
+const isChangePasswordPage = computed(
+  () =>
+    route.name === 'changePassword' || route.path.startsWith('/changePassword')
+);
+
+// 정책 상세 헤더 (policyDetail만!)
+const isPolicyDetailPage = computed(
+  () => route.name === 'policyDetail' // name이 정확히 'policyDetail'인 경우만
+);
 
 const activeHeader = computed(() => {
   if (isNotificationPage.value) return NotificationHeader;
   if (isSearchPage.value) return PolicySearchHeader;
+  if (isChangePasswordPage.value) return ChangePasswordHeader;
+  // 정책 상세일 때만 PolicyHeader 사용!
+  if (isPolicyDetailPage.value) return PolicyDetailHeader;
   return Header;
 });
 </script>

@@ -1,7 +1,7 @@
 // src/firebase/initFirebase.js
 
-import { initializeApp } from 'firebase/app';
-import { getMessaging } from 'firebase/messaging';
+import { initializeApp } from "firebase/app";
+import { getMessaging } from "firebase/messaging";
 
 // Firebase 설정
 const firebaseConfig = {

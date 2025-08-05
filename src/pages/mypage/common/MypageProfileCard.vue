@@ -2,13 +2,14 @@
   <div class="userCard">
     <div class="userInfo">
       <img
-        src="@/assets/images/icons/profile/profile_edit_beard.png"
+        :src="userInfo.profileImage"
         alt="프로필 이미지"
         class="profileImage"
       />
+
       <div class="userText">
-        <p class="userName font-22 font-bold">{{ userInfo.name }}</p>
-        <p class="userEmail font-15 font-regular">{{ userInfo.email }}</p>
+        <p class="userName font-20 font-bold">{{ userInfo.name }}</p>
+        <p class="userEmail font-14 font-regular">{{ userInfo.email }}</p>
       </div>
       <button class="editBtn" @click="$emit('edit')">
         <img src="@/assets/images/icons/mypage/edit.png" alt="수정" />
@@ -26,12 +27,13 @@ defineProps({ userInfo: Object });
   background-color: white;
   border-radius: 16px;
   padding: 24px;
-  margin: 0 auto 24px; /* ✅ 좌우 가운데 정렬 */
-  width: 416px;
+  width: 100%;
   height: 136px;
+  box-sizing: border-box;
 }
 
 .userInfo {
+  justify-content: space-between;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -39,9 +41,9 @@ defineProps({ userInfo: Object });
 }
 
 .profileImage {
-  margin-left: 12px;
-  width: 74px;
-  height: 74px;
+  margin-left: 10px;
+  width: 85px;
+  height: 85px;
   border-radius: 50%;
   background-color: var(--input-bg-3);
   object-fit: cover;
@@ -54,6 +56,7 @@ defineProps({ userInfo: Object });
   flex: 1;
   gap: 2px;
   margin-top: 4px;
+  min-width: 0;
 }
 
 .userText p {

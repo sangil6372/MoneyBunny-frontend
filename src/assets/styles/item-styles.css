@@ -1,0 +1,134 @@
+/* ===============================
+   공통 Item 스타일 (기존 클래스명 유지)
+   AccountItem.vue, CardItem.vue에서 사용
+================================= */
+
+/* 공통 아이템 컨테이너 스타일 */
+.account-item,
+.card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--input-bg-2);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border: 1px solid #f0f0f0;
+}
+/* 클릭 시 색상 변화 */
+.account-item:active,
+.card-item:active {
+  background: var(--input-bg-1);
+}
+
+/* 공통 로고 스타일 */
+.bank-logo {
+  width: 48px;
+  height: 48px;
+  margin-right: 0.8rem;
+  flex-shrink: 0;
+}
+
+.card-logo {
+  width: 3rem;
+  height: 3rem;
+  margin-right: 0.8rem;
+  flex-shrink: 0;
+  object-fit: contain;
+  object-position: center;
+  background-color: var(--input-bg-1);
+  border-radius: 0.25rem;
+}
+
+/* 공통 정보 영역 */
+.account-info,
+.card-info {
+  flex: 1;
+  cursor: default;
+}
+
+.info-top {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* 공통 이름 스타일 */
+.bank-name,
+.card-name {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.main-badge {
+  background: var(--text-bluegray);
+  color: white;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+/* 공통 서브 텍스트 */
+.account-number,
+.card-number {
+  font-size: 0.9rem;
+  color: var(--text-lightgray);
+  margin-top: 0.2rem;
+}
+
+/* 공통 금액 스타일 */
+.balance,
+.card-amount {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--base-blue-dark);
+  margin-top: 0.5rem;
+}
+
+/* 공통 컨트롤 영역 */
+.account-control,
+.card-control {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.main-label {
+  font-size: 0.8rem;
+  color: var(--base-blue-dark);
+  background: none;
+  border: none;
+}
+
+.set-main-btn {
+  font-size: 0.8rem;
+  color: var(--base-blue-dark);
+  background: #f5f7fa;
+  border: 1px solid #e0e0e0;
+  padding: 0.25rem 0.6rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.set-main-btn:hover {
+  background: var(--sub-skyblue);
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.delete-btn img {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.delete-btn:hover img {
+  opacity: 0.8;
+}

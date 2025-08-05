@@ -1,14 +1,34 @@
 <script>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import api from '@/api';
+import { usePolicyQuizStore } from '@/stores/policyQuizStore';
 
 export default {
   name: 'PolicyQuizStep5',
   setup() {
     const router = useRouter();
+    const route = useRoute();
 
     const options = ['금액', '조회수', '만료일'];
     const selectedOptions = ref([]);
+    const policyQuizStore = usePolicyQuizStore(); // 스토어 인스턴스 생성
+
+    onMounted(() => {
+      // 스토어에서 이전에 저장된 값 불러오기 (선택 사항)
+      // 각 랭크 값을 기반으로 selectedOptions를 재구성
+      const storedOptions = [];
+      if (policyQuizStore.moneyRank) {
+        storedOptions[policyQuizStore.moneyRank - 1] = '금액';
+      }
+      if (policyQuizStore.popularityRank) {
+        storedOptions[policyQuizStore.popularityRank - 1] = '조회수';
+      }
+      if (policyQuizStore.periodRank) {
+        storedOptions[policyQuizStore.periodRank - 1] = '만료일';
+      }
+      selectedOptions.value = storedOptions.filter(Boolean); // null/undefined 제거
+    });
 
     const handleClick = (option) => {
       const index = selectedOptions.value.indexOf(option);
@@ -34,11 +54,50 @@ export default {
     };
 
     const goToPrevStep = () => {
+      // 현재 우선순위 저장
+      selectedOptions.value.forEach((option, index) => {
+        const rank = index + 1;
+        if (option === '금액') {
+          policyQuizStore.setMoneyRank(rank);
+        } else if (option === '조회수') {
+          policyQuizStore.setPopularityRank(rank);
+        } else if (option === '만료일') {
+          policyQuizStore.setPeriodRank(rank);
+        }
+      });
       router.push({ name: 'policyQuizStep4' });
     };
 
-    const goToNextStep = () => {
-      router.push({ name: 'policyResultSummary' });
+    const goToNextStep = async () => {
+      if (selectedOptions.value.length !== 3) return;
+
+      // 각 항목의 랭크를 스토어에 저장
+      selectedOptions.value.forEach((option, index) => {
+        const rank = index + 1;
+        if (option === '금액') {
+          policyQuizStore.setMoneyRank(rank);
+        } else if (option === '조회수') {
+          policyQuizStore.setPopularityRank(rank);
+        } else if (option === '만료일') {
+          policyQuizStore.setPeriodRank(rank);
+        }
+      });
+
+      const payload = policyQuizStore.getRequestPayload();
+
+      try {
+        await api.post('/api/userPolicy', payload);
+        router.push({
+          name: 'policyResultSummary',
+          query: {
+            ...payload,
+            priority: selectedOptions.value.join(','),
+          },
+        });
+      } catch (error) {
+        console.error('Failed to save user policy:', error);
+        alert('추천 결과를 불러오지 못했습니다.');
+      }
     };
 
     return {
@@ -57,13 +116,13 @@ export default {
 <template>
   <header class="introHeader">
     <div class="quizHeader">
-      <div class="font-20 font-bold">맞춤 정책 추천을 위한 간단한 질문</div>
+      <div class="font-18">맞춤 정책 추천을 위한 간단한 질문</div>
     </div>
   </header>
 
-  <div class="quizContainer" style="font-family: 'NanumSquareNeo'">
+  <div class="quizContainer">
     <section class="quizContent">
-      <div class="question font-18 font-bold mb-4">
+      <div class="question font-16 mb-4">
         정책을 신청할 때 중요하게 여기는 순서대로 클릭해주세요
       </div>
 
@@ -87,9 +146,9 @@ export default {
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-20" @click="goToPrevStep">이전</button>
+      <button class="prevButton font-18" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-20"
+        class="nextButton font-18"
         :disabled="selectedOptions.length !== 3"
         @click="goToNextStep"
       >
@@ -141,7 +200,7 @@ export default {
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .optionItem.selected {
@@ -154,7 +213,7 @@ export default {
   transform: translateY(-50%);
   background-color: var(--base-blue-dark);
   color: white;
-  font-size: 14px;
+  font-size: 13px;
   padding: 6px 12px;
   border-radius: 999px;
   line-height: 1;

@@ -1,18 +1,78 @@
 <script setup>
-import { ref } from 'vue';
-import RegionSelectModal from '../recommend/RegionSelectModal.vue';
+import { ref, computed } from 'vue';
+import AreaSelectModal from './AreaSelectModal.vue';
 
 const page = ref('main');
-
 const maritalOptions = ['기혼', '미혼', '제한없음'];
 const selectedMarital = ref([]);
 
-const selectedRegion = ref('');
+const selectedRegion = ref([]);
 const showRegionModal = ref(false);
 
 const age = ref('');
 const income = ref('');
 
+const needsSi = [
+  '서울',
+  '부산',
+  '대구',
+  '인천',
+  '광주',
+  '대전',
+  '울산',
+  '세종',
+];
+const formatFull = (item) => {
+  const [sido, gugun] = item.split(' ');
+  const s = needsSi.includes(sido) ? `${sido}시` : sido;
+  return gugun ? `${s} ${gugun}` : s;
+};
+
+const MAX_DISPLAY = 3;
+
+const displayRegionText = computed(() => {
+  const items = selectedRegion.value.map(formatFull);
+  if (items.length <= MAX_DISPLAY) {
+    return items.join(', ');
+  }
+  return (
+    items.slice(0, MAX_DISPLAY).join(', ') +
+    ` 외 ${items.length - MAX_DISPLAY}곳`
+  );
+});
+
+const displayEducationText = computed(() => {
+  const items = selectedEducation.value;
+  if (items.length <= MAX_DISPLAY) return items.join(', ');
+  return (
+    items.slice(0, MAX_DISPLAY).join(', ') +
+    ` 외 ${items.length - MAX_DISPLAY}개`
+  );
+});
+const displayMajorText = computed(() => {
+  const items = selectedMajor.value;
+  if (items.length <= MAX_DISPLAY) return items.join(', ');
+  return (
+    items.slice(0, MAX_DISPLAY).join(', ') +
+    ` 외 ${items.length - MAX_DISPLAY}개`
+  );
+});
+const displayJobStatusText = computed(() => {
+  const items = selectedJobStatus.value;
+  if (items.length <= MAX_DISPLAY) return items.join(', ');
+  return (
+    items.slice(0, MAX_DISPLAY).join(', ') +
+    ` 외 ${items.length - MAX_DISPLAY}개`
+  );
+});
+const displaySpecialtyText = computed(() => {
+  const items = selectedSpecialty.value;
+  if (items.length <= MAX_DISPLAY) return items.join(', ');
+  return (
+    items.slice(0, MAX_DISPLAY).join(', ') +
+    ` 외 ${items.length - MAX_DISPLAY}개`
+  );
+});
 const educationOptions = [
   '제한없음',
   '고졸 미만',
@@ -99,7 +159,10 @@ const handleRegionSelected = (value) => {
   selectedRegion.value = value;
   showRegionModal.value = false;
 };
-
+// 개별 지역 제거
+const removeRegionTag = (idx) => {
+  selectedRegion.value.splice(idx, 1);
+};
 function getSelectedList(page) {
   if (page === 'education') return selectedEducation;
   if (page === 'major') return selectedMajor;
@@ -169,16 +232,11 @@ function toggleMulti(listRef, option) {
       </div>
       <hr class="divider" />
 
-      <!-- ================= MAIN 필터폼 ================= -->
       <div v-if="page === 'main'" class="modalBody">
-        <!-- 지역 -->
-        <div class="fieldLabel font-16 font-bold">지역</div>
-        <div
-          class="regionField font-15 font-regular"
-          @click="showRegionModal = true"
-        >
-          <span v-if="selectedRegion">{{ selectedRegion }}</span>
-          <span v-else class="regionPlaceholder">지역 선택</span>
+        <div class="fieldLabel">지역</div>
+        <div class="selectOpenInput" @click="showRegionModal = true">
+          <span v-if="selectedRegion.length">{{ displayRegionText }}</span>
+          <span v-else class="placeholder">지역 선택</span>
           <img
             src="@/assets/images/icons/policy/select_down.png"
             class="selectDownIcon"
@@ -230,9 +288,9 @@ function toggleMulti(listRef, option) {
         <!-- 학력 -->
         <div class="fieldLabel font-16 font-bold">학력</div>
         <div class="selectOpenInput" @click="page = 'education'">
-          <span v-if="selectedEducation.length">{{
-            selectedEducation.join(', ')
-          }}</span>
+          <span v-if="selectedEducation.length">
+            {{ displayEducationText }}
+          </span>
           <span v-else class="placeholder">제한없음</span>
           <img
             src="@/assets/images/icons/policy/select_down.png"
@@ -242,9 +300,9 @@ function toggleMulti(listRef, option) {
         <!-- 전공 요건 -->
         <div class="fieldLabel font-16 font-bold">전공 요건</div>
         <div class="selectOpenInput" @click="page = 'major'">
-          <span v-if="selectedMajor.length">{{
-            selectedMajor.join(', ')
-          }}</span>
+          <span v-if="selectedMajor.length">
+            {{ displayMajorText }}
+          </span>
           <span v-else class="placeholder">제한없음</span>
           <img
             src="@/assets/images/icons/policy/select_down.png"
@@ -254,9 +312,9 @@ function toggleMulti(listRef, option) {
         <!-- 취업 상태 -->
         <div class="fieldLabel font-16 font-bold">취업 상태</div>
         <div class="selectOpenInput" @click="page = 'jobStatus'">
-          <span v-if="selectedJobStatus.length">{{
-            selectedJobStatus.join(', ')
-          }}</span>
+          <span v-if="selectedJobStatus.length">
+            {{ displayJobStatusText }}
+          </span>
           <span v-else class="placeholder">제한없음</span>
           <img
             src="@/assets/images/icons/policy/select_down.png"
@@ -266,9 +324,9 @@ function toggleMulti(listRef, option) {
         <!-- 특화 분야 -->
         <div class="fieldLabel font-16 font-bold">특화 분야</div>
         <div class="selectOpenInput" @click="page = 'specialty'">
-          <span v-if="selectedSpecialty.length">{{
-            selectedSpecialty.join(', ')
-          }}</span>
+          <span v-if="selectedSpecialty.length">
+            {{ displaySpecialtyText }}
+          </span>
           <span v-else class="placeholder">제한없음</span>
           <img
             src="@/assets/images/icons/policy/select_down.png"
@@ -310,7 +368,8 @@ function toggleMulti(listRef, option) {
         </button>
       </div>
     </div>
-    <RegionSelectModal
+
+    <AreaSelectModal
       v-if="showRegionModal"
       @close="showRegionModal = false"
       @selected="handleRegionSelected"
@@ -386,11 +445,14 @@ function toggleMulti(listRef, option) {
   padding: 0 24px;
   flex: 1;
   overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
 .modalBody::-webkit-scrollbar {
   width: 3px;
   background: transparent;
+  display: none;
 }
 .modalBody::-webkit-scrollbar-thumb {
   background: var(--input-outline-2);
@@ -576,6 +638,8 @@ function toggleMulti(listRef, option) {
   gap: 7px;
   padding: 0 16px 20px 16px;
   min-height: 0;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .optionBtn {
@@ -605,9 +669,31 @@ function toggleMulti(listRef, option) {
 
 .optionList::-webkit-scrollbar {
   width: 3px;
+  display: none;
 }
+
 .optionList::-webkit-scrollbar-thumb {
   background: var(--input-outline-2);
   border-radius: 6px;
+}
+
+.regionTag {
+  background: var(--input-bg-2);
+  color: var(--text-login);
+  border-radius: 12px;
+  padding: 4px 13px 4px 12px;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  margin-right: 4px;
+}
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--text-lightgray);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 0 0 2px;
 }
 </style>

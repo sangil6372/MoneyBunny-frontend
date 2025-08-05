@@ -1,0 +1,93 @@
+export const ALL_POLICIES = [
+  {
+    policyId: 202,
+    title: '2025년 청년사회진입 활동지원사업',
+    description: '청년 사회진입 활동을 지원하는 정책',
+    objective: '청년의 사회진입을 돕기 위한 지원사업입니다.',
+    supportAmount: '일시금 30만원 지급',
+    supportDetails: [{ title: '현금 지원', desc: '30만원 일시금 지급' }],
+    relatedPolicies: [
+      { title: '청년내일채움공제', desc: '청년 장기근속 지원' },
+    ],
+    policyBenefitDescription: '일시금 30만원 지급',
+    endDate: '20250220 ~ 20251015',
+    tag: '청년',
+    applyUrl: 'https://youthdream.daegu.go.kr/support/introduce/02',
+  },
+  {
+    policyId: 5,
+    title: '2025년 청년도전지원사업(원주시)',
+    description: '청년의 도전을 지원하는 원주시 청년 대상 정책',
+    objective: '청년들의 자기계발 및 사회진입을 위한 일시금 지원 정책',
+    supportAmount: '최대 35만원 일시금 지급',
+    supportDetails: [{ title: '일시금 지원', desc: '최대 35만원 일시금 지급' }],
+    relatedPolicies: [
+      {
+        title: '청년사회진입 활동지원사업',
+        desc: '청년 사회진입을 위한 활동 지원',
+      },
+    ],
+    policyBenefitDescription: '최대 35만원 일시금 지급',
+    endDate: '20250721 ~ 20250930',
+    tag: '청년',
+    applyUrl: '', // url 없음!
+  },
+  {
+    policyId: 1135,
+    title:
+      '[밀알복지재단] 경기도 저출생 위기극복 지원사업  ‘우리가족, 함께 기대’',
+    description: '경기도 내 저출생 위기 극복을 위한 임산부 건강검진 지원사업',
+    objective: '저출생 위기 가정에 건강검진비 지원을 통해 출산을 장려하는 사업',
+    supportAmount: '임산부 건강검진비 최대 100만원 지원',
+    supportDetails: [
+      { title: '건강검진비 지원', desc: '임산부 건강검진비 최대 100만원 지원' },
+    ],
+    relatedPolicies: [
+      { title: '임신축하금 지원사업', desc: '임신 가정에 축하금 10만원 지급' },
+    ],
+    policyBenefitDescription: '임산부 건강검진비 최대 100만원 지원',
+    endDate: '20240911 ~ 20250831',
+    tag: '육아',
+    applyUrl: '',
+  },
+  {
+    policyId: 848,
+    title: '청년 희망디딤돌 통장 운영',
+    policyBenefitDescription: '월 10만원 매칭 지원',
+    endDate: '20250801 ~ 20250829',
+    tag: '청년',
+    applyUrl: '',
+  },
+  {
+    policyId: 260,
+    title: '글로벌 이노베이터 페스타 사업 지원',
+    policyBenefitDescription: '총상금 5천만원 시상',
+    endDate: '20250627 ~ 20250814',
+    tag: '창업',
+    applyUrl: '',
+  },
+  {
+    policyId: 178,
+    title: '청년농업인 농지임차료 지원',
+    policyBenefitDescription: '연간 농지 임차료 최대 70% 지원',
+    endDate: '20250701 ~ 20250831',
+    tag: '청년',
+    applyUrl: '',
+  },
+  {
+    policyId: 595,
+    title: '법학전문대학원 장학금 지원',
+    policyBenefitDescription: '일시금 500만원 지급',
+    endDate: '20250901 ~ 20250930',
+    tag: '장학',
+    applyUrl: '',
+  },
+  {
+    policyId: 469,
+    title: '부산청년 기쁨두배통장',
+    policyBenefitDescription: '월 10만원 저축 시 1:1 매칭 지원',
+    endDate: '20250701 ~ 20250731',
+    tag: '청년',
+    applyUrl: '',
+  },
+];

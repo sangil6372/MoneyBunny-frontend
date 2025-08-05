@@ -1,99 +1,167 @@
 <template>
   <div class="policyWrapper">
     <!-- 정책 검색창 -->
-    <div class="searchBar">
+    <div class="searchBar" @click="goToSearchPage" style="cursor: pointer">
       <img
         src="@/assets/images/icons/policy/search.png"
         alt="search icon"
         class="searchIconImage"
       />
-      <input type="text" placeholder="정책 검색" @focus="goToSearchPage" />
-    </div>
-
-    <!-- 맞춤 정책 TOP 3 추천 -->
-    <div class="topThreeBanner">
-      <img
-        src="@/assets/images/icons/policy/award.png"
-        alt="award icon"
-        class="topThreeIconImage"
+      <input
+        type="text"
+        placeholder="정책 검색"
+        @focus="goToSearchPage"
+        @click="goToSearchPage"
+        class="fakeInput"
+        readonly
       />
-      <span class="font-bold font-18">맞춤 정책 TOP 3 추천</span>
     </div>
 
     <!-- 정책 카드 리스트 -->
-    <div v-for="(policy, index) in policyList" :key="index" class="policyCard">
-      <div class="cardHeader">
-        <span class="cardTitle font-bold font-15">{{ policy.title }}</span>
-        <span class="cardTag font-12">{{ policy.tag }}</span>
+    <template v-if="visiblePolicies.length > 0">
+      <div
+        v-for="(policy, index) in visiblePolicies"
+        :key="policy.policyId"
+        class="policyCard"
+      >
+        <div class="cardHeader">
+          <span v-if="index < 3" class="topRank" :class="`rank${index + 1}`">
+            TOP {{ index + 1 }}
+          </span>
+          <div class="titleTagRow">
+            <span class="cardTitle font-bold font-15">{{ policy.title }}</span>
+            <!-- largeCategory(태그)가 있을 때만 표시 -->
+            <span v-if="policy.largeCategory" class="cardTag font-12">{{
+              policy.largeCategory
+            }}</span>
+          </div>
+        </div>
+        <p class="cardDesc font-14">{{ policy.policyBenefitDescription }}</p>
+        <p class="cardDeadline font-12">
+          <span class="label font-regular">신청기간 : </span>
+          <span class="date font-bold">
+            {{ policy.endDate ? formatPeriod(policy.endDate) : '상시' }}
+          </span>
+        </p>
+        <div class="cardActions">
+          <button
+            class="buttonSecondary font-14"
+            @click="goToDetail(policy.policyId)"
+          >
+            자세히 보기
+          </button>
+          <button
+            class="buttonPrimary font-14"
+            @click="goToApplyPage(policy.applyUrl)"
+          >
+            신청하기
+          </button>
+        </div>
       </div>
-      <p class="cardDesc font-14">{{ policy.desc }}</p>
-      <p class="cardDeadline font-12">
-        <span class="label font-regular">마감일 : </span>
-        <span class="date font-bold">{{ policy.deadline }}</span>
-      </p>
-
-      <div class="cardActions">
-        <button class="buttonSecondary font-14" @click="goToDetail(policy.id)">
-          자세히 보기
-        </button>
-
-        <button class="buttonPrimary font-14">신청하기</button>
+    </template>
+    <template v-else>
+      <div
+        style="text-align: center; color: var(--text-bluegray); margin: 40px 0"
+      >
+        조건에 맞는 정책 목록이 없습니다.
       </div>
-    </div>
+    </template>
 
     <!-- 더 많은 정책 보기 버튼 -->
-    <button class="moreButton font-bold font-16">더 많은 정책 보기</button>
-
-    <!-- 하단 네비게이션 -->
+    <button
+      v-if="showMoreBtn"
+      class="moreButton font-bold font-16"
+      @click="loadMore"
+    >
+      더 많은 정책 보기
+    </button>
     <BottomNav />
   </div>
+
+  <PolicyApplyModal
+    v-if="showApplyModal"
+    :policyTitle="selectedPolicy?.title"
+    :applyUrl="selectedPolicy?.applyUrl"
+    @close="closeApplyModal"
+  />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import BottomNav from '@/components/layouts/NavBar.vue';
+import PolicyApplyModal from './component/PolicyApplyModal.vue';
+import { usePolicyMatchingStore } from '@/stores/policyMatchingStore';
+import api from '@/api';
 
 const router = useRouter();
+const policyMatchingStore = usePolicyMatchingStore();
+
+const showApplyModal = ref(false);
+const selectedPolicy = ref(null);
 
 const goToDetail = (policyId) => {
-  router.push({ name: 'policyDetail', params: { id: policyId } });
+  router.push({ name: 'policyDetail', params: { policyId } });
 };
+
 const goToSearchPage = () => {
   router.push({ name: 'policySearch' });
 };
 
-const policyList = ref([
-  {
-    id: 1,
-    title: '청년 주택드림 청약통장',
-    tag: '주택',
-    desc: '만 19~34세 청년층을 위한 주택 구입 지원 정책으로...',
-    deadline: '2024.12.31',
-  },
-  {
-    id: 2,
-    title: '청년 내일채움공제',
-    tag: '취업',
-    desc: '중소기업 취업 청년을 위한 장기재직 지원제도...',
-    deadline: '2024.11.30',
-  },
-  {
-    id: 3,
-    title: '청년 창업지원금',
-    tag: '창업',
-    desc: '만 39세 이하 예비창업자 및 창업 3년 이내 기업 대상...',
-    deadline: '2024.10.15',
-  },
-]);
+const goToApplyPage = (url) => {
+  if (url) {
+    window.open(url, '_blank');
+  }
+};
+
+const formatPeriod = (periodStr) => {
+  if (!periodStr) return '상시';
+  const match = periodStr.match(/^(\d{8})\s*~\s*(\d{8})$/);
+  if (!match) return periodStr;
+  const [_, start, end] = match;
+  const s = `${start.slice(0, 4)}.${start.slice(4, 6)}.${start.slice(6, 8)}`;
+  const e = `${end.slice(0, 4)}.${end.slice(4, 6)}.${end.slice(6, 8)}`;
+  return `${s} ~ ${e}`;
+};
+
+// 정책 데이터 관리 (스토어/동적 API)
+const ALL_POLICIES = ref([]);
+
+onMounted(async () => {
+  if (policyMatchingStore.recommendedPolicies.length > 0) {
+    ALL_POLICIES.value = policyMatchingStore.recommendedPolicies;
+  } else {
+    try {
+      const res = await api.get('/api/userPolicy/search');
+      policyMatchingStore.setRecommendedPolicies(res.data);
+      ALL_POLICIES.value = res.data;
+    } catch (e) {
+      ALL_POLICIES.value = [];
+    }
+  }
+});
+
+const policiesToShow = ref(3);
+const visiblePolicies = computed(() =>
+  ALL_POLICIES.value.slice(0, policiesToShow.value)
+);
+const showMoreBtn = computed(
+  () => policiesToShow.value < ALL_POLICIES.value.length
+);
+
+const loadMore = () => {
+  policiesToShow.value = Math.min(
+    policiesToShow.value + 5,
+    ALL_POLICIES.value.length
+  );
+};
 </script>
+
 <style scoped>
 .policyWrapper {
-  padding-bottom: 40px;
+  padding: 10px;
   background-color: var(--input-bg-2);
-  font-family: 'NanumSquareNeo';
 }
-
 .searchBar {
   display: flex;
   align-items: center;
@@ -105,7 +173,6 @@ const policyList = ref([
   margin-bottom: 20px;
   gap: 8px;
 }
-
 .searchBar input {
   border: none;
   outline: none;
@@ -113,28 +180,10 @@ const policyList = ref([
   font-size: 15px;
   background-color: transparent;
 }
-
 .searchIconImage {
   width: 24px;
   height: 24px;
 }
-
-.topThreeBanner {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background-color: var(--base-blue-dark);
-  color: white;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 20px;
-}
-
-.topThreeIconImage {
-  width: 18px;
-  height: 18px;
-}
-
 .policyCard {
   background-color: white;
   border-radius: 16px;
@@ -142,53 +191,89 @@ const policyList = ref([
   margin-bottom: 16px;
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.05);
 }
-
 .cardHeader {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   margin-bottom: 8px;
+  width: 100%;
+  min-width: 0;
+}
+.titleTagRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  flex: 1;
+  gap: 6px;
 }
 
+.topRank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 999px;
+  width: 50px;
+  height: 24px;
+  color: #fff;
+  letter-spacing: -0.5px;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.rank1 {
+  background: var(--top-rank-1);
+}
+.rank2 {
+  background: var(--top-rank-2);
+}
+.rank3 {
+  background: var(--top-rank-3);
+}
 .cardTitle {
   color: var(--text-login);
+  font-size: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+  vertical-align: middle;
+  max-width: calc(100% - 60px);
 }
-
 .cardTag {
+  display: inline-block;
   background-color: var(--input-outline);
   color: var(--text-bluegray);
   padding: 2px 6px;
-  border-radius: 6px;
+  border-radius: 4px;
+  margin-left: 2px;
+  font-size: 13px;
+  vertical-align: middle;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
-
 .cardDesc {
   color: var(--text-bluegray);
   margin: 6px 0;
 }
-
 .cardDeadline {
   margin-bottom: 12px;
 }
-
 .cardDeadline .label {
   color: var(--text-bluegray);
   margin-right: 4px;
 }
-
 .cardDeadline .date {
   color: var(--base-blue-dark);
 }
-
 .cardActions {
   display: flex;
   gap: 8px;
 }
-
 .buttonSecondary,
 .buttonPrimary {
   flex: 1;
 }
-
 .buttonSecondary {
   width: 185px;
   background-color: var(--input-bg-2);
@@ -197,7 +282,6 @@ const policyList = ref([
   border-radius: 8px;
   color: var(--text-bluegray);
 }
-
 .buttonPrimary {
   width: 185px;
   background-color: var(--base-blue-dark);
@@ -206,7 +290,6 @@ const policyList = ref([
   padding: 10px;
   border-radius: 8px;
 }
-
 .moreButton {
   width: 100%;
   height: 50px;
@@ -217,5 +300,8 @@ const policyList = ref([
   border-radius: 8px;
   border: 1px solid var(--input-outline);
   margin-top: 15px;
+}
+.fakeInput {
+  pointer-events: auto;
 }
 </style>

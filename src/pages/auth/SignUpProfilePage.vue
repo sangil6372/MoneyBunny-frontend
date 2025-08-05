@@ -1,21 +1,54 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import profile1 from '@/assets/images/icons/profile/profile_edit_sprout.png';
-import profile2 from '@/assets/images/icons/profile/profile_edit_beard.png';
-import profile3 from '@/assets/images/icons/profile/profile_edit_eyelash.png';
-import profile4 from '@/assets/images/icons/profile/profile_edit_carrot.png';
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import axios from "axios";
+
+import profile1 from "@/assets/images/icons/profile/profile_edit_sprout.png";
+import profile2 from "@/assets/images/icons/profile/profile_edit_beard.png";
+import profile3 from "@/assets/images/icons/profile/profile_edit_eyelash.png";
+import profile4 from "@/assets/images/icons/profile/profile_edit_carrot.png";
 
 const profileImages = [profile1, profile2, profile3, profile4];
 let selectedImage = profileImages[0];
 
 const router = useRouter();
 
+// 뒤로 가기
 const goBack = () => {
   router.back();
 };
 
+// 회원 가입 후 로그인으로 이동
 const goLogin = () => {
-  router.push('/');
+  router.push("/");
+};
+
+// 아이디, 아이디 사용가능 여부 메세지, 아이디 확인 boolean값
+const username = ref("");
+const idCheckMsg = ref("");
+const isUsernameValid = ref(false);
+
+const checkUsername = async () => {
+  idCheckMsg.value = "";
+  isUsernameValid.value = false;
+
+  if (!username.value.trim()) {
+    idCheckMsg.value = "아이디를 입력해주세요.";
+    return;
+  }
+
+  try {
+    const res = await axios.get(`/api/member/checkusername/${username.value}`);
+    if (res.data === true) {
+      idCheckMsg.value = "이미 사용 중인 아이디입니다.";
+      isUsernameValid.value = false;
+    } else {
+      idCheckMsg.value = "사용 가능한 아이디입니다.";
+      isUsernameValid.value = true;
+    }
+  } catch (err) {
+    idCheckMsg.value = "아이디 확인 중 오류가 발생했습니다.";
+  }
 };
 </script>
 <template>
@@ -52,9 +85,17 @@ const goLogin = () => {
         <label class="font-15 font-bold">아이디</label>
         <div class="inputRow">
           <input type="text" placeholder="아이디를 입력하세요 (6자 이상)" />
-          <button class="checkButton font-13 font-bold">중복확인</button>
+          <button class="checkButton font-13 font-bold" @click="checkUsername">
+            중복확인
+          </button>
         </div>
         <p class="font-12 font-light">영문, 숫자 조합 6자 이상</p>
+        <p
+          class="font-13"
+          :style="{ color: isUsernameValid ? '#2a8' : '#c33' }"
+        >
+          {{ idCheckMsg }}
+        </p>
       </div>
 
       <div class="formGroup">

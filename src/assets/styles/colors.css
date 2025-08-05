@@ -51,5 +51,11 @@
 
   --input-outline: #f1f5f9;
   --input-outline-2: #e5e7eb;
+  --gray-medium: #cfd4db;
+
   --reset-button: #f9fafb;
+
+  --top-rank-1: #304663; /* TOP1: 기본 네이비 */
+  --top-rank-2: #5b7bb0; /* TOP2: 조금 밝은 차분한 블루 */
+  --top-rank-3: #aac3df; /* TOP3: 밝은 연블루 */
 }

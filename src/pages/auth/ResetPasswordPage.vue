@@ -1,26 +1,69 @@
 <script setup>
-import { ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
-
+import { ref, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
+// 🎵(유정) 이메일 인증(FindPasswordPage) 후 비밀번호 재설정 페이지
 const router = useRouter();
+const route = useRoute(); // loginId
 
-const password = ref('');
-const confirmPassword = ref('');
+const password = ref("");
+const confirmPassword = ref("");
 const showSuccess = ref(false); // ✅ 성공 메시지 표시 여부
+const errorMsg = ref("");
+const loginId = route.query.loginId; // loginId 가져옴
 
-const isFormValid = computed(() => {
-  return password.value.length >= 8 && password.value === confirmPassword.value;
+// 비밀번호 유효성 검사
+const passwordRules = {
+  minLength: 8,
+  pattern:
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]|\\;:'",.<>/?]).{8,}$/,
+};
+
+const isPasswordValid = computed(() => {
+  return passwordRules.pattern.test(password.value);
 });
 
-const handleReset = () => {
-  if (!isFormValid.value) return;
+const isFormValid = computed(() => {
+  return (
+    password.value.length >= 8 &&
+    isPasswordValid.value &&
+    confirmPassword.value.length > 0 &&
+    password.value === confirmPassword.value
+  );
+});
 
-  // 실제 비밀번호 변경 API 연동 시 여기에 비동기 호출
-  showSuccess.value = true;
+const handleReset = async () => {
+  if (!password.value || !confirmPassword.value) {
+    errorMsg.value = "비밀번호를 다시 입력하세요.";
+    return;
+  }
+
+  if (!isPasswordValid.value) {
+    errorMsg.value =
+      "비밀번호 조건을 확인하세요. (영문, 숫자, 특수문자 포함, 8자 이상)";
+    return;
+  }
+
+  if (password.value !== confirmPassword.value) {
+    errorMsg.value = "비밀번호가 일치하는지 확인하세요.";
+    return;
+  }
+
+  try {
+    await axios.post("/api/auth/reset-password", {
+      loginId,
+      password: password.value,
+    });
+    errorMsg.value = ""; // 성공 시 에러 메시지 초기화
+    showSuccess.value = true;
+  } catch (err) {
+    errorMsg.value =
+      err.response?.data || "비밀번호 변경 중 오류가 발생했습니다.";
+  }
 };
 
 const goToLogin = () => {
-  router.push('/');
+  router.push("/");
 };
 </script>
 
@@ -31,6 +74,10 @@ const goToLogin = () => {
       <p class="subtitle font-15 font-regular">
         비밀번호를 재설정하기 위해 이메일을 입력해주세요
       </p>
+
+      <div v-if="errorMsg" class="errorMessage font-13">
+        {{ errorMsg }}
+      </div>
 
       <div class="formGroup">
         <label for="password" class="font-15 font-bold">새 비밀번호</label>
@@ -54,11 +101,7 @@ const goToLogin = () => {
         />
       </div>
 
-      <button
-        class="resetButton font-15 font-bold"
-        :disabled="!isFormValid"
-        @click="handleReset"
-      >
+      <button class="resetButton font-15 font-bold" @click="handleReset">
         비밀번호 변경
       </button>
 
@@ -169,5 +212,14 @@ input {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 4px;
+}
+.errorMessage {
+  background-color: #fee;
+  color: #c33;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  text-align: center;
+  border: 1px solid #fcc;
 }
 </style>

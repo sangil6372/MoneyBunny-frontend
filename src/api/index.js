@@ -2,67 +2,60 @@ import axios from 'axios';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 
-// Axios 인스턴스 생성
+// 기본 인스턴스(1초)
 const instance = axios.create({
-  timeout: 1000, // 요청 타임아웃 설정(1000 == 1초)
+  timeout: 1000,
 });
 
-// 💪(상일) 요청 인터셉터 - JWT 토큰 자동 추가 및 만료 확인
-instance.interceptors.request.use(
-  (config) => {
-    const authStore = useAuthStore();
-    const { getToken, isTokenExpired, logout } = authStore;
-    const token = getToken();
+// CODEF 전용 인스턴스 (2분)
+const codefInstance = axios.create({
+  timeout: 120000,
+});
 
-    if (token) {
-      // 토큰 만료 확인
-      if (isTokenExpired()) {
-        console.warn('JWT 토큰이 만료되었습니다. 자동 로그아웃 처리');
-        logout();
-        router.push('/?error=token_expired');
-        return Promise.reject({ error: '토큰이 만료되었습니다.' });
+// 공통 인터셉터 함수
+function applyAuthInterceptors(inst) {
+  // 요청 인터셉터
+  inst.interceptors.request.use(
+    (config) => {
+      const authStore = useAuthStore();
+      const { getToken, isTokenExpired, logout } = authStore;
+      const token = getToken();
+      if (token) {
+        if (isTokenExpired()) {
+          console.warn('JWT 토큰이 만료되었습니다. 자동 로그아웃 처리');
+          logout();
+          router.push('/?error=token_expired');
+          return Promise.reject({ error: '토큰이 만료되었습니다.' });
+        }
+        config.headers['Authorization'] = `Bearer ${token}`;
       }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
 
-      // Authorization 헤더에 Bearer 토큰 추가
-      config.headers['Authorization'] = `Bearer ${token}`;
-    }
-
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// 응답 인터셉터 - 에러 응답 자동 처리
-instance.interceptors.response.use(
-  (response) => {
-    // 정상 응답 처리 (200, 404 등)
-    if (response.status === 200) {
+  // 응답 인터셉터
+  inst.interceptors.response.use(
+    (response) => {
+      if (response.status === 200) return response;
+      if (response.status === 404)
+        return Promise.reject('404: 페이지 없음 ' + response.request);
       return response;
+    },
+    (error) => {
+      if (error.response?.status === 401) {
+        const { logout } = useAuthStore();
+        logout();
+        router.push('/?error=login_required');
+        return Promise.reject({ error: '로그인이 필요한 서비스입니다.' });
+      }
+      return Promise.reject(error);
     }
+  );
+}
 
-    if (response.status === 404) {
-      return Promise.reject('404: 페이지 없음 ' + response.request);
-    }
+applyAuthInterceptors(instance);
+applyAuthInterceptors(codefInstance);
 
-    return response;
-  },
-  async (error) => {
-    // 에러 응답 처리 (401, 403, 500 등)
-    if (error.response?.status === 401) {
-      const { logout } = useAuthStore();
-      logout(); // 자동 로그아웃
-      router.push('/?error=login_required'); // 로그인 페이지로 이동 (루트 경로 = 로그인 페이지)
-
-      // 401 Unauthorized 에러 발생 시 자동으로 로그아웃하고 로그인 페이지로 이동
-      return Promise.reject({
-        error: '로그인이 필요한 서비스입니다.',
-      });
-    }
-
-    return Promise.reject(error);
-  }
-);
-
-export default instance; // 인터셉터가 설정된 axios 인스턴스 내보내기
+export { codefInstance }; // CODEF 전용 인스턴스
+export default instance; // 일반 인스턴스

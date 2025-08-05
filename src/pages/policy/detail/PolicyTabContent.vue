@@ -8,7 +8,11 @@ const props = defineProps({
 </script>
 
 <template>
-  <PolicyOverviewTab v-if="tab === '정책 개요'" :policy="policy" />
+  <PolicyOverviewTab
+    v-if="tab === '정책 개요'"
+    :policy="policy"
+    :period="period"
+  />
 
   <div v-else-if="tab === '신청 조건'">
     <slot name="condition" />

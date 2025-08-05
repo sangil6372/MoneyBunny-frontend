@@ -31,7 +31,7 @@ const selected = defineModel('selectedTab', { type: String });
   text-align: center;
   padding: 15px;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text-bluegray);
   border-bottom: 2px solid transparent;
 }

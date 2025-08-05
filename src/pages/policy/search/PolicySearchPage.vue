@@ -1,10 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import api from '@/api';
 
 const router = useRouter();
 const searchQuery = ref('');
-const popularKeywords = ['청년', '주거', '창업', '취업', '대출', '지원금'];
+const popularKeywords = ref([]);
+const recentKeywords = ref([]);
 
 const goBack = () => {
   router.back();
@@ -13,6 +15,31 @@ const goBack = () => {
 const search = () => {
   console.log(`검색어: ${searchQuery.value}`);
 };
+
+const fetchPopularKeywords = async () => {
+  try {
+    const res = await api.get('/api/userPolicy/popular-keywords');
+    // 응답이 배열이면 아래처럼 바로 할당
+    popularKeywords.value = Array.isArray(res.data) ? res.data : [];
+  } catch (e) {
+    console.error('인기 검색어 조회 실패', e);
+  }
+};
+
+const fetchRecentKeywords = async () => {
+  try {
+    const res = await api.get('/api/userPolicy/recent-keywords');
+    // 응답이 배열이면 아래처럼 바로 할당
+    recentKeywords.value = Array.isArray(res.data) ? res.data : [];
+  } catch (e) {
+    console.error('최근 검색어 조회 실패', e);
+  }
+};
+
+onMounted(() => {
+  fetchPopularKeywords();
+  fetchRecentKeywords();
+});
 </script>
 
 <template>
@@ -20,9 +47,9 @@ const search = () => {
     <section class="section">
       <div class="title">최근 검색어</div>
       <div class="chipList">
-        <span class="chip">청년 내일채움공제</span>
-        <span class="chip">전세자금 대출</span>
-        <span class="chip">창업지원금</span>
+        <span class="chip" v-for="(item, idx) in recentKeywords" :key="idx">{{
+          item
+        }}</span>
       </div>
     </section>
 
@@ -74,8 +101,12 @@ const search = () => {
 
 <style scoped>
 .policySearchPage {
-  /* min-height: 100vh; */
   padding: 0;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+}
+.policySearchPage::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 
 .section {

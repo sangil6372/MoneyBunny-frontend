@@ -2,32 +2,50 @@
 <template>
   <div class="asset-main-wrapper">
     <div class="asset-main-tab">
-      <TotalAssetCard />
-      <AccountStatusCard class="with-margin" />
-      <CardStatusCard />
+      <TotalAssetCard :summary="summary" />
+      <!-- <AccountStatusCard class="with-margin" />
+      <CardStatusCard /> -->
     </div>
     <!---->
     <!-- 계좌 현황 -->
-    <AccountOverviewCard @switchTab="$emit('switchTab', $event)" />
+    <AccountOverviewCard
+      :accounts="summary.accounts || []"
+      @switchTab="$emit('switchTab', $event)"
+    />
 
     <!-- 카드 현황 -->
-    <CardOverviewCard @switchTab="$emit('switchTab', $event)" />
+    <CardOverviewCard
+      :cards="summary.cards || []"
+      @switchTab="$emit('switchTab', $event)"
+    />
   </div>
 </template>
 
 <script setup>
-import TotalAssetCard from '@/pages/asset/main/TotalAssetCard.vue';
-import AccountOverviewCard from '../main/AccountOverviewCard.vue';
-import CardOverviewCard from '../main/CardOverviewCard.vue';
+import { onMounted } from 'vue';
+import TotalAssetCard from '../component/total/TotalAssetCard.vue';
+import AccountOverviewCard from '../component/total/AccountOverviewCard.vue';
+import CardOverviewCard from '../component/total/CardOverviewCard.vue';
+import { useSync } from '@/composables/useSync';
 
 defineEmits(['switchTab']);
+
+const props = defineProps({
+  summary: { type: Object, required: true },
+});
+
+// 동기화 composable 계좌/카드 각각 가져오기
+const { syncWithUX: syncAccounts } = useSync('account');
+const { syncWithUX: syncCards } = useSync('card');
+
+// 탭 첫 진입 시 계좌/카드 둘 다 동기화 (10분 이내면 무시, 아니면 실행)
+onMounted(() => {
+  syncAccounts(false);
+  syncCards(false);
+});
 </script>
 
 <style scoped>
-.asset-main-wrapper {
-  padding: 1rem;
-}
-
 .asset-section {
   margin-top: 1.5rem;
   background-color: white;
