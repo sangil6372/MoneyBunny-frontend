@@ -1,31 +1,92 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
-
+import { ref, onMounted } from 'vue';
+import api from '@/api';
 import PolicyFilterModal from '../filter/PolicyFilterModal.vue';
 
 const filterData = ref({});
 const showFilterModal = ref(false);
 const openFilter = () => (showFilterModal.value = true);
-const closeFilter = () => (showFilterModal.value = false);
 
 const router = useRouter();
 const searchQuery = ref('');
 const goBack = () => router.back();
-const search = () => {};
 
 function handleConfirm(selected) {
   filterData.value = selected;
   showFilterModal.value = false;
 }
+
 function onSearch() {
-  if (searchQuery.value.trim()) {
-    router.push({
-      name: 'policySearchResult',
-      query: { q: searchQuery.value },
-    });
-  }
+  router.push({
+    name: 'policySearchResult',
+    query: {
+      q: searchQuery.value,
+      filter: encodeURIComponent(JSON.stringify(filterData.value)),
+    },
+  });
 }
+
+// 🟦 모달에 넘길 초기값 (PolicyFilterModal이 기대하는 구조)
+const filterInitial = ref({
+  initialMarital: [],
+  initialRegion: [],
+  initialAge: '',
+  initialIncome: '',
+  initialEducation: [],
+  initialMajor: [],
+  initialJobStatus: [],
+  initialSpecialty: [],
+});
+
+// 🟦 검색용 필터 데이터 (검색 API에 맞는 구조)
+const userFilter = ref({
+  marital: [],
+  region: [],
+  age: '',
+  income: '',
+  education: [],
+  major: [],
+  jobStatus: [],
+  specialty: [],
+});
+
+const fetchUserPolicyFilter = async () => {
+  try {
+    const res = await api.get('/api/userPolicy');
+    const d = res.data || {};
+    // 모달용 초기값
+    Object.assign(filterInitial.value, {
+      initialMarital: d.marriage ? [d.marriage] : [],
+      initialRegion: d.regions || [],
+      initialAge: d.age || '',
+      initialIncome: d.income || '',
+      initialEducation: d.educationLevels || [],
+      initialMajor: d.majors || [],
+      initialJobStatus: d.employmentStatuses || [],
+      initialSpecialty: d.specialConditions || [],
+    });
+    // 검색용 필터 데이터
+    Object.assign(userFilter.value, {
+      marital: d.marriage ? [d.marriage] : [],
+      region: d.regions || [],
+      age: d.age || '',
+      income: d.income || '',
+      education: d.educationLevels || [],
+      major: d.majors || [],
+      jobStatus: d.employmentStatuses || [],
+      specialty: d.specialConditions || [],
+    });
+    // 최초 진입 시 filterData도 검색용 구조로 세팅
+    Object.assign(filterData.value, userFilter.value);
+  } catch (e) {
+    // 에러 무시, 기본값 사용
+  }
+};
+
+onMounted(() => {
+  fetchUserPolicyFilter();
+});
 </script>
 <template>
   <div class="policySearchHeader">
@@ -40,9 +101,9 @@ function onSearch() {
         class="searchInput"
         placeholder="정책을 검색해보세요 (예: 청년, 주거, 창업)"
         v-model="searchQuery"
-        @keyup.enter="search"
+        @keyup.enter="onSearch"
       />
-      <button class="searchIconBtn" @click="search" aria-label="검색">
+      <button class="searchIconBtn" @click="onSearch" aria-label="검색">
         <img src="@/assets/images/icons/policy/search.png" class="searchIcon" />
       </button>
     </div>
@@ -57,6 +118,7 @@ function onSearch() {
     v-if="showFilterModal"
     @close="showFilterModal = false"
     @confirm="handleConfirm"
+    v-bind="filterInitial"
   />
 </template>
 

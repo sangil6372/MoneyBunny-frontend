@@ -1,14 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { regions } from '@/constants/regions.js';
-import { onMounted, onUnmounted } from 'vue';
+import { regionCodeMap } from '@/assets/utils/regionCodeMap.js';
 
-onMounted(() => {
-  document.body.classList.add('modal-open');
-});
-onUnmounted(() => {
-  document.body.classList.remove('modal-open');
-});
 // ‘시’를 붙일 시/도 리스트
 const needsSi = [
   '서울',
@@ -30,7 +24,41 @@ const selectedSido = ref('');
 const selectedGugun = ref('');
 
 // 복수 선택된 지역 배열
-const selectedRegions = ref([]); // [{ sido: '서울특별시', gugun: '동작구' }, ...]
+const selectedRegions = ref([]); // [{ sido: '서울', gugun: '동작구' }, ...]
+
+// 지역 코드 → 지역명 역매핑 테이블 생성
+const codeToRegionName = {};
+Object.entries(regionCodeMap).forEach(([sido, guguns]) => {
+  Object.entries(guguns).forEach(([gugun, code]) => {
+    // '전체'는 gugun === '전체', 빈 문자열로도 매핑
+    if (gugun === '전체') {
+      codeToRegionName[code] = { sido, gugun: '' };
+    } else {
+      codeToRegionName[code] = { sido, gugun };
+    }
+  });
+});
+
+const props = defineProps({
+  initialRegionCodes: { type: Array, default: () => [] }, // ex: ['11680', '11110']
+});
+
+onMounted(() => {
+  document.body.classList.add('modal-open');
+  // 코드값이 넘어오면 지역명으로 변환하여 selectedRegions에 반영
+  if (props.initialRegionCodes && props.initialRegionCodes.length > 0) {
+    selectedRegions.value = props.initialRegionCodes
+      .map((code) => {
+        const region = codeToRegionName[code];
+        if (!region) return null;
+        return { sido: region.sido, gugun: region.gugun };
+      })
+      .filter(Boolean);
+  }
+});
+onUnmounted(() => {
+  document.body.classList.remove('modal-open');
+});
 
 const filteredSidoList = computed(() => {
   if (!search.value) return regions;
@@ -370,11 +398,12 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   border-radius: 8px;
   cursor: pointer;
 }
-/* .applyBtn:disabled {
-  background-color: var(--input-bg-2);
+
+.applyBtn:disabled {
+  background-color: rgba(160, 160, 180, 0.2);
   color: var(--text-bluegray);
   cursor: not-allowed;
-} */
+}
 
 .scrollArea {
   max-height: 360px;

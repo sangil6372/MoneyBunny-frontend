@@ -90,38 +90,28 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 
 .dropdownList {
   position: absolute;
-  top: 110%;
+  top: 100%;
   left: 0;
   width: 100%;
   max-height: 200px;
   overflow-y: auto;
   border: 1px solid var(--input-outline);
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: white;
   z-index: 1000;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-  padding: 5px 0;
-  scrollbar-width: thin;
+  padding: 7px 0;
+  scrollbar-width: none;
 }
 
 .dropdownItem {
-  padding: 10px 15px;
+  padding: 12px 15px;
+  font-size: 14px;
   cursor: pointer;
   list-style: none;
+  user-select: none;
 }
 
 .dropdownItem:hover {
   background-color: var(--input-bg-2);
 }
-
-/* .fade-enter-active,
-.fade-leave-active {
-  transition: all 0.2s ease;
-} */
-
-/* .fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  transform: scaleY(0.95);
-} */
 </style>

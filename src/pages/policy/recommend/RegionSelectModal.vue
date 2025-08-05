@@ -70,7 +70,7 @@ const canApply = computed(() => selectedSido.value && selectedGugun.value);
         <div class="columnsWrapper">
           <!-- 시/도 -->
           <div class="sidoColumn">
-            <h4>시/도</h4>
+            <div class="sidoTitle">시/도</div>
             <div class="scrollArea">
               <div
                 v-for="(guguns, sido) in filteredSidoList"
@@ -85,7 +85,7 @@ const canApply = computed(() => selectedSido.value && selectedGugun.value);
 
           <!-- 구/군 -->
           <div class="gugunColumn">
-            <h4>구/군</h4>
+            <div class="gugunTitle">구/군</div>
             <div class="scrollArea">
               <div v-if="selectedSido">
                 <div
@@ -155,38 +155,37 @@ const canApply = computed(() => selectedSido.value && selectedGugun.value);
 
 .regionSelectBox {
   margin: 20px 10px;
-  flex-grow: 1;
+  flex: none;
 }
 
 .columnsWrapper {
   display: flex;
-  max-height: 340px;
+  max-height: 350px;
   gap: 6px;
+  margin-bottom: 15px;
 }
 
-.sidoColumn,
-.gugunColumn {
-  flex: 1;
+.sidoColumn {
+  flex: 0.8;
   display: flex;
   flex-direction: column;
-  font-size: 15px;
+  height: 100%;
 }
 
-.sidoColumn h4,
-.gugunColumn h4 {
+.gugunColumn {
+  flex: 1.1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidoTitle,
+.gugunTitle {
   font-size: 16px;
+  font-weight: bold;
   color: var(--text-bluegray);
-  margin-left: 4px;
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  padding-left: 4px;
-}
-
-.scrollArea {
-  max-height: 340px;
-  overflow-y: auto;
-  padding-right: 6px;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
 .sidoItem,
@@ -194,15 +193,16 @@ const canApply = computed(() => selectedSido.value && selectedGugun.value);
   padding: 9px;
   border-radius: 6px;
   cursor: pointer;
+  text-align: center;
 }
 
 .sidoItem.selected,
 .gugunItem.selected {
-  background-color: rgba(160, 160, 180, 0.1); /* 옅은 파스텔 톤 + 투명도 */
+  background-color: rgba(160, 160, 180, 0.2); /* 옅은 파스텔 톤 + 투명도 */
 }
 
 .emptyText {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text-disabled);
   text-align: center;
   margin-top: 15px;
@@ -211,41 +211,49 @@ const canApply = computed(() => selectedSido.value && selectedGugun.value);
 .modalFooter {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
-
 .resetBtn {
-  flex: 1;
-  background-color: var(--input-bg-1);
-  color: var(--text-bluegray);
-  border: none;
-  padding: 12px;
+  flex: 0.8;
   border-radius: 8px;
-  font-size: 15px;
+  border: 1.5px solid var(--input-outline-2);
+  background: var(--reset-buttn);
+  color: var(--text-bluegray);
+  padding: 12px 0;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
 }
-
 .applyBtn {
-  flex: 1;
+  flex: 1.1;
   background-color: var(--base-blue-dark);
   color: white;
   border: none;
-  padding: 12px;
-  font-size: 15px;
+  padding: 12px 0;
+  font-size: 16px;
   border-radius: 8px;
   cursor: pointer;
 }
 
 .applyBtn:disabled {
-  background-color: var(--input-bg-2);
+  background-color: rgba(160, 160, 180, 0.2);
   color: var(--text-bluegray);
   cursor: not-allowed;
 }
 
-.scrollArea::-webkit-scrollbar {
-  width: 3px;
+.scrollArea {
+  max-height: 360px;
+  overflow-y: auto;
+  padding-right: 6px;
+  /* 크롬, 사파리, 엣지용 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
+.scrollArea::-webkit-scrollbar {
+  width: 3.5px;
+  display: none;
+}
 .scrollArea::-webkit-scrollbar-thumb {
   background-color: var(--input-disabled-2);
   border-radius: 3px;

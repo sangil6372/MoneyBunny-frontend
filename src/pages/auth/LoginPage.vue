@@ -4,6 +4,8 @@ import { useRouter, useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import AttendanceCheckModal from './AttendanceCheckModal.vue';
 
+const showToast = ref(false);
+
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
@@ -37,9 +39,15 @@ const handleLogin = async () => {
       password: password.value,
     });
 
-    console.log('로그인 성공, 출석체크 모달 표시');
     // 로그인 성공 시 출석체크 모달 표시
-    showModal.value = true;
+    // showModal.value = true;
+
+    // 로그인 성공!
+    showToast.value = true;
+    setTimeout(() => {
+      showToast.value = false;
+      router.push('/home');
+    }, 1200); // 1.2초 보여주고 홈으로
   } catch (error) {
     console.error('로그인 에러:', error);
 
@@ -109,27 +117,26 @@ watch(errorMessage, () => {
 
 <template>
   <div class="loginContainer">
-    <div class="loginWrapper">
-      <!-- 🐰 토끼 이미지 추가 -->
+    <div class="cardBox">
       <img
         src="@/assets/images/icons/signup/login_main.png"
         alt="login-bunny"
         class="bunnyImage"
       />
-
+      <transition name="fade">
+        <div v-if="showToast" class="toastMsg">로그인 되었습니다!</div>
+      </transition>
       <div class="loginCard">
-        <h1 class="loginTitle font-28 font-extrabold">MoneyBunny</h1>
-        <p class="loginSubtitle font-15 font-regular">
-          아이디와 비밀번호를 입력해주세요
-        </p>
+        <div class="loginTitle font-26 font-extrabold">MoneyBunny</div>
+        <p class="loginSubtitle font-14">아이디와 비밀번호를 입력해주세요</p>
 
         <!-- 💪(상일) 에러 메시지 표시 영역 추가 -->
-        <div v-if="errorMessage" class="errorMessage font-13">
+        <div v-if="errorMessage" class="errorMessage font-12">
           {{ errorMessage }}
         </div>
 
         <div class="formGroup">
-          <label for="id" class="font-15 font-bold">아이디</label>
+          <label for="id" class="font-14 font-bold">아이디</label>
           <input
             type="text"
             id="id"
@@ -141,7 +148,7 @@ watch(errorMessage, () => {
         </div>
 
         <div class="formGroup">
-          <label for="password" class="font-15 font-bold">비밀번호</label>
+          <label for="password" class="font-14 font-bold">비밀번호</label>
           <input
             type="password"
             id="password"
@@ -153,7 +160,7 @@ watch(errorMessage, () => {
         </div>
 
         <button
-          class="loginButton font-15 font-bold"
+          class="loginButton font-15"
           @click="handleLogin"
           :disabled="isLoading"
         >
@@ -161,13 +168,13 @@ watch(errorMessage, () => {
           <span v-else>로그인</span>
         </button>
 
-        <div class="loginLinks font-13">
+        <div class="loginLink font-12">
           <router-link to="/findId">아이디 찾기</router-link>
           <span>|</span>
           <router-link to="/findPassword">비밀번호 찾기</router-link>
         </div>
 
-        <div class="signupLink font-13">
+        <div class="signupLink font-12">
           계정이 없으신가요?
           <router-link to="/signUpEmailVerify">회원가입</router-link>
         </div>
@@ -175,7 +182,7 @@ watch(errorMessage, () => {
     </div>
 
     <!-- ✅ 출석체크 모달 -->
-    <AttendanceCheckModal v-if="showModal" @close="closeModal" />
+    <!-- <AttendanceCheckModal v-if="showModal" @close="closeModal" /> -->
   </div>
 </template>
 
@@ -185,69 +192,87 @@ watch(errorMessage, () => {
   min-height: 100vh;
   background-color: var(--input-bg-2);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
-  padding: 24px;
-  box-sizing: border-box;
+  justify-content: center;
+}
+.cardBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+.bunnyImage {
+  width: 90px;
+  height: 90px;
+  margin-bottom: -30px;
+  z-index: 2;
 }
 
 .loginCard {
   width: 100%;
-  max-width: 350px;
+  max-width: 360px;
+  min-height: 460px;
   background-color: white;
-  padding: 24px;
-  border-radius: 16px;
-  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); */
+  padding: 32px 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .loginTitle {
   text-align: center;
   color: var(--text-login);
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 }
 
 .loginSubtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-top: 9px;
-  margin-bottom: 36px;
+  margin-bottom: 24px;
 }
 
 .formGroup {
   display: flex;
   flex-direction: column;
-  /* margin-bottom: 16px; */
 }
 
 input {
-  margin-top: 9px;
-  margin-bottom: 16px;
-  font-size: 14px;
+  margin-top: 7px;
+  margin-bottom: 13px;
+  font-size: 13px;
   padding: 12px 16px;
-  border: 1px solid var(--input-outline);
+  border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
   outline: none;
+}
+
+input:focus {
+  border: 1.5px solid var(--input-outline-2);
 }
 
 .loginButton {
   width: 100%;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 14px;
+  padding: 12px;
   border-radius: 8px;
   border: none;
-  margin-top: 8px;
+  margin-top: 6px;
   cursor: pointer;
 }
 
-.loginLinks {
-  margin-top: 13px;
+.loginLink {
+  margin-top: 12px;
   text-align: center;
   color: var(--text-bluegray);
 }
 
-.loginLinks a {
+.loginLink a {
   color: var(--text-bluegray);
   text-decoration: none;
   margin: 0 6px;
@@ -255,50 +280,26 @@ input {
 
 .signupLink {
   text-align: center;
-  margin-top: 16px;
+  margin-top: 14px;
   color: var(--text-lightgray);
 }
 
 .signupLink a {
   color: var(--base-lavender);
   text-decoration: none;
-  margin-left: 10px;
-}
-.loginWrapper {
-  position: relative;
-  width: 100%;
-  max-width: 350px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.bunnyImage {
-  width: 90px;
-  height: auto;
-  position: absolute;
-  top: -30px;
-  z-index: 2;
-}
-
-.loginCard {
-  background-color: white;
-  padding: 24px;
-  border-radius: 16px;
-  margin-top: 40px; /* 토끼 머리 공간 확보 */
-  width: 100%;
-  box-sizing: border-box;
+  margin-left: 6px;
+  font-size: 13px;
 }
 
 /* 💪(상일) 에러 메시지 및 로딩 상태 스타일 추가 */
 .errorMessage {
-  background-color: #fee;
-  color: #c33;
+  background-color: var(--alert-light-3);
+  color: var(--alert-red);
   padding: 8px 12px;
   border-radius: 4px;
   margin-bottom: 16px;
   text-align: center;
-  border: 1px solid #fcc;
+  border: 1px solid var(--alert-light-2);
 }
 
 .loginButton:disabled {
@@ -310,5 +311,24 @@ input {
 input:disabled {
   background-color: #f5f5f5;
   cursor: not-allowed;
+}
+
+.toastMsg {
+  position: absolute;
+  top: -54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  background: var(--base-blue-dark);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  min-width: 300px;
+  max-width: 400px;
+  pointer-events: none;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 </style>

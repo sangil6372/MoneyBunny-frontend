@@ -1,14 +1,46 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import AreaSelectModal from './AreaSelectModal.vue';
+import {
+  maritalCodeToLabel,
+  maritalLabelToCode,
+} from '@/assets/utils/maritalMap';
+import { educationLevelCodeMap } from '@/assets/utils/educationLevelCodeMap.js';
+import { majorCodeMap } from '@/assets/utils/majorCodeMap.js';
+import { employmentStatusCodeMap } from '@/assets/utils/employmentStatusCodeMap.js';
+import { specialConditionCodeMap } from '@/assets/utils/specialConditionCodeMap.js';
+import { regionCodeMap } from '@/assets/utils/regionCodeMap.js';
+
+// 코드→라벨 역매핑 생성
+const educationLevelLabelMap = Object.fromEntries(
+  Object.entries(educationLevelCodeMap).map(([k, v]) => [v, k])
+);
+const majorLabelMap = Object.fromEntries(
+  Object.entries(majorCodeMap).map(([k, v]) => [v, k])
+);
+const employmentStatusLabelMap = Object.fromEntries(
+  Object.entries(employmentStatusCodeMap).map(([k, v]) => [v, k])
+);
+const specialConditionLabelMap = Object.fromEntries(
+  Object.entries(specialConditionCodeMap).map(([k, v]) => [v, k])
+);
+
+const props = defineProps({
+  initialMarital: { type: Array, default: () => [] },
+  initialRegion: { type: Array, default: () => [] },
+  initialAge: { type: [String, Number], default: '' },
+  initialIncome: { type: [String, Number], default: '' },
+  initialEducation: { type: Array, default: () => [] },
+  initialMajor: { type: Array, default: () => [] },
+  initialJobStatus: { type: Array, default: () => [] },
+  initialSpecialty: { type: Array, default: () => [] },
+});
 
 const page = ref('main');
 const maritalOptions = ['기혼', '미혼', '제한없음'];
 const selectedMarital = ref([]);
-
 const selectedRegion = ref([]);
 const showRegionModal = ref(false);
-
 const age = ref('');
 const income = ref('');
 
@@ -77,7 +109,7 @@ const educationOptions = [
   '제한없음',
   '고졸 미만',
   '고교 재학',
-  '고교 예정',
+  '고졸 예정',
   '고교 졸업',
   '대학 재학',
   '대졸 예정',
@@ -144,14 +176,38 @@ const reset = () => {
 const emit = defineEmits(['close', 'confirm', 'reset']);
 const confirm = () => {
   emit('confirm', {
-    region: selectedRegion.value,
-    marital: selectedMarital.value,
-    age: age.value,
-    income: income.value,
-    education: selectedEducation.value,
-    major: selectedMajor.value,
-    jobStatus: selectedJobStatus.value,
-    specialty: selectedSpecialty.value,
+    region:
+      selectedRegion.value && selectedRegion.value.length > 0
+        ? selectedRegion.value.map(regionNameToCode)
+        : [],
+    marital:
+      selectedMarital.value && selectedMarital.value.length > 0
+        ? selectedMarital.value.map((label) => maritalLabelToCode[label])
+        : [],
+    age: age.value || '',
+    income: income.value || '',
+    education:
+      selectedEducation.value && selectedEducation.value.length > 0
+        ? selectedEducation.value.map(
+            (label) => educationLevelCodeMap[label] || label
+          )
+        : [],
+    major:
+      selectedMajor.value && selectedMajor.value.length > 0
+        ? selectedMajor.value.map((label) => majorCodeMap[label] || label)
+        : [],
+    jobStatus:
+      selectedJobStatus.value && selectedJobStatus.value.length > 0
+        ? selectedJobStatus.value.map(
+            (label) => employmentStatusCodeMap[label] || label
+          )
+        : [],
+    specialty:
+      selectedSpecialty.value && selectedSpecialty.value.length > 0
+        ? selectedSpecialty.value.map(
+            (label) => specialConditionCodeMap[label] || label
+          )
+        : [],
   });
 };
 const close = () => emit('close');
@@ -198,6 +254,90 @@ function toggleMulti(listRef, option) {
     }
   }
 }
+
+// 코드 → 지역명 변환 함수 (배열 코드도 지원)
+function codeToRegionName(code) {
+  for (const [sido, guguns] of Object.entries(regionCodeMap)) {
+    for (const [gugun, gugunCode] of Object.entries(guguns)) {
+      if (Array.isArray(gugunCode) && gugunCode.includes(code)) {
+        return gugun === '전체' ? sido : `${sido} ${gugun}`;
+      }
+      if (gugunCode === code) {
+        return gugun === '전체' ? sido : `${sido} ${gugun}`;
+      }
+    }
+  }
+  return code; // fallback: 코드 그대로
+}
+
+// 지역명 → 코드 변환 함수 (필터링 시 사용)
+function regionNameToCode(name) {
+  name = name.trim();
+  for (const [sido, guguns] of Object.entries(regionCodeMap)) {
+    for (const [gugun, gugunCode] of Object.entries(guguns)) {
+      // name이 "시도 구군" 또는 "시도" 형태일 수 있음
+      if (
+        `${sido} ${gugun}`.trim() === name ||
+        sido === name ||
+        gugun === name
+      ) {
+        // 여러 코드가 있을 경우 첫 번째 코드 반환
+        if (Array.isArray(gugunCode)) return gugunCode[0];
+        return gugunCode;
+      }
+    }
+  }
+  return name;
+}
+
+onMounted(() => {
+  // 혼인여부 코드 → 라벨
+  if (props.initialMarital && props.initialMarital.length > 0) {
+    selectedMarital.value = props.initialMarital
+      .map((code) => maritalCodeToLabel[code])
+      .filter(Boolean);
+  }
+  // 지역 코드 → 지역명 변환
+  if (props.initialRegion && props.initialRegion.length > 0) {
+    selectedRegion.value = props.initialRegion
+      .map((code) => codeToRegionName(code))
+      .filter(Boolean);
+  }
+  if (props.initialAge) age.value = props.initialAge;
+  if (props.initialIncome) income.value = props.initialIncome;
+  // 학력 코드 → 라벨
+  if (props.initialEducation && props.initialEducation.length > 0) {
+    selectedEducation.value = props.initialEducation
+      .map((code) => educationLevelLabelMap[code])
+      .filter(Boolean);
+  }
+  // 전공 코드 → 라벨
+  if (props.initialMajor && props.initialMajor.length > 0) {
+    selectedMajor.value = props.initialMajor
+      .map((code) => majorLabelMap[code])
+      .filter(Boolean);
+  }
+  // 취업상태 코드 → 라벨
+  if (props.initialJobStatus && props.initialJobStatus.length > 0) {
+    selectedJobStatus.value = props.initialJobStatus
+      .map((code) => employmentStatusLabelMap[code])
+      .filter(Boolean);
+  }
+  // 특화분야 코드 → 라벨
+  if (props.initialSpecialty && props.initialSpecialty.length > 0) {
+    selectedSpecialty.value = props.initialSpecialty
+      .map((code) => specialConditionLabelMap[code])
+      .filter(Boolean);
+  }
+});
+
+// AreaSelectModal에 지역 코드값을 넘겨서, 사용자가 이전에 선택한 지역이 선택된 상태로 보이게 함
+const areaSelectModalProps = computed(() => ({
+  initialRegionCodes:
+    props.initialRegion && props.initialRegion.length > 0
+      ? props.initialRegion
+      : [],
+}));
 </script>
 <template>
   <div class="policyFilterModal" @click.self="close">
@@ -368,9 +508,9 @@ function toggleMulti(listRef, option) {
         </button>
       </div>
     </div>
-
     <AreaSelectModal
       v-if="showRegionModal"
+      v-bind="areaSelectModalProps"
       @close="showRegionModal = false"
       @selected="handleRegionSelected"
     />

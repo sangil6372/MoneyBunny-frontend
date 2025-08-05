@@ -1,66 +1,154 @@
 <script setup>
-const policy = {
-  minAge: 19,
-  maxAge: 34,
-  regionList: [],
-  incomeConditionCode: '',
-  incomeEtc: '소득 수준 제한 없음',
-  educationLevels: [],
-  majorList: [],
-  employmentStatuses: [],
-  specialConditions: [],
-};
+import { regionCodeMap } from '@/assets/utils/regionCodeMap';
+import { educationLevelCodeMap } from '@/assets/utils/educationLevelCodeMap';
+import { majorCodeMap } from '@/assets/utils/majorCodeMap';
+import { employmentStatusCodeMap } from '@/assets/utils/employmentStatusCodeMap';
+import { specialConditionCodeMap } from '@/assets/utils/specialConditionCodeMap';
 
-const minAge = policy.minAge;
-const maxAge = policy.maxAge;
-const ageText = minAge && maxAge ? `만 ${minAge}세 이상 ${maxAge}세 이하` : '';
+const props = defineProps({
+  policy: Object,
+});
 
-const region = policy.regionList || policy.regions || [];
-const regionText =
-  region.length > 0 ? '해당 지역 거주자' : '전국 (지역 제한 없음)';
+// 지역코드 → 지역명 변환 함수
+function getRegionNameByCode(code) {
+  for (const [sido, guguns] of Object.entries(regionCodeMap)) {
+    for (const [gugun, gugunCode] of Object.entries(guguns)) {
+      // gugunCode가 배열인 경우(중복 코드), 배열 내에 code가 포함되어 있으면 반환
+      if (Array.isArray(gugunCode) && gugunCode.includes(code)) {
+        return gugun === '전체' ? sido : `${sido} ${gugun}`;
+      }
+      // 기존 단일 코드 처리
+      if (gugunCode === code) {
+        return gugun === '전체' ? sido : `${sido} ${gugun}`;
+      }
+    }
+  }
+  return code;
+}
 
-const income =
-  policy.incomeConditionCode ||
-  policy.incomeMin ||
-  policy.incomeMax ||
-  policy.incomeEtc ||
-  '';
-const incomeText = income ? income : '';
+// 매핑 함수
+function getLabelByCode(code, map) {
+  if (!code) return null;
+  for (const [label, v] of Object.entries(map)) {
+    if (v === code) return label;
+  }
+  return code;
+}
+function getLabelsByCodes(codes, map) {
+  if (!Array.isArray(codes) || codes.length === 0) return [];
+  return codes.map((code) => getLabelByCode(code, map)).filter(Boolean);
+}
 
-const edu =
-  (policy.educationLevelList && policy.educationLevelList.length > 0) ||
-  (policy.educationLevels && policy.educationLevels.length > 0)
-    ? '일부 학력 제한 있음'
-    : '학력 제한 없음';
-const major =
-  (policy.majorList && policy.majorList.length > 0) ||
-  (policy.majors && policy.majors.length > 0)
-    ? '일부 전공 제한 있음'
-    : '전공 제한 없음';
-const eduMajorText =
-  edu === '학력 제한 없음' && major === '전공 제한 없음'
-    ? '제한 없음'
-    : `${edu}, ${major}`;
+// 연령
+let ageText = '제한 없음';
+if (props.policy && props.policy.ageLimitYn === false) {
+  const minAge = props.policy.minAge;
+  const maxAge = props.policy.maxAge;
+  if (minAge && maxAge) {
+    ageText = `만 ${minAge}세 이상 ${maxAge}세 이하`;
+  } else if (minAge) {
+    ageText = `만 ${minAge}세 이상`;
+  } else if (maxAge) {
+    ageText = `만 ${maxAge}세 이하`;
+  }
+}
 
-const job =
-  (policy.employmentStatusList && policy.employmentStatusList.length > 0) ||
-  (policy.employmentStatuses && policy.employmentStatuses.length > 0)
-    ? '특정 취업 상태 필요'
-    : '제한 없음';
-const special =
-  (policy.specialConditionList && policy.specialConditionList.length > 0) ||
-  (policy.specialConditions && policy.specialConditions.length > 0)
-    ? '특정 조건 필요'
-    : '제한 없음';
+// 거주지역
+let regionText = '전국 (지역 제한 없음)';
+const regions =
+  (props.policy && (props.policy.regions || props.policy.regionList)) || [];
+if (Array.isArray(regions) && regions.length > 0) {
+  const regionNames = regions
+    .map((r) => getRegionNameByCode(r.regionCode || r))
+    .filter(Boolean);
+  regionText = regionNames.length > 0 ? regionNames.join(', ') : regionText;
+}
+
+// 소득조건
+let incomeText = '';
+const code = props.policy && props.policy.incomeConditionCode;
+if (code === '0043002') {
+  const min = props.policy.incomeMin;
+  const max = props.policy.incomeMax;
+  if (min && max) {
+    incomeText = `월소득 ${min} ~ ${max}만원`;
+  } else if (min) {
+    incomeText = `월소득 ${min}만원 이상`;
+  } else if (max) {
+    incomeText = `월소득 ${max}만원 이하`;
+  }
+} else if (code === '0043001') {
+  incomeText = '제한 없음';
+} else if (code === '0043003') {
+  incomeText = props.policy.incomeEtc || '';
+}
+
+// 학력 (educationLevels 배열의 각 객체에서 educationLevel 값만 추출)
+let educationLabels = [];
+if (
+  props.policy.educationLevels &&
+  Array.isArray(props.policy.educationLevels) &&
+  props.policy.educationLevels.length > 0
+) {
+  const codes = props.policy.educationLevels
+    .map((e) => e.educationLevel)
+    .filter(Boolean);
+  educationLabels = getLabelsByCodes(codes, educationLevelCodeMap);
+}
+const educationText =
+  educationLabels.length > 0 ? educationLabels.join(', ') : '제한 없음';
+
+// 전공 (majors 배열의 각 객체에서 major 값만 추출)
+let majorLabels = [];
+if (
+  props.policy.majors &&
+  Array.isArray(props.policy.majors) &&
+  props.policy.majors.length > 0
+) {
+  const codes = props.policy.majors.map((m) => m.major).filter(Boolean);
+  majorLabels = getLabelsByCodes(codes, majorCodeMap);
+}
+const majorText = majorLabels.length > 0 ? majorLabels.join(', ') : '제한 없음';
+
+// 취업상태 (employmentStatuses 배열의 각 객체에서 employmentStatus 값만 추출)
+let employmentLabels = [];
+if (
+  props.policy.employmentStatuses &&
+  Array.isArray(props.policy.employmentStatuses) &&
+  props.policy.employmentStatuses.length > 0
+) {
+  const codes = props.policy.employmentStatuses
+    .map((e) => e.employmentStatus)
+    .filter(Boolean);
+  employmentLabels = getLabelsByCodes(codes, employmentStatusCodeMap);
+}
+const employmentText =
+  employmentLabels.length > 0 ? employmentLabels.join(', ') : '제한 없음';
+
+// 특화분야 (specialConditions 배열의 각 객체에서 specialCondition 값만 추출)
+let specialLabels = [];
+if (
+  props.policy.specialConditions &&
+  Array.isArray(props.policy.specialConditions) &&
+  props.policy.specialConditions.length > 0
+) {
+  const codes = props.policy.specialConditions
+    .map((s) => s.specialCondition)
+    .filter(Boolean);
+  specialLabels = getLabelsByCodes(codes, specialConditionCodeMap);
+}
+const specialText =
+  specialLabels.length > 0 ? specialLabels.join(', ') : '제한 없음';
 
 // undefined/null/빈 desc 모두 필터링
 const eligibility = [
   { title: '연령', desc: ageText },
   { title: '거주지역', desc: regionText },
   { title: '소득조건', desc: incomeText },
-  { title: '학력/전공', desc: eduMajorText },
-  { title: '취업상태', desc: job },
-  { title: '특화분야', desc: special },
+  { title: '학력', desc: educationText },
+  { title: '전공', desc: majorText },
+  { title: '취업상태', desc: employmentText },
+  { title: '특화분야', desc: specialText },
 ].filter((item) => item && item.desc);
 </script>
 

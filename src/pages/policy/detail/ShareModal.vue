@@ -1,15 +1,139 @@
 <script setup>
-const emit = defineEmits(['close']);
+import { ref, onMounted, computed } from "vue";
+import axios from "axios";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const policyId = computed(() =>
+  Number(route.params.policyId || route.params.id)
+);
+
+const emit = defineEmits(["close"]);
 
 const close = () => {
-  emit('close');
+  emit("close");
 };
 
-const shareInfo = {
-  title: '청년 내일채움공제',
-  description: '청년층의 장기근속과 목돈마련을 지원하는 정책',
-  amount: '최대 3,000만원',
-  url: 'https://policy.gov.kr/youth-savings',
+const shareInfo = ref({
+  title: "",
+  description: "",
+  amount: "",
+  url: "",
+});
+
+// 정책 불러오기
+
+const fetchPolicy = async () => {
+  try {
+    const savedAuth = localStorage.getItem("auth"); // "auth" 전체 객체 꺼냄
+    const parsed = savedAuth ? JSON.parse(savedAuth) : null;
+    const token = parsed?.token;
+
+    console.log(token);
+
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await axios.get(`/api/policy/detail/${policyId.value}`, {
+      headers,
+    });
+
+    console.log("API 응답 데이터:", response.data);
+    const data = response.data;
+
+    shareInfo.value = {
+      title: data.title,
+      description: data.description,
+      amount:
+        data.policyBenefitDescription ||
+        (data.policyBenefitAmount
+          ? `${data.policyBenefitAmount.toLocaleString()}원`
+          : "지원 내용 없음"),
+      url:
+        typeof data.applyUrl === "string" &&
+        data.applyUrl.startsWith("http") &&
+        !data.applyUrl.includes("localhost")
+          ? data.applyUrl
+          : typeof data.refUrl1 === "string" &&
+            data.refUrl1.startsWith("http") &&
+            !data.refUrl1.includes("localhost")
+          ? data.refUrl1
+          : `https://money-bunny-frontend.vercel.app/policy/${String(
+              props.policyId
+            )}`,
+    };
+
+    console.log("applyUrl from API:", data.applyUrl);
+    console.log("공유할 정보:", shareInfo);
+  } catch (error) {
+    console.error("정책 정보 조회 실패:", error);
+  }
+};
+
+onMounted(() => {
+  fetchPolicy();
+
+  const initKakao = () => {
+    if (!window.Kakao.isInitialized()) {
+      const KAKAO_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+      window.Kakao.init(KAKAO_KEY);
+    }
+  };
+
+  if (!window.Kakao) {
+    const script = document.createElement("script");
+    script.src = "https://developers.kakao.com/sdk/js/kakao.min.js";
+    script.onload = initKakao;
+    document.head.appendChild(script);
+  } else {
+    initKakao();
+  }
+});
+
+// 카카오 공유하기 전송
+
+const sendKakao = () => {
+  const info = shareInfo.value;
+  console.log("✅ 공유할 정보:", info);
+
+  const isInfoReady =
+    typeof info.title === "string" &&
+    info.title.trim().length > 0 &&
+    typeof info.description === "string" &&
+    typeof info.amount === "string" &&
+    typeof info.url === "string" &&
+    info.url.startsWith("http");
+
+  if (!isInfoReady) {
+    alert("공유할 정보를 아직 불러오는 중입니다. 잠시만 기다려 주세요.");
+    return;
+  }
+
+  if (!window.Kakao || !window.Kakao.Link) {
+    alert("카카오 SDK가 로드되지 않았습니다.");
+    return;
+  }
+
+  window.Kakao.Link.sendCustom({
+    templateId: 123089,
+    templateArgs: {
+      title: info.title,
+      description: info.description,
+      amount: info.amount,
+      policy_id: policyId.value,
+    },
+  });
+};
+
+// 클립보드 복사(링크 공유)
+
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("링크가 복사되었습니다!");
+  } catch (err) {
+    console.error("클립보드 복사 실패:", err);
+    alert("복사에 실패했습니다. 브라우저 권한을 확인해주세요.");
+  }
 };
 </script>
 
@@ -23,7 +147,7 @@ const shareInfo = {
       />
       <div class="font-20 font-bold mb-3">공유하기</div>
 
-      <div class="shareItem">
+      <div class="shareItem" @click="sendKakao">
         <img src="@/assets/images/icons/policy/kakaotalk.png" />
         <div class="text">
           <div class="font-15 font-bold">카카오톡</div>
@@ -31,7 +155,7 @@ const shareInfo = {
         </div>
       </div>
 
-      <div class="shareItem">
+      <div class="shareItem" @click="copyToClipboard(shareInfo.url)">
         <img src="@/assets/images/icons/policy/link.png" />
         <div class="text">
           <div class="font-15 font-bold">링크 복사</div>

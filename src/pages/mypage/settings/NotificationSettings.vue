@@ -143,10 +143,8 @@ const checkNotificationPermission = async () => {
   hasNotificationPermission.value = permission === "granted";
 
   if (permission === "default") {
-    // 권한 요청 전인 경우
-    showPermissionNotice.value = true;
-    permissionMessage.value =
-      "알림을 받으려면 브라우저 알림 권한이 필요합니다.";
+    // 권한 요청 전인 경우 - 안내 문구 표시하지 않음
+    showPermissionNotice.value = false;
   } else if (permission === "denied") {
     // 권한이 거부된 경우
     showPermissionNotice.value = true;

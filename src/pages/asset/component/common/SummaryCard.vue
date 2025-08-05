@@ -1,3 +1,4 @@
+<!-- SummaryCard.vue 수정 버전 -->
 <template>
   <div class="home-card summary-card" :class="`summary-card--${variant}`">
     <div class="summary-content">
@@ -25,12 +26,24 @@
     <!-- 우측 정보 -->
     <div class="summary-right">
       <p class="home-card-rate">{{ rightLabel }}</p>
-      <p class="summary-right-value">{{ rightValue }}{{ rightUnit }}</p>
+
+      <!-- 우측 값 타입에 따라 다른 스타일 적용 -->
+      <p
+        class="summary-right-value"
+        :class="{
+          'comparison-text': isComparisonText,
+          'count-text': !isComparisonText,
+        }"
+      >
+        {{ rightValue }}{{ rightUnit }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { computed } from 'vue';
+
 const props = defineProps({
   // 메인 제목
   title: { type: String, required: true },
@@ -40,7 +53,6 @@ const props = defineProps({
   subInfo: {
     type: Object,
     default: null,
-    // 예시: { label: '이번 달 순입출금', value: 2500000, showSign: true }
   },
   // 우측 라벨
   rightLabel: { type: String, required: true },
@@ -48,8 +60,16 @@ const props = defineProps({
   rightValue: { type: [Number, String], required: true },
   // 우측 단위
   rightUnit: { type: String, default: '개' },
-  // 카드 타입 (account, card, investment 등)
+  // 카드 타입
   variant: { type: String, default: 'account' },
+});
+
+// 우측 값이 비교 텍스트인지 확인 (+417,500원(+20%) 형태)
+const isComparisonText = computed(() => {
+  return (
+    typeof props.rightValue === 'string' &&
+    (props.rightValue.includes('+') || props.rightValue.includes('-'))
+  );
 });
 
 const formatAmount = (amount) => {
@@ -58,7 +78,6 @@ const formatAmount = (amount) => {
 
 const formatSubValue = (subInfo) => {
   if (!subInfo) return '';
-
   const prefix = subInfo.showSign && subInfo.value >= 0 ? '+' : '';
   return `${prefix}${subInfo.value.toLocaleString()}원`;
 };
@@ -71,14 +90,13 @@ const formatSubValue = (subInfo) => {
 .summary-card {
   display: flex;
   flex-direction: row;
-  align-items: center; /* 중앙 정렬 */
+  align-items: center;
   justify-content: space-between;
-  height: 120px; /* 카드 높이 축소 */
-  padding: 1.25rem 1.5rem; /* 내부 여백 조정 */
+  height: 120px;
+  padding: 1.25rem 1.5rem;
   gap: 0.5rem;
 }
 
-/* 좌측 메인 정보 영역 */
 .summary-content {
   flex: 1;
   display: flex;
@@ -87,41 +105,47 @@ const formatSubValue = (subInfo) => {
   gap: 0.25rem;
 }
 
-/* 메인 금액 라벨 */
 .summary-main .home-card-label {
   margin-bottom: 0.5rem;
 }
 
-/* 메인 금액 값 */
 .summary-main .home-card-value {
-  font-size: 1.5rem; /* 폰트 확대 */
+  font-size: 1.5rem;
   font-weight: 700;
   margin: 0;
 }
 
 .summary-right {
   display: flex;
-  flex-direction: column; /* 세로 정렬 */
-  align-items: flex-end; /* 우측 정렬 */
+  flex-direction: column;
+  align-items: flex-end;
   justify-content: center;
   text-align: right;
-  gap: 0.25rem; /* 라벨과 값 간격 */
+  gap: 0.25rem;
 }
 
-/* 우측 라벨 (예: 카드 수) */
 .summary-right .home-card-rate {
-  font-size: 0.875rem; /* 라벨 크기 */
+  font-size: 0.875rem;
   font-weight: 500;
   color: var(--text-rate);
   margin: 0;
 }
 
-/* 우측 값 (예: 3개) */
+/* 기본 우측 값 스타일 */
 .summary-right-value {
-  font-size: 1rem; /* 메인 금액 크기와 유사 */
   font-weight: 700;
-
-  color: white;
   margin: 0;
+}
+
+/* 개수 표시용 (3개, 15건 등) */
+.summary-right-value.count-text {
+  font-size: 1rem;
+  color: white;
+}
+
+/* 비교 텍스트용 (+417,500원(+20%) 등) */
+.summary-right-value.comparison-text {
+  font-size: 0.875rem;
+  color: var(--text-green); /* 기본값, variant별로 override 가능 */
 }
 </style>

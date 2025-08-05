@@ -1,148 +1,84 @@
 <script setup>
-import axios from "axios";
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
-const email = ref("");
-const code = ref("");
-const isCodeSent = ref(false);
-
-const loginId = ref("");
-const errorMessage = ref("");
+const loginId = ref('');
+const email = ref('');
+const errorMessage = ref('');
+const showToast = ref(false);
 
 const router = useRouter();
 
-// 이메일 전송 및 인증 관련 변수
-const route = useRoute();
-
-// 타이머 관련 변수
-const time = 180; // 180초 == 3분
-const timeLeft = ref(time); // 남은 시간
-let timerInterval = null;
-
-const isExpired = computed(() => timeLeft.value === 0);
-
-const handleSubmit = async () => {
-  if (!isCodeSent.value) {
-    try {
-      const response = await axios.post("/api/auth/send-find-password-code", {
-        loginId: loginId.value,
-        email: email.value,
-      });
-      isCodeSent.value = true;
-      errorMessage.value = "";
-
-      // 타이머 시작
-      timeLeft.value = time; // 남은 시간 초기화
-      clearInterval(timerInterval); // 기존 타이머 제거 (중복 방지)
-      startTimer();
-    } catch (error) {
-      if (error.response && error.response.status === 400) {
-        errorMessage.value = "아이디와 이메일이 일치하지 않습니다.";
-      } else {
-        errorMessage.value = "인증코드 전송 중 오류가 발생했습니다.";
-      }
-    }
-  } else {
-    // 인증 확인 후 다음 단계로
-    try {
-      const response = await axios.post("/api/auth/verify", {
-        email: email.value,
-        code: code.value,
-      });
-      if (response.data === "verified") {
-        router.push({
-          path: "/resetPassword",
-          query: { loginId: loginId.value },
-        });
-      }
-    } catch (error) {
-      errorMessage.value = "인증코드가 일치하지 않습니다.";
-    }
+const handleSendCode = () => {
+  if (!loginId.value || !email.value) {
+    errorMessage.value = '아이디와 이메일을 모두 입력해주세요.';
+    setTimeout(() => (errorMessage.value = ''), 2000);
+    return;
   }
+
+  // 토스트 먼저 띄우기!
+  showToast.value = true;
+  setTimeout(() => {
+    showToast.value = false;
+    // 실제 이동
+    router.push({
+      name: 'findPasswordCode', // 라우터 네임에 맞게 수정
+      query: { loginId: loginId.value, email: email.value },
+    });
+  }, 1200); // 1.2초 후 이동
 };
-
-// 타이머
-
-// 타이머 시작 함수
-const startTimer = () => {
-  timerInterval = setInterval(() => {
-    if (timeLeft.value > 0) {
-      timeLeft.value--;
-    } else {
-      clearInterval(timerInterval);
-      errorMessage.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
-    }
-  }, 1000);
-};
-
-// 컴포넌트 언마운트 시 타이머 제거
-onBeforeUnmount(() => {
-  if (timerInterval) clearInterval(timerInterval);
-});
-
-// mm:ss 형식으로 포맷
-const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
-  const seconds = String(timeLeft.value % 60).padStart(2, "0");
-  return `${minutes}:${seconds}`;
-});
 </script>
 
 <template>
   <div class="findPasswordContainer">
-    <div class="card">
-      <h1 class="title font-28 font-extrabold">MoneyBunny</h1>
-      <p class="subtitle font-15 font-regular">
-        비밀번호를 재설정하기 위해 이메일을 입력해주세요
-      </p>
+    <div class="cardBox">
+      <img
+        src="@/assets/images/icons/signup/login_main.png"
+        alt="login-bunny"
+        class="bunnyImage"
+      />
+      <transition name="fade">
+        <div v-if="showToast" class="toastMsg">인증코드가 발송되었습니다.</div>
+      </transition>
 
-      <!-- 에러 메시지 표시 -->
-      <div v-if="errorMessage" class="errorMessage font-13">
-        {{ errorMessage }}
-      </div>
+      <div class="card">
+        <div class="title font-26 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-14">이메일을 입력해주세요</p>
 
-      <!-- 아이디 입력칸 추가 -->
-      <div class="formGroup">
-        <label class="font-15 font-bold">아이디</label>
-        <input
-          type="text"
-          v-model="loginId"
-          placeholder="아이디를 입력하세요"
-        />
-      </div>
+        <div v-if="errorMessage" class="errorMessage font-12">
+          {{ errorMessage }}
+        </div>
 
-      <div class="formGroup">
-        <label class="font-15 font-bold">이메일</label>
-        <input type="email" v-model="email" placeholder="이메일을 입력하세요" />
-      </div>
-
-      <!-- 인증코드 입력 -->
-      <div v-if="isCodeSent" class="formGroup">
-        <label class="font-15 font-bold">인증코드</label>
-        <div class="inputRow">
+        <div class="formGroup">
+          <label class="font-14 font-bold">아이디</label>
           <input
             type="text"
-            v-model="code"
-            placeholder="인증코드를 입력하세요"
+            v-model="loginId"
+            placeholder="아이디를 입력하세요"
           />
-          <span class="timer font-13">{{ formattedTime }}</span>
         </div>
-      </div>
 
-      <!-- 버튼 -->
-      <button class="actionButton font-15 font-bold" @click="handleSubmit">
-        {{ isCodeSent ? "인증하기" : "인증코드 발송" }}
-      </button>
+        <div class="formGroup">
+          <label class="font-14 font-bold">이메일</label>
+          <input
+            type="email"
+            v-model="email"
+            placeholder="이메일을 입력하세요"
+          />
+        </div>
 
-      <!-- 링크 -->
-      <div class="linkGroup font-13">
-        <a href="/findId">아이디 찾기</a>
-        <span>|</span>
-        <a href="/">로그인</a>
-      </div>
-      <div class="signupLink font-13">
-        계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
+        <button class="actionButton font-15" @click="handleSendCode">
+          인증코드 발송
+        </button>
+
+        <div class="loginLink font-12">
+          <a href="/findId">아이디 찾기</a>
+          <span>|</span>
+          <a href="/">로그인</a>
+        </div>
+        <div class="signupLink font-12">
+          계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
+        </div>
       </div>
     </div>
   </div>
@@ -156,93 +92,61 @@ const formattedTime = computed(() => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 24px;
   box-sizing: border-box;
 }
-
+.cardBox {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 360px;
+}
+.bunnyImage {
+  width: 90px;
+  height: 90px;
+  margin-bottom: -30px;
+  z-index: 2;
+}
 .card {
   width: 100%;
   max-width: 360px;
+  min-height: 460px;
   background-color: white;
-  padding: 32px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  padding: 32px 24px;
+  border-radius: 12px;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
-
 .title {
   text-align: center;
-  color: var(--base-blue-dark);
+  color: var(--text-login);
+  margin-bottom: 8px;
 }
-
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-top: 8px;
-  margin-bottom: 24px;
+  margin-bottom: 18px;
 }
-
 .formGroup {
   display: flex;
   flex-direction: column;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
 }
-
 input {
-  font-size: 14px;
-  padding: 12px 14px;
-  border: none;
+  margin-top: 7px;
+  font-size: 13px;
+  padding: 12px 16px;
+  border: 1.2px solid var(--input-outline);
   border-radius: 8px;
-  background-color: var(--input-bg-1);
+  background-color: transparent;
   outline: none;
 }
-
-.submitButton {
-  width: 100%;
-  background-color: var(--base-blue-dark);
-  color: white;
-  padding: 14px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 12px;
-  cursor: pointer;
+input:focus {
+  border: 1.5px solid var(--input-outline-2);
 }
-
-.linkGroup {
-  margin-top: 16px;
-  text-align: center;
-  color: var(--text-bluegray);
-}
-
-.linkGroup a {
-  color: var(--text-bluegray);
-  text-decoration: none;
-  margin: 0 6px;
-}
-
-.signupLink {
-  text-align: center;
-  margin-top: 16px;
-  color: var(--text-lightgray);
-}
-
-.signupLink a {
-  color: var(--base-lavender);
-  text-decoration: none;
-  margin-left: 4px;
-}
-
-.inputRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 8px;
-}
-
-.timer {
-  margin-left: 8px;
-  color: var(--text-lightgray);
-}
-
 .actionButton {
   width: 100%;
   background-color: var(--base-blue-dark);
@@ -250,16 +154,56 @@ input {
   padding: 14px;
   border-radius: 10px;
   border: none;
-  margin-top: 16px;
+  margin-top: 10px;
   cursor: pointer;
 }
+.loginLink {
+  margin-top: 12px;
+  text-align: center;
+  color: var(--text-bluegray);
+}
+.loginLink a {
+  color: var(--text-bluegray);
+  text-decoration: none;
+  margin: 0 6px;
+}
+.signupLink {
+  text-align: center;
+  margin-top: 12px;
+  color: var(--text-lightgray);
+}
+.signupLink a {
+  color: var(--base-lavender);
+  text-decoration: none;
+  margin-left: 6px;
+  font-size: 13px;
+}
 .errorMessage {
-  background-color: #fee;
-  color: #c33;
+  background-color: var(--alert-light-3);
+  color: var(--alert-red);
   padding: 8px 12px;
   border-radius: 4px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   text-align: center;
-  border: 1px solid #fcc;
+  border: 1px solid var(--alert-light-2);
+}
+
+.toastMsg {
+  position: absolute;
+  top: -54px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  background: var(--base-blue-dark);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  min-width: 300px;
+  max-width: 400px;
+  pointer-events: none;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 </style>

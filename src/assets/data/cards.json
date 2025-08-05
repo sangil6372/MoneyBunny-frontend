@@ -25,177 +25,61 @@
         "category": "쇼핑",
         "amount": 32000,
         "status": "승인"
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "issuerCode": "0302",
-    "cardName": "현대 ZERO Edition2",
-    "cardMaskedNumber": "5382********4321",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSxyKThQlxNMsyTfMXIetXFrrF9QnvxbbQyRPO5G8Klhx9ABIDJljPOJ-nXjtvKw6jSAhk&usqp=CAU",
-    "amount": 350000,
-    "isRepresentative": false,
-    "cardTransactions": [
+      },
       {
-        "transactionId": "C20250730003",
-        "date": "2025-07-26",
-        "time": "20:15",
-        "merchant": "이마트",
-        "category": "쇼핑",
-        "amount": 48000,
-        "status": "승인"
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "issuerCode": "0303",
-    "cardName": "삼성 taptap O",
-    "cardMaskedNumber": "5523********9876",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3KRjYjMviaZcIkcheXQo__ml3d0Uh8EFXOw&s",
-    "amount": 275000,
-    "isRepresentative": false,
-    "cardTransactions": [
-      {
-        "transactionId": "C20250730004",
-        "date": "2025-07-25",
+        "transactionId": "C20250010001",
+        "date": "2025-08-05",
         "time": "12:00",
-        "merchant": "GS25",
+        "merchant": "스타벅스",
         "category": "식비",
-        "amount": 4200,
+        "amount": 10000,
         "status": "승인"
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "issuerCode": "0304",
-    "cardName": "NH 올원 체크",
-    "cardMaskedNumber": "4576********1234",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSghE8XeqPf42DfL8y9YNzsXwQybwzH11ZzRw&s",
-    "amount": 150000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 5,
-    "issuerCode": "0305",
-    "cardName": "BC 바로카드",
-    "cardMaskedNumber": "5234********5678",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjYhvuhphW-ML2iGROILyb1iQVIB8CKS3xPA&s",
-    "amount": 198000,
-    "isRepresentative": false,
-    "cardTransactions": [
+      },
       {
-        "transactionId": "C20250730005",
-        "date": "2025-07-24",
-        "time": "09:30",
-        "merchant": "넷플릭스",
-        "category": "취미/여가",
-        "amount": 17000,
-        "status": "승인"
-      }
-    ]
-  },
-  {
-    "id": 6,
-    "issuerCode": "0306",
-    "cardName": "신한 Deep Dream",
-    "cardMaskedNumber": "5317********8765",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQWdFXkFe8kJGAZNGsrpdsYmbR7prHhmQbOg&s",
-    "amount": 320000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 7,
-    "issuerCode": "0307",
-    "cardName": "씨티 NEW 프리미어마일",
-    "cardMaskedNumber": "5432********3456",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR6BlQnnfKDi5XYQUu7XfV87CQZfrARhGYCtA&s",
-    "amount": 290000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 8,
-    "issuerCode": "0309",
-    "cardName": "우리카드의정석 I&U+",
-    "cardMaskedNumber": "5317********2156",
-    "cardImage": "https://pc.wooricard.com/webcontent/cdPrdImgFileList/2024/2/13/1931f194-e38e-4c90-87d3-f084acb6218a.png",
-    "amount": 325000,
-    "isRepresentative": false,
-    "cardTransactions": [
-      {
-        "transactionId": "C20250730006",
-        "date": "2025-07-28",
-        "time": "15:20",
+        "transactionId": "C20250020002",
+        "date": "2025-07-06",
+        "time": "12:00",
         "merchant": "쿠팡",
         "category": "쇼핑",
-        "amount": 45000,
+        "amount": 20000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250030003",
+        "date": "2025-06-06",
+        "time": "12:00",
+        "merchant": "넷플릭스",
+        "category": "취미/여가",
+        "amount": 30000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250040004",
+        "date": "2025-05-07",
+        "time": "12:00",
+        "merchant": "버스",
+        "category": "교통비",
+        "amount": 40000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250050005",
+        "date": "2025-04-07",
+        "time": "12:00",
+        "merchant": "이마트",
+        "category": "생활",
+        "amount": 50000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250060006",
+        "date": "2025-03-08",
+        "time": "12:00",
+        "merchant": "스타벅스",
+        "category": "식비",
+        "amount": 60000,
         "status": "승인"
       }
     ]
-  },
-  {
-    "id": 9,
-    "issuerCode": "0311",
-    "cardName": "롯데 LIKIT FUN",
-    "cardMaskedNumber": "5243********5678",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQs_0TPdfYLXZdxDPsq6WggfPEMdnhhR5eptA&s",
-    "amount": 180000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 10,
-    "issuerCode": "0313",
-    "cardName": "하나 K-패스",
-    "cardMaskedNumber": "5376********9876",
-    "cardImage": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQtRrzQr_LhT9yi1YUDq-47b8cWyTEKpHvfzQ&s",
-    "amount": 260000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 11,
-    "issuerCode": "0315",
-    "cardName": "전북 JB카드",
-    "cardMaskedNumber": "5245********2345",
-    "cardImage": "https://www.jbbank.co.kr/img/cad/card_thumb_theoil.gif",
-    "amount": 140000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 12,
-    "issuerCode": "0316",
-    "cardName": "광주카드 GJ카드",
-    "cardMaskedNumber": "5234********1122",
-    "cardImage": "https://www.kjbank.com/image/card/gj.png",
-    "amount": 120000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 13,
-    "issuerCode": "0320",
-    "cardName": "수협 Sh카드",
-    "cardMaskedNumber": "5432********9090",
-    "cardImage": "https://www.suhyup.co.kr/image/card/sh.png",
-    "amount": 95000,
-    "isRepresentative": false,
-    "cardTransactions": []
-  },
-  {
-    "id": 14,
-    "issuerCode": "0321",
-    "cardName": "제주 Jeju Pass 카드",
-    "cardMaskedNumber": "5245********7878",
-    "cardImage": "https://www.jejubank.com/image/card/jeju.png",
-    "amount": 88000,
-    "isRepresentative": false,
-    "cardTransactions": []
   }
 ]

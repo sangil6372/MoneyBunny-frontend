@@ -1,6 +1,7 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
+import api from '@/api'; // api 인스턴스 import 추가
 
 import PolicyHeader from './PolicyHeader.vue';
 import PolicyTab from './PolicyTabs.vue';
@@ -63,8 +64,32 @@ const selectedTab = ref('정책 개요');
 const policyId = computed(() =>
   Number(route.params.policyId || route.params.id)
 );
+
+// API에서 받아온 정책 데이터 저장
+const policyData = ref(null);
+
+// 정책 상세 API 호출
+async function fetchPolicyDetail(id) {
+  try {
+    const res = await api.get(`/api/policy/detail/${id}`);
+    policyData.value = res.data;
+  } catch (e) {
+    policyData.value = null;
+  }
+}
+
+// policyId가 바뀔 때마다 API 호출
+watchEffect(() => {
+  if (policyId.value) {
+    fetchPolicyDetail(policyId.value);
+  }
+});
+
+// 기존 ALL_POLICIES에서 찾는 로직은 유지 (예시 데이터)
 const policy = computed(() =>
-  ALL_POLICIES.find((p) => p.policyId === policyId.value)
+  policyData.value
+    ? policyData.value
+    : ALL_POLICIES.find((p) => p.policyId === policyId.value)
 );
 // 기간 문자열 추출 (endDate 필드)
 const period = computed(() => policy.value?.endDate || '');
@@ -72,7 +97,11 @@ const period = computed(() => policy.value?.endDate || '');
 
 <template>
   <div class="policyDetailPage" v-if="policy">
-    <PolicyHeader :policy="policy" />
+    <PolicyHeader
+      :title="policy.title"
+      :description="policy.policyBenefitDescription"
+      :policy="policy"
+    />
 
     <div class="contentBox">
       <PolicyTab v-model:selectedTab="selectedTab" />

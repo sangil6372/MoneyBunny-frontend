@@ -3,64 +3,43 @@ import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
-// 🎵(유정) 이메일 인증 코드 전송 후 인증코드 입력 for 아이디 찾기 페이지
-// 이메일 전송 및 인증 관련 변수
+// 🎵 회원가입 - 이메일 인증코드 입력 페이지
 const route = useRoute();
 const email = ref(route.query.email || '');
 
 const router = useRouter();
 const code = ref('');
 const errorMsg = ref('');
-
-// ✅ 토스트 관련 추가
 const showToast = ref(false);
 
-// 타이머 관련 변수
 const time = 180; // 180초 == 3분
-const timeLeft = ref(time); // 남은 시간
+const timeLeft = ref(time);
 let timerInterval = null;
-
 const isExpired = computed(() => timeLeft.value === 0);
 
-// 인증 만료 메시지 clear
-const clearError = () => {
-  setTimeout(() => {
-    errorMsg.value = '';
-  }, 3000);
-};
-
-// 인증
-
-// 2단계: 인증코드 확인 및 아이디 조회
+// 인증코드 검증 (회원가입용)
 const verify = async () => {
-  // 인증 시간 관련
   if (isExpired.value) {
     errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
-    // clearError();
     return;
   }
-
-  // 이메일 & 인증코드 입력 관련
   if (!email.value || !code.value) {
     errorMsg.value = '이메일과 인증코드를 모두 입력해주세요.';
     return;
   }
-
-  // 인증 처리
   try {
-    await axios.post('/api/auth/verify', {
+    // 실제 API에 맞게 endpoint 수정!
+    await axios.post('/api/auth/verify-signup-code', {
       email: email.value,
       code: code.value,
     });
-
-    // 인증 성공 → 토스트 띄우고 이동
+    // 성공 토스트 → 다음 단계로 이동 (회원가입 폼 등)
     showToast.value = true;
-    setTimeout(async () => {
+    setTimeout(() => {
       showToast.value = false;
-      const res = await axios.post('/api/auth/find-id', { email: email.value });
-      const loginId = res.data;
-      router.push({ name: 'findIdResult', query: { loginId } });
-    }, 1000); // 1초 후 이동
+      // 회원가입 입력폼(예: SignUpProfilePage)으로 이동
+      router.push({ name: 'signUpProfile', query: { email: email.value } });
+    }, 1000);
   } catch (err) {
     errorMsg.value =
       '인증 실패: ' + (err.response?.data?.message || '코드를 확인해주세요');
@@ -68,8 +47,6 @@ const verify = async () => {
 };
 
 // 타이머
-
-// 타이머 시작 함수
 const startTimer = () => {
   timerInterval = setInterval(() => {
     if (timeLeft.value > 0) {
@@ -80,18 +57,11 @@ const startTimer = () => {
     }
   }, 1000);
 };
-
-// 컴포넌트 마운트 시 타이머 시작
-onMounted(() => {
-  startTimer();
-});
-
-// 컴포넌트 언마운트 시 타이머 제거
+onMounted(startTimer);
 onBeforeUnmount(() => {
   if (timerInterval) clearInterval(timerInterval);
 });
 
-// mm:ss 형식으로 포맷
 const formattedTime = computed(() => {
   const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
   const seconds = String(timeLeft.value % 60).padStart(2, '0');
@@ -108,28 +78,27 @@ const formattedTime = computed(() => {
         class="bunnyImage"
       />
       <transition name="fade">
-        <div v-if="showToast" class="toastMsg">인증 성공!</div>
+        <div v-if="showToast" class="toastMsg">
+          이메일 인증이 완료되었습니다!
+        </div>
       </transition>
       <div class="card">
         <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">인증코드를 입력해주세요</p>
-
-        <!-- 에러 메시지 표시 -->
+        <p class="subtitle font-14">이메일로 전송된 인증코드를 입력해주세요</p>
         <div v-if="errorMsg" class="errorMessage font-13">
           {{ errorMsg }}
         </div>
-
         <div class="formGroup">
           <label class="font-14 font-bold" for="email">이메일</label>
           <input
             id="email"
             type="email"
-            placeholder="이메일을 입력하세요"
             class="input"
             v-model="email"
+            readonly
+            style="background: #f7f7fb"
           />
         </div>
-
         <div class="formGroup">
           <label class="font-14 font-bold" for="code">인증코드</label>
           <div class="inputRow">
@@ -139,6 +108,7 @@ const formattedTime = computed(() => {
               placeholder="인증코드를 입력하세요"
               class="input"
               v-model="code"
+              :disabled="isExpired"
               style="flex: 1"
             />
             <span
@@ -154,7 +124,6 @@ const formattedTime = computed(() => {
             </span>
           </div>
         </div>
-
         <button
           class="submitButton font-15"
           @click="verify"
@@ -163,15 +132,8 @@ const formattedTime = computed(() => {
         >
           {{ isExpired ? '인증 만료' : '인증하기' }}
         </button>
-
-        <div class="loginLink font-12">
-          <a href="/findPassword">비밀번호 찾기</a>
-          <span>|</span>
-          <a href="/">로그인</a>
-        </div>
-
         <div class="signupLink font-12">
-          계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
+          이미 계정이 있으신가요? <a href="/login">로그인</a>
         </div>
       </div>
     </div>
@@ -188,7 +150,6 @@ const formattedTime = computed(() => {
   align-items: center;
   justify-content: center;
 }
-
 .cardBox {
   position: relative;
   display: flex;
@@ -197,14 +158,12 @@ const formattedTime = computed(() => {
   width: 100%;
   max-width: 360px;
 }
-
 .bunnyImage {
   width: 90px;
   height: 90px;
   margin-bottom: -30px;
   z-index: 2;
 }
-
 .card {
   width: 100%;
   max-width: 360px;
@@ -217,23 +176,19 @@ const formattedTime = computed(() => {
   box-sizing: border-box;
   border: none;
 }
-
 .title {
   text-align: center;
   color: var(--text-login);
   margin-bottom: 8px;
 }
-
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
   margin-bottom: 18px;
 }
-
 .formGroup {
   margin-bottom: 14px;
 }
-
 .input {
   margin-top: 7px;
   width: 100%;
@@ -247,7 +202,6 @@ const formattedTime = computed(() => {
 input:focus {
   border: 1.5px solid var(--input-outline-2);
 }
-
 .inputRow {
   width: 100%;
   display: flex;
@@ -256,7 +210,6 @@ input:focus {
 .inputRow .input {
   flex: 1;
 }
-
 .timer {
   margin-left: 5px;
   color: var(--base-blue-dark);
@@ -264,7 +217,6 @@ input:focus {
   text-align: center;
   letter-spacing: 1px;
 }
-
 .submitButton {
   width: 100%;
   background-color: var(--base-blue-dark);
@@ -279,32 +231,27 @@ input:focus {
   background-color: var(--input-disabled-2);
   cursor: not-allowed;
 }
-
 .loginLink {
   margin-top: 16px;
   text-align: center;
   color: var(--text-bluegray);
 }
-
 .loginLink a {
   margin: 0 6px;
   color: var(--text-bluegray);
   text-decoration: none;
 }
-
 .signupLink {
   text-align: center;
   margin-top: 12px;
   color: var(--text-lightgray);
 }
-
 .signupLink a {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
   font-size: 13px;
 }
-
 .errorMessage {
   background-color: var(--alert-light-3);
   color: var(--alert-red);
@@ -314,7 +261,6 @@ input:focus {
   text-align: center;
   border: 1px solid var(--alert-light-2);
 }
-
 .toastMsg {
   position: absolute;
   top: -54px;

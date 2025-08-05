@@ -1,8 +1,9 @@
 <!-- src/components/policy/detail/PolicyOverviewTab.vue -->
 <script setup>
 const props = defineProps({
-  policy: Object,
-  period: String, // "20250220 ~ 20251015" 형태
+  description: String,
+  supportContent: String,
+  applyPeriod: String, // "20250220 ~ 20251015" 형태 또는 undefined
 });
 
 const formatPeriod = (periodStr) => {
@@ -14,21 +15,28 @@ const formatPeriod = (periodStr) => {
   const e = `${end.slice(0, 4)}.${end.slice(4, 6)}.${end.slice(6, 8)}`;
   return `${s} ~ ${e}`;
 };
+
+// 줄바꿈 분리 함수
+const splitLines = (str) =>
+  str ? str.split('\n').filter((s) => s.trim() !== '') : [];
 </script>
 
 <template>
   <div class="tabContent">
     <div class="font-bold font-18 mb-2">정책 설명</div>
-    <p class="font-14 text-bluegray mb-4">{{ policy.objective }}</p>
+    <div class="font-14 text-bluegray mb-4">
+      <template v-for="(line, idx) in splitLines(description)" :key="idx">
+        <span>{{ line }}</span
+        ><br v-if="idx !== splitLines(description).length - 1" />
+      </template>
+    </div>
 
     <div class="font-bold font-18 mb-2">지원 내용</div>
-    <div
-      class="supportBox"
-      v-for="(item, index) in policy.supportDetails"
-      :key="index"
-    >
-      <div class="supportTitle font-bold font-14 mb-1">{{ item.title }}</div>
-      <p class="font-13 text-bluegray">{{ item.desc }}</p>
+    <div class="supportBox">
+      <template v-for="(line, idx) in splitLines(supportContent)" :key="idx">
+        <span class="font-13 text-bluegray">{{ line }}</span
+        ><br v-if="idx !== splitLines(supportContent).length - 1" />
+      </template>
     </div>
 
     <div class="font-18 font-bold mb-2 mt-4">신청 기간</div>
@@ -40,9 +48,9 @@ const formatPeriod = (periodStr) => {
       />
       <div class="periodContent">
         <div class="periodText font-14 font-bold">
-          {{ formatPeriod(period) }}
+          {{ formatPeriod(applyPeriod) }}
         </div>
-        <span class="periodSub font-12">
+        <span v-if="!applyPeriod" class="periodSub font-12">
           연중 상시 접수 (예산 소진 시 조기 마감)
         </span>
       </div>

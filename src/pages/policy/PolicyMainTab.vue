@@ -30,10 +30,15 @@
           </span>
           <div class="titleTagRow">
             <span class="cardTitle font-bold font-15">{{ policy.title }}</span>
-            <!-- largeCategory(태그)가 있을 때만 표시 -->
-            <span v-if="policy.largeCategory" class="cardTag font-12">{{
-              policy.largeCategory
-            }}</span>
+            <!-- 대분류 태그 중복 제거 후 표시 -->
+            <template v-if="getUniqueLargeCategories(policy).length">
+              <span
+                v-for="tag in getUniqueLargeCategories(policy)"
+                :key="tag"
+                class="cardTag font-12"
+                >{{ tag }}</span
+              >
+            </template>
           </div>
         </div>
         <p class="cardDesc font-14">{{ policy.policyBenefitDescription }}</p>
@@ -155,6 +160,28 @@ const loadMore = () => {
     ALL_POLICIES.value.length
   );
 };
+
+// 대분류 중복 제거 함수
+function getUniqueLargeCategories(policy) {
+  // largeCategory가 배열이든, 문자열이든, 중복 없이 문자열 배열로 반환
+  if (!policy.largeCategory) return [];
+  if (Array.isArray(policy.largeCategory)) {
+    // 배열 내 중복/공백 제거
+    return Array.from(
+      new Set(policy.largeCategory.filter((v) => !!v && v !== ''))
+    );
+  }
+  // 문자열(콤마로 구분된 경우 포함) 처리
+  if (typeof policy.largeCategory === 'string') {
+    // 콤마로 구분된 문자열이면 분리
+    const arr = policy.largeCategory
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean);
+    return Array.from(new Set(arr));
+  }
+  return [];
+}
 </script>
 
 <style scoped>

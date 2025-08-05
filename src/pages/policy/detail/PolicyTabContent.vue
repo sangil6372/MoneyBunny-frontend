@@ -5,13 +5,19 @@ const props = defineProps({
   tab: String,
   policy: Object,
 });
+
+// 정책 개요 탭에 필요한 값 추출
+const description = props.policy?.description || '';
+const supportContent = props.policy?.supportContent || '';
+const applyPeriod = props.policy?.applyPeriod || '';
 </script>
 
 <template>
   <PolicyOverviewTab
     v-if="tab === '정책 개요'"
-    :policy="policy"
-    :period="period"
+    :description="description"
+    :supportContent="supportContent"
+    :applyPeriod="applyPeriod"
   />
 
   <div v-else-if="tab === '신청 조건'">
