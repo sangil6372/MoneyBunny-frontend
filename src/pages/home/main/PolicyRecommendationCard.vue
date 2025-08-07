@@ -25,41 +25,49 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { ref, onMounted } from 'vue';
+import { policyAPI } from '@/api/policy';
 import PolicyCardItem from './PolicyCardItem.vue';
-import NoPolicyCard from './NoPolicyCard.vue'; // 정책이 없을 떼
+import NoPolicyCard from './NoPolicyCard.vue';
 
 const router = useRouter();
 
 const goToPolicy = () => {
-  router.push('/policy'); //정책 탭으로 이동
+  router.push('/policy');
 };
 
 const goToQuiz = () => {
-  router.push('/policy/taps/PolicyMainTab'); // 예: 유형 검사 시작
+  router.push('/policy/taps/PolicyMainTab');
 };
 
-//정책 있는 경우
-const policyList = [
-  {
-    title: '청년도약계좌',
-    description: '연 5% 이자 + 정부지원금',
-    amount: 1200000,
-  },
-  {
-    title: '청년희망적금',
-    description: '연 4.5% 이자 + 세제혜택',
-    amount: 980000,
-  },
-  {
-    title: '주택청약종합저축',
-    description: '연 3.5% 이자 + 청약가점',
-    amount: 750000,
-  },
-];
+const policyList = ref([]);
+const top3TotalAmount = ref(0);
 
-/*정책 없는 경우
-const policyList = [];
-*/
+onMounted(async () => {
+  try {
+    const res = await policyAPI.getUserPolicySearch();
+    const top3 = (res.data || []).slice(0, 3).map((item) => ({
+      title: item.title,
+      description: item.policyBenefitDescription,
+      amount: item.policyBenefitAmount,
+    }));
+    policyList.value = top3;
+    // 혜택금액 총합 저장
+    top3TotalAmount.value = top3.reduce(
+      (sum, item) => sum + (typeof item.amount === 'number' ? item.amount : 0),
+      0
+    );
+    // 필요하다면 console.log(top3TotalAmount.value);
+  } catch (e) {
+    policyList.value = [];
+    top3TotalAmount.value = 0;
+  }
+});
+
+// expose top3TotalAmount to parent
+defineExpose({
+  top3TotalAmount,
+});
 </script>
 
 <style scoped>

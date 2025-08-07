@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue';
 import PolicyOverviewTab from './PolicyOverviewTab.vue';
 
 const props = defineProps({
@@ -6,10 +7,16 @@ const props = defineProps({
   policy: Object,
 });
 
-// 정책 개요 탭에 필요한 값 추출
-const description = props.policy?.description || '';
-const supportContent = props.policy?.supportContent || '';
-const applyPeriod = props.policy?.applyPeriod || '';
+// 정책 개요 탭에 필요한 값 추출 (computed로 변경)
+const description = computed(() => props.policy?.description || '');
+const supportContent = computed(() => props.policy?.supportContent || '');
+const applyPeriod = computed(() => props.policy?.applyPeriod || '');
+
+// supportContent 값 로그 출력
+console.log(
+  'PolicyTabContent에서 넘기는 supportContent:',
+  supportContent.value
+);
 </script>
 
 <template>

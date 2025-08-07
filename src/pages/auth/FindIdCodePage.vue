@@ -1,3 +1,4 @@
+5
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
@@ -111,16 +112,16 @@ const formattedTime = computed(() => {
         <div v-if="showToast" class="toastMsg">인증 성공!</div>
       </transition>
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">인증코드를 입력해주세요</p>
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-13">인증코드를 입력해주세요</p>
 
         <!-- 에러 메시지 표시 -->
-        <div v-if="errorMsg" class="errorMessage font-13">
+        <div v-if="errorMsg" class="errorMessage font-12">
           {{ errorMsg }}
         </div>
 
         <div class="formGroup">
-          <label class="font-14 font-bold" for="email">이메일</label>
+          <label class="font-13 font-bold" for="email">이메일</label>
           <input
             id="email"
             type="email"
@@ -131,7 +132,7 @@ const formattedTime = computed(() => {
         </div>
 
         <div class="formGroup">
-          <label class="font-14 font-bold" for="code">인증코드</label>
+          <label class="font-13 font-bold" for="code">인증코드</label>
           <div class="inputRow">
             <input
               id="code"
@@ -142,7 +143,7 @@ const formattedTime = computed(() => {
               style="flex: 1"
             />
             <span
-              class="timer font-12"
+              class="timer font-10"
               :style="{
                 color:
                   timeLeft < 30
@@ -156,7 +157,7 @@ const formattedTime = computed(() => {
         </div>
 
         <button
-          class="submitButton font-15"
+          class="submitButton font-14"
           @click="verify"
           :disabled="isExpired"
           :class="{ expired: isExpired }"
@@ -164,13 +165,13 @@ const formattedTime = computed(() => {
           {{ isExpired ? '인증 만료' : '인증하기' }}
         </button>
 
-        <div class="loginLink font-12">
+        <div class="loginLink font-11">
           <a href="/findPassword">비밀번호 찾기</a>
           <span>|</span>
           <a href="/">로그인</a>
         </div>
 
-        <div class="signupLink font-12">
+        <div class="signupLink font-11">
           계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
         </div>
       </div>
@@ -195,7 +196,7 @@ const formattedTime = computed(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
 }
 
 .bunnyImage {
@@ -207,10 +208,10 @@ const formattedTime = computed(() => {
 
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background-color: white;
-  padding: 32px 24px;
+  padding: 28px 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -227,7 +228,7 @@ const formattedTime = computed(() => {
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 
 .formGroup {
@@ -237,11 +238,11 @@ const formattedTime = computed(() => {
 .input {
   margin-top: 7px;
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
 }
 input:focus {
@@ -269,8 +270,8 @@ input:focus {
   width: 100%;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
   margin-top: 12px;
   cursor: pointer;
@@ -302,7 +303,7 @@ input:focus {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .errorMessage {
@@ -325,7 +326,7 @@ input:focus {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 300px;
   max-width: 400px;
   pointer-events: none;

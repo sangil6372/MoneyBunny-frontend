@@ -32,7 +32,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         // target: "http://localhost:8080", // 개발 중
-        target: "http://13.124.226.44", // 백엔드 API 주소: 'http://13.124.226.44'
+        target: 'http://13.124.226.44', // 백엔드 API 주소: 'http://13.124.226.44'
         changeOrigin: true,
       },
     },

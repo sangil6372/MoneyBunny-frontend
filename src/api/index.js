@@ -1,10 +1,10 @@
-import axios from "axios";
-import { useAuthStore } from "@/stores/auth";
-import router from "@/router";
+import axios from 'axios';
+import { useAuthStore } from '@/stores/auth';
+import router from '@/router';
 
 // 기본 인스턴스(1초)
 const instance = axios.create({
-  timeout: 1000,
+  timeout: 5000,
 });
 
 // CODEF 전용 인스턴스 (2분)
@@ -22,12 +22,12 @@ function applyAuthInterceptors(inst) {
       const token = getToken();
       if (token) {
         if (isTokenExpired()) {
-          console.warn("JWT 토큰이 만료되었습니다. 자동 로그아웃 처리");
+          console.warn('JWT 토큰이 만료되었습니다. 자동 로그아웃 처리');
           logout();
-          router.push("/?error=token_expired");
-          return Promise.reject({ error: "토큰이 만료되었습니다." });
+          router.push('/?error=token_expired');
+          return Promise.reject({ error: '토큰이 만료되었습니다.' });
         }
-        config.headers["Authorization"] = `Bearer ${token}`;
+        config.headers['Authorization'] = `Bearer ${token}`;
       }
       return config;
     },
@@ -39,15 +39,15 @@ function applyAuthInterceptors(inst) {
     (response) => {
       if (response.status === 200) return response;
       if (response.status === 404)
-        return Promise.reject("404: 페이지 없음 " + response.request);
+        return Promise.reject('404: 페이지 없음 ' + response.request);
       return response;
     },
     (error) => {
       if (error.response?.status === 401) {
         const { logout } = useAuthStore();
         logout();
-        router.push("/?error=login_required");
-        return Promise.reject({ error: "로그인이 필요한 서비스입니다." });
+        router.push('/?error=login_required');
+        return Promise.reject({ error: '로그인이 필요한 서비스입니다.' });
       }
       return Promise.reject(error);
     }

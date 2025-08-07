@@ -1,46 +1,49 @@
 <!-- src/pages/asset/tabs/AssetSpendingTab.vue -->
 <template>
   <div class="asset-spending-tab">
-    <!-- 일반 지출 탭 화면 -->
     <!-- 상단 지출 요약 카드 -->
     <SummaryCard
       title="이번 달 총 지출액"
-      :main-amount="totalSpending"
-      right-label="지난달 대비"
-      :right-value="comparisonText"
-      right-unit=""
-      variant="spending"
+      :mainAmount="totalSpending"
+      :rightLabel="'지난달 대비'"
+      :rightValue="comparisonText"
+      :rightUnit="''"
     />
 
     <!-- 월별 네비게이션 -->
     <CalendarSection
-      :selected-date="currentDate"
+      :selectedDate="currentDate"
       @update:selectedDate="updateSelectedDate"
+      @monthChange="handleMonthChange"
     />
 
     <!-- 도넛 차트 -->
     <CategoryDonutChart
-      :total-spending="totalSpending"
-      :chart-data="chartData"
-      @category-click="handleCategoryClick"
+      :totalSpending="totalSpending"
+      :chartData="chartData"
+      @categoryClick="handleCategoryClick"
     />
 
     <!-- 카테고리 리스트 -->
     <CategoryList
       :categories="categoryList"
-      :show-all="showAllCategories"
-      @toggle-show-all="toggleShowAll"
-      @category-click="handleCategoryDetailClick"
+      :showAll="showAllCategories"
+      @toggleShowAll="toggleShowAll"
+      @categoryClick="handleCategoryDetailClick"
     />
 
     <!-- 월별 지출 추이 차트 -->
-    <CategoryChart :spending-data="monthlyTrendChartData" />
+    <CategoryChart
+      :monthlyTrendData="monthlyTrendData"
+      :selectedMonth="selectedMonth"
+    />
 
     <!-- 카테고리 상세보기 모달 -->
     <DetailModal :visible="showCategoryDetail" @close="closeCategoryDetail">
       <CategoryDetailView
         v-if="selectedCategoryData"
-        :category-data="selectedCategoryData"
+        :categoryData="selectedCategoryData"
+        :selectedDate="currentDate"
         @back="closeCategoryDetail"
       />
     </DetailModal>
@@ -66,15 +69,15 @@ const {
   categoryList,
   chartData,
   monthlyTrendData,
-  previousMonth,
-  nextMonth,
-  getCategoryDetail,
 } = useSpendingData();
 
 // 로컬 상태
 const showAllCategories = ref(false);
 const showCategoryDetail = ref(false);
 const selectedCategoryData = ref(null);
+
+// 현재 선택된 월 상태 (초기값: 현재 월)
+const selectedMonth = ref(currentDate.value.getMonth() + 1);
 
 // 전월 대비 텍스트 계산
 const comparisonText = computed(() => {
@@ -85,46 +88,33 @@ const comparisonText = computed(() => {
   return `${sign}${difference.toLocaleString()}원(${sign}${percentage}%)`;
 });
 
-// 월별 추이 차트용 데이터 변환 (CategoryChart 컴포넌트에 맞게)
-const monthlyTrendChartData = computed(() => {
-  const { months, amounts } = monthlyTrendData.value;
+// CalendarSection에서 월 변경 시 처리
+const handleMonthChange = (month) => {
+  selectedMonth.value = month;
+};
 
-  return months.map((month, index) => ({
-    date: month.replace('월', '.1'), // "8월" -> "8.1" 형식으로 변환
-    price: amounts[index],
-    category: '지출',
-    memo: '월별 지출',
-  }));
-});
-
-// 월별 네비게이션 업데이트 핸들러
+// CalendarSection에서 날짜 업데이트 시 처리
 const updateSelectedDate = (newDate) => {
-  // useSpendingData의 currentDate 직접 업데이트
   currentDate.value = newDate;
+  selectedMonth.value = newDate.getMonth() + 1;
 };
 
-// 더보기/접기 토글
+// 더보기 토글 (한번 누르면 모든 카테고리 표시, 접기 없음)
 const toggleShowAll = () => {
-  showAllCategories.value = !showAllCategories.value;
+  showAllCategories.value = true;
 };
 
-// 도넛 차트 카테고리 클릭 핸들러
+// 카테고리 클릭 핸들러 (도넛 차트용)
 const handleCategoryClick = (categoryIndex) => {
   const category = categoryList.value[categoryIndex];
   if (category) {
-    console.log('도넛 차트 카테고리 클릭:', category.name);
-    openCategoryDetail(category);
+    selectedCategoryData.value = category;
+    showCategoryDetail.value = true;
   }
 };
 
-// 카테고리 리스트 아이템 클릭 핸들러
+// 리스트에서 카테고리 클릭
 const handleCategoryDetailClick = (category) => {
-  console.log('카테고리 상세 클릭:', category.name);
-  openCategoryDetail(category);
-};
-
-// 카테고리 상세보기 열기
-const openCategoryDetail = (category) => {
   selectedCategoryData.value = category;
   showCategoryDetail.value = true;
 };

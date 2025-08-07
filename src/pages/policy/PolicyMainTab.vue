@@ -97,7 +97,7 @@ import { useRouter } from 'vue-router';
 import BottomNav from '@/components/layouts/NavBar.vue';
 import PolicyApplyModal from './component/PolicyApplyModal.vue';
 import { usePolicyMatchingStore } from '@/stores/policyMatchingStore';
-import api from '@/api';
+import { policyAPI } from '@/api/policy';
 
 const router = useRouter();
 const policyMatchingStore = usePolicyMatchingStore();
@@ -137,10 +137,12 @@ onMounted(async () => {
     ALL_POLICIES.value = policyMatchingStore.recommendedPolicies;
   } else {
     try {
-      const res = await api.get('/api/userPolicy/search');
+      console.log('search API 요청:', '/api/userPolicy/search');
+      const res = await policyAPI.getUserPolicySearch(); // GET 방식으로 변경
       policyMatchingStore.setRecommendedPolicies(res.data);
       ALL_POLICIES.value = res.data;
     } catch (e) {
+      console.error('search API error:', e);
       ALL_POLICIES.value = [];
     }
   }

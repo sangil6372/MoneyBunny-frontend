@@ -33,40 +33,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import axios from 'axios';
+import { computed } from 'vue';
 
-// 자산 관련 상태 선언
-const currentAsset = ref(null);
-const expectedAsset = ref(null);
-const increaseAmount = ref(null);
-const increaseRate = ref(null);
+// props로 총 자산과 정책 혜택 총합 전달받음
+const props = defineProps({
+  totalAsset: {
+    type: Number,
+    required: true,
+  },
+  top3TotalAmount: {
+    type: Number,
+    required: true,
+  },
+});
 
-//컴포넌트 마운트 시 화면
-// onMounted(async () => {
-// try {
-//백엔드 서버에서 계좌 정보 가져오기
-// const res = await axios.get('http://localhost:3000/accounts?userId=1');
-// const accounts = res.data;
-// const total = accounts.reduce((sum, acc) => sum + acc.balance, 0);
+// 현재 자산: 총 자산
+const currentAsset = computed(() => props.totalAsset ?? 0);
+// 예상 자산: 총 자산 + 정책 혜택 총합
+const expectedAsset = computed(
+  () => (props.totalAsset ?? 0) + (props.top3TotalAmount ?? 0)
+);
+// 증가 금액
+const increaseAmount = computed(() => expectedAsset.value - currentAsset.value);
+// 증가율
+const increaseRate = computed(() =>
+  currentAsset.value > 0
+    ? ((increaseAmount.value / currentAsset.value) * 100).toFixed(1)
+    : '0.0'
+);
 
-//   //계좌 잔액 총합
-//   currentAsset.value = total;
-//   //변경 예정: 정책 적용 시 자산 증가
-//   expectedAsset.value = Math.round(total * 1.1);
-
-//   //증가 금액과 증가율 계산
-//   increaseAmount.value = expectedAsset.value - total;
-//   increaseRate.value = ((increaseAmount.value / total) * 100).toFixed(1);
-// } catch (e) {
-//   //오류 발생시
-//   console.error('자산 불러오기 실패', e);
-// }
-// });
-
-// fallback display용
+// 표시용 포맷 함수
 const format = (val, suffix = '원') =>
-  val ? val.toLocaleString() + suffix : '9,999' + suffix;
+  val != null ? val.toLocaleString() + suffix : '-';
 
 const currentAssetDisplay = computed(() => format(currentAsset.value));
 const expectedAssetDisplay = computed(() => format(expectedAsset.value));
@@ -74,7 +72,7 @@ const increaseAmountDisplay = computed(
   () => '+' + format(increaseAmount.value)
 );
 const increaseRateDisplay = computed(() =>
-  increaseRate.value ? `${increaseRate.value}%` : '9.9%'
+  increaseRate.value ? `${increaseRate.value}%` : '-'
 );
 </script>
 

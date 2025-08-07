@@ -2,14 +2,24 @@
 import { ref, computed } from 'vue';
 import cardsData from '@/assets/data/cards.json';
 
-// 카테고리별 색상 매핑 (추후 변경 예정)
+// 카테고리별 색상 매핑 (실제 색상값 사용)
 const CATEGORY_COLORS = {
-  식비: '#304663', // 어두운 색 (base-blue-dark)
-  교통비: '#a3c6df', // 파란색 (sub-skyblue)
-  쇼핑: '#a5d6d3', // 초록색 (sub-mint)
-  '취미/여가': '#a1a6c6', // 라벤더 (base-lavender)
-  생활: '#cbd1e8', // 연한 파랑 (base-blue-light)
-  기타: '#ffe6eb', // 핑크 (base-pink)
+  '교통/자동차': '#bcdffb', // 파스텔 블루
+  생활: '#dfe4ea', // 연한 그레이톤
+  '레저와 여가생활': '#ffd6a5', // 파스텔 오렌지
+  마트: '#fff3b0', // 파스텔 옐로우
+  편의점: '#c7f9cc', // 민트톤
+  쇼핑: '#f7d6e0', // 파스텔 핑크
+  '온라인 쇼핑': '#d6d6d6', // 연한 그레이
+  '커피와 디저트': '#e4c9b0', // 연한 브라운
+  뷰티: '#f8c8dc', // 파스텔 로즈
+  식비: '#b8e0d2', // 연한 민트 그린
+  '보험과 금융': '#c3cde6', // 파스텔 블루-그레이
+  '건강과 의료': '#cde7f0', // 파스텔 아쿠아
+  교육: '#e6d7f5', // 파스텔 라벤더
+  여행: '#ffe5b4', // 파스텔 베이지 오렌지
+  주류: '#f2b6b6', // 파스텔 레드-핑크
+  '카테고리 미지정': '#d1d5db', // 연한 회색
 };
 
 export function useSpendingData() {
@@ -71,7 +81,8 @@ export function useSpendingData() {
           name: category,
           amount: 0,
           transactions: [],
-          color: CATEGORY_COLORS[category] || CATEGORY_COLORS['기타'],
+          color:
+            CATEGORY_COLORS[category] || CATEGORY_COLORS['카테고리 미지정'],
         };
       }
 

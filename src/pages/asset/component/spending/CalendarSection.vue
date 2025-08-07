@@ -27,13 +27,13 @@ import { ref, watch, onMounted } from 'vue';
 const props = defineProps({
   selectedDate: {
     type: Date,
-    default: () => new Date(), // 현재 날짜로 자동 설정
+    default: () => new Date(),
   },
 });
 
-const emit = defineEmits(['update:selectedDate']);
+const emit = defineEmits(['update:selectedDate', 'monthChange']);
 
-const currentDate = ref(new Date()); // 현재 날짜로 자동 초기화
+const currentDate = ref(new Date());
 
 // 부모에서 받은 selectedDate 변화 감지
 watch(
@@ -43,29 +43,32 @@ watch(
   }
 );
 
+// 날짜 포맷팅 (통합된 유틸리티 함수)
 const formatDate = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   return `${month}월 ${year}년`;
 };
 
-const previousMonth = () => {
+// 월 이동 로직 (중복 제거된 통합 함수)
+const changeMonth = (monthOffset) => {
   const newDate = new Date(currentDate.value);
-  newDate.setMonth(newDate.getMonth() - 1);
+  newDate.setMonth(newDate.getMonth() + monthOffset);
   currentDate.value = newDate;
   emit('update:selectedDate', newDate);
+  emit('monthChange', newDate.getMonth() + 1);
 };
 
-const nextMonth = () => {
-  const newDate = new Date(currentDate.value);
-  newDate.setMonth(newDate.getMonth() + 1);
-  currentDate.value = newDate;
-  emit('update:selectedDate', newDate);
-};
+// 이전 달 이동
+const previousMonth = () => changeMonth(-1);
+
+// 다음 달 이동
+const nextMonth = () => changeMonth(1);
 
 // 컴포넌트 마운트시 부모에게 초기 날짜 전달
 onMounted(() => {
   emit('update:selectedDate', currentDate.value);
+  emit('monthChange', currentDate.value.getMonth() + 1);
 });
 </script>
 
@@ -73,8 +76,7 @@ onMounted(() => {
 .calendar-section {
   background: white;
   border-radius: 0.75rem;
-  padding: 1rem 1.5rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+  padding: 0.75rem 1rem;
 }
 
 .calendar-header {
@@ -86,12 +88,12 @@ onMounted(() => {
 .calendar-nav-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--base-blue-dark);
-  padding: 0.5rem;
-  border-radius: 0.375rem;
-  width: 2.5rem;
-  height: 2.5rem;
+  padding: 0.375rem;
+  border-radius: 0.25rem;
+  width: 2rem;
+  height: 2rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -103,11 +105,11 @@ onMounted(() => {
 
 .calendar-nav-btn:active {
   background-color: var(--input-bg-1);
-  transform: scale(0.95);
+  transform: scale(0.9);
 }
 
 .calendar-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--text-login);
   margin: 0;

@@ -42,7 +42,7 @@ function apply() {
   <div class="modalOverlay" @click.self="close">
     <div class="modalContainer">
       <header class="modalHeader">
-        <span class="modalTitle font-18 font-bold">우선 순위</span>
+        <span class="modalTitle font-17 font-bold">우선 순위</span>
         <button class="iconBtn right" @click="close">
           <img src="@/assets/images/icons/common/x.png" alt="닫기" />
         </button>
@@ -80,22 +80,18 @@ function apply() {
 <style scoped>
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.16);
-  z-index: 10001;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .modalContainer {
   background: #fff;
-  border-radius: 16px;
-  width: 92vw;
-  max-width: 420px;
-  min-width: 320px;
+  border-radius: 12px;
+  width: 340px;
   box-sizing: border-box;
   padding: 0 0 20px 0;
   display: flex;
@@ -130,8 +126,8 @@ function apply() {
   justify-content: space-between;
   background: var(--input-bg-2);
   border-radius: 8px;
-  padding: 10px 25px;
-  font-size: 16px;
+  padding: 8px 20px;
+  font-size: 15px;
   color: var(--text-login);
   cursor: pointer;
   border: none;
@@ -139,16 +135,16 @@ function apply() {
 
 .priorityBadge {
   display: inline-block;
-  background: var(--base-blue-dark);
-  color: #fff;
+  background: var(--priority-bg);
+  color: var(--base-blue-dark);
   border-radius: 10px;
-  font-size: 15px;
-  min-width: 60px;
+  font-size: 14px;
+  min-width: 55px;
   text-align: center;
-  padding: 8px 0;
+  padding: 6px 0;
   margin-left: 16px;
-  height: 33px;
-  line-height: 16px;
+  height: 30px;
+  line-height: 18px;
   vertical-align: middle;
 }
 
@@ -164,28 +160,28 @@ function apply() {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 18px 0 18px;
-  gap: 10px;
+  padding: 15px 18px 0 18px;
+  gap: 8px;
 }
 .resetBtn {
   flex: 1;
-  padding: 13px 0;
-  border-radius: 10px;
-  background: #f8f8fa;
+  padding: 10px 0;
+  border-radius: 8px;
+  background: var(--input-bg-2);
   color: var(--text-login);
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
   margin-right: 6px;
 }
 .applyBtn {
   flex: 2;
-  padding: 13px 0;
-  border-radius: 10px;
+  padding: 10px 0;
+  border-radius: 8px;
   background: var(--base-blue-dark);
   color: #fff;
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
 }
 .applyBtn:disabled {
@@ -202,8 +198,8 @@ function apply() {
   align-items: center;
 }
 .iconBtn img {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: block;
 }
 .iconBtn.right {

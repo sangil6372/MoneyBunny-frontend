@@ -127,16 +127,16 @@ watch(errorMessage, () => {
         <div v-if="showToast" class="toastMsg">로그인 되었습니다!</div>
       </transition>
       <div class="loginCard">
-        <div class="loginTitle font-26 font-extrabold">MoneyBunny</div>
-        <p class="loginSubtitle font-14">아이디와 비밀번호를 입력해주세요</p>
+        <div class="loginTitle font-24 font-extrabold">MoneyBunny</div>
+        <p class="loginSubtitle font-13">아이디와 비밀번호를 입력해주세요</p>
 
         <!-- 💪(상일) 에러 메시지 표시 영역 추가 -->
-        <div v-if="errorMessage" class="errorMessage font-12">
+        <div v-if="errorMessage" class="errorMessage font-11">
           {{ errorMessage }}
         </div>
 
         <div class="formGroup">
-          <label for="id" class="font-14 font-bold">아이디</label>
+          <label for="id" class="font-13 font-bold">아이디</label>
           <input
             type="text"
             id="id"
@@ -148,7 +148,7 @@ watch(errorMessage, () => {
         </div>
 
         <div class="formGroup">
-          <label for="password" class="font-14 font-bold">비밀번호</label>
+          <label for="password" class="font-13 font-bold">비밀번호</label>
           <input
             type="password"
             id="password"
@@ -160,7 +160,7 @@ watch(errorMessage, () => {
         </div>
 
         <button
-          class="loginButton font-15"
+          class="loginButton font-14"
           @click="handleLogin"
           :disabled="isLoading"
         >
@@ -168,15 +168,15 @@ watch(errorMessage, () => {
           <span v-else>로그인</span>
         </button>
 
-        <div class="loginLink font-12">
+        <div class="loginLink font-11">
           <router-link to="/findId">아이디 찾기</router-link>
           <span>|</span>
           <router-link to="/findPassword">비밀번호 찾기</router-link>
         </div>
 
-        <div class="signupLink font-12">
+        <div class="signupLink font-11">
           계정이 없으신가요?
-          <router-link to="/signUpEmailVerify">회원가입</router-link>
+          <router-link to="/signUpEmailRequest">회원가입</router-link>
         </div>
       </div>
     </div>
@@ -202,7 +202,7 @@ watch(errorMessage, () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
 }
 .bunnyImage {
   width: 90px;
@@ -213,10 +213,10 @@ watch(errorMessage, () => {
 
 .loginCard {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background-color: white;
-  padding: 32px 24px;
+  padding: 28px 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -232,7 +232,7 @@ watch(errorMessage, () => {
 .loginSubtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
 .formGroup {
@@ -243,8 +243,8 @@ watch(errorMessage, () => {
 input {
   margin-top: 7px;
   margin-bottom: 13px;
-  font-size: 13px;
-  padding: 12px 16px;
+  font-size: 12px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
@@ -288,7 +288,7 @@ input:focus {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 /* 💪(상일) 에러 메시지 및 로딩 상태 스타일 추가 */
@@ -323,7 +323,7 @@ input:disabled {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 300px;
   max-width: 400px;
   pointer-events: none;

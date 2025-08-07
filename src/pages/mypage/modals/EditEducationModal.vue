@@ -35,7 +35,7 @@ const reset = () => (selected.value = '');
   <div class="modalOverlay" @click.self="close">
     <div class="modalContainer">
       <header class="modalHeader">
-        <span class="modalTitle font-18 font-bold">학력</span>
+        <span class="modalTitle font-17 font-bold">학력</span>
         <button class="iconBtn right" @click="close">
           <img src="@/assets/images/icons/common/x.png" alt="닫기" />
         </button>
@@ -62,22 +62,17 @@ const reset = () => (selected.value = '');
 <style scoped>
 .modalOverlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.16);
-  z-index: 10001;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .modalContainer {
   background: #fff;
-  border-radius: 16px;
-  width: 92vw;
-  max-width: 420px;
-  min-width: 320px;
+  border-radius: 12px;
+  width: 340px;
   box-sizing: border-box;
   padding: 0 0 20px 0;
   display: flex;
@@ -86,7 +81,7 @@ const reset = () => (selected.value = '');
 .modalHeader {
   display: flex;
   align-items: center;
-  padding: 24px 24px 18px 18px;
+  padding: 20px;
   border-bottom: 1px solid #eee;
   position: relative;
   justify-content: center;
@@ -100,15 +95,15 @@ const reset = () => (selected.value = '');
 }
 
 .optionList {
-  padding: 14px 18px 0 18px;
+  padding: 10px 18px 5px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 .optionBtn {
   width: 100%;
-  padding: 13px 0;
-  font-size: 15px;
+  padding: 12px 0;
+  font-size: 14px;
   background: #fff;
   border: 1.5px solid var(--input-bg-1);
   border-radius: 8px;
@@ -125,31 +120,32 @@ const reset = () => (selected.value = '');
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 18px 0 18px;
-  gap: 10px;
+  padding: 10px 18px 0 18px;
+  gap: 8px;
 }
 .resetBtn {
   flex: 1;
-  padding: 13px 0;
-  border-radius: 10px;
+  padding: 10px 0;
+  border-radius: 8px;
   background: var(--input-bg-2);
   color: var(--text-login);
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
   margin-right: 6px;
 }
 
 .applyBtn {
   flex: 2;
-  padding: 13px 0;
-  border-radius: 10px;
+  padding: 10px 0;
+  border-radius: 8px;
   background: var(--base-blue-dark);
   color: #fff;
   border: none;
-  font-size: 15px;
+  font-size: 14px;
   cursor: pointer;
 }
+
 .applyBtn:disabled {
   background: #bcc7e5;
   color: #fff;
@@ -165,8 +161,8 @@ const reset = () => (selected.value = '');
   align-items: center;
 }
 .iconBtn img {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: block;
 }
 .iconBtn.right {

@@ -31,11 +31,10 @@ defineProps({
   top: 0;
   left: 0;
   right: 0;
-
   width: 100%;
-  max-width: 474px;
+  max-width: 390px;
   margin: 0 auto;
-  height: 70px;
+  height: 65px;
   border-bottom: 1px solid var(--base-lavender);
   background: white;
   display: flex;

@@ -68,19 +68,19 @@ const handleClick = () => {
       />
 
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">이메일을 입력해주세요</p>
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-13">이메일을 입력해주세요</p>
         <div
           v-if="errorMsg"
           :class="[
-            'errorMessage font-13',
+            'errorMessage font-12',
             errorMsg === '인증코드가 발송되었습니다.' ? 'successMessage' : '',
           ]"
         >
           {{ errorMsg }}
         </div>
         <div class="formGroup">
-          <label for="email" class="font-14">이메일</label>
+          <label for="email" class="font-13">이메일</label>
           <input
             type="email"
             id="email"
@@ -89,18 +89,18 @@ const handleClick = () => {
           />
         </div>
         <button
-          class="submitButton font-15"
+          class="submitButton font-14"
           @click="sendIdCode"
           :disabled="isCodeSent"
         >
           인증코드 발송
         </button>
-        <div class="loginLink font-12">
+        <div class="loginLink font-11">
           <router-link to="/findPassword">비밀번호 찾기</router-link>
           <span>|</span>
           <router-link to="/">로그인</router-link>
         </div>
-        <div class="signupLink font-12">
+        <div class="signupLink font-11">
           계정이 없으신가요?
           <router-link to="/signUpEmailVerify">회원가입</router-link>
         </div>
@@ -123,7 +123,7 @@ const handleClick = () => {
 .cardBox {
   position: relative;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -136,15 +136,15 @@ const handleClick = () => {
 }
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
-  background: white;
+  max-width: 320px;
+  min-height: 420px;
+  background-color: white;
+  padding: 28px 20px;
   border-radius: 12px;
-  border: none;
-  padding: 32px 24px 32px 24px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  border: none;
 }
 
 .title {
@@ -155,7 +155,7 @@ const handleClick = () => {
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .formGroup {
   width: 100%;
@@ -165,13 +165,13 @@ const handleClick = () => {
 }
 input {
   margin-top: 7px;
-  font-size: 14px;
-  padding: 12px 16px;
+  font-size: 13px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
   outline: none;
-  width: 100%;
+  /* width: 100%; */
 }
 input:focus {
   border: 1.5px solid var(--input-outline-2);
@@ -180,16 +180,14 @@ input:focus {
   width: 100%;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 13px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  margin-bottom: 10px;
   cursor: pointer;
-  font-weight: bold;
   margin-top: 4px;
 }
 .loginLink {
-  margin-top: 10px;
+  margin-top: 12px;
   text-align: center;
   color: var(--text-bluegray);
 }
@@ -200,14 +198,14 @@ input:focus {
 }
 .signupLink {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 14px;
   color: var(--text-lightgray);
 }
 .signupLink a {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .errorMessage {
@@ -237,7 +235,7 @@ input:focus {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 300px;
   max-width: 400px;
   text-align: center;

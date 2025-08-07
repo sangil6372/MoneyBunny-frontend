@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, watchEffect } from 'vue';
 import { useRoute } from 'vue-router';
-import api from '@/api'; // api 인스턴스 import 추가
+import { policyAPI } from '@/api/policy'; // 변경: policyAPI import
 
 import PolicyHeader from './PolicyHeader.vue';
 import PolicyTab from './PolicyTabs.vue';
@@ -71,7 +71,7 @@ const policyData = ref(null);
 // 정책 상세 API 호출
 async function fetchPolicyDetail(id) {
   try {
-    const res = await api.get(`/api/policy/detail/${id}`);
+    const res = await policyAPI.getPolicyDetail(id); // 변경: policyAPI 사용
     policyData.value = res.data;
   } catch (e) {
     policyData.value = null;
@@ -91,6 +91,16 @@ const policy = computed(() =>
     ? policyData.value
     : ALL_POLICIES.find((p) => p.policyId === policyId.value)
 );
+
+// supportContent 값 로그 출력
+watchEffect(() => {
+  if (policy.value) {
+    console.log(
+      'PolicyDetailPage에서 넘기는 policy.supportContent:',
+      policy.value.supportContent
+    );
+  }
+});
 // 기간 문자열 추출 (endDate 필드)
 const period = computed(() => policy.value?.endDate || '');
 </script>

@@ -1,7 +1,15 @@
-import { ref, computed } from 'vue';
-import { defineStore } from 'pinia';
+import { ref, computed } from "vue";
+import { defineStore } from "pinia";
+import { FCMTokenManager } from '@/firebase/FCMTokenManager';
 
 import axios from 'axios'; // axios 임포트 // <- 추가
+
+// 💪(상일) 다른 Pinia 스토어들 import
+import { useBookmarkStore } from '@/stores/bookmark';
+import { useNotificationStore } from '@/stores/notification';
+import { useAssetStore } from '@/stores/asset';
+import { usePolicyQuizStore } from '@/stores/policyQuizStore';
+import { usePolicyMatchingStore } from '@/stores/policyMatchingStore';
 
 // 초기 상태 템플릿
 const initState = {
@@ -73,39 +81,80 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   // 로그아웃 액션
-  // 🎵(유정)
+  // 🎵(유정) + 💪(상일) FCM 토큰 정리 개선
   const logout = async () => {
     console.log('[Logout] 로그아웃 시작');
 
-    load(); // 상태 복원 시도
-    console.log('[Logout] 로컬 상태 복원 완료:', state.value);
-
     try {
-      const token = state.value.token;
-      if (token) {
-        console.log('[Logout] 백엔드 로그아웃 요청 전송...');
-        await axios.post(
-          '/api/auth/logout',
-          {},
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log('[Logout] 백엔드 로그아웃 완료');
+      // 💪(상일) 로그아웃 전 필요한 토큰들 미리 수집
+      const fcmToken = localStorage.getItem('fcm_token');
+      const authToken = state.value.token;
+      
+      console.log("[Logout] 토큰 수집 완료 - FCM:", !!fcmToken, "Auth:", !!authToken);
+
+      // 💪(상일) FCM 토큰 정리 (토큰 손실 방지)
+      if (fcmToken) {
+        try {
+          await FCMTokenManager.cleanupWithToken(fcmToken);
+          console.log("[Logout] FCM 토큰 정리 완료");
+        } catch (error) {
+          console.warn("[Logout] FCM 토큰 정리 실패:", error);
+        }
       } else {
-        console.warn('[Logout] 토큰이 없어 백엔드 로그아웃 생략');
+        console.log("[Logout] FCM 토큰 없음 - 정리 건너뜀");
       }
-    } catch (err) {
-      console.warn(
-        '[Logout] 백엔드 로그아웃 실패:',
-        err.response?.data || err.message
-      );
+
+      // 💪(상일) 백엔드 로그아웃 요청
+      if (authToken) {
+        try {
+          console.log("[Logout] 백엔드 로그아웃 요청 전송...");
+          await axios.post(
+            "/api/auth/logout",
+            {},
+            {
+              headers: {
+                Authorization: `Bearer ${authToken}`,
+              },
+            }
+          );
+          console.log("[Logout] 백엔드 로그아웃 완료");
+        } catch (err) {
+          console.warn(
+            "[Logout] 백엔드 로그아웃 실패:",
+            err.response?.data || err.message
+          );
+        }
+      } else {
+        console.warn("[Logout] 인증 토큰이 없어 백엔드 로그아웃 생략");
+      }
+
+    } catch (error) {
+      console.error("[Logout] 로그아웃 처리 중 예외 발생:", error);
     } finally {
+      // 💪(상일) 모든 Pinia 스토어 초기화
+      try {
+        const bookmarkStore = useBookmarkStore();
+        const notificationStore = useNotificationStore();
+        const assetStore = useAssetStore();
+        const policyQuizStore = usePolicyQuizStore();
+        const policyMatchingStore = usePolicyMatchingStore();
+        
+        // 각 스토어 초기 상태로 리셋
+        bookmarkStore.$reset();
+        notificationStore.$reset();
+        assetStore.$reset();
+        policyQuizStore.$reset();
+        policyMatchingStore.$reset();
+        
+        console.log("[Logout] 모든 Pinia 스토어 초기화 완료");
+      } catch (storeError) {
+        console.warn("[Logout] 일부 스토어 초기화 실패:", storeError);
+      }
+      
+      // 💪(상일) 무조건 로컬 상태 완전 초기화 (원자성 보장)
       localStorage.clear();
       state.value = { ...initState };
-      console.log('[Logout] 로컬 상태 및 localStorage 초기화 완료');
+      console.log("[Logout] 로컬 상태 및 localStorage 완전 초기화 완료");
     }
   };
 

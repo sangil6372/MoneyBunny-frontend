@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import api from '@/api';
+import { policyAPI } from '@/api/policy';
 import PolicySearchHeader from './PolicySearchHeader.vue';
 
 const route = useRoute();
@@ -36,7 +36,7 @@ async function fetchPolicies() {
   }
   const payload = buildSearchPayload(filter, query);
   try {
-    const res = await api.post('/api/userPolicy/search', payload);
+    const res = await policyAPI.searchUserPolicy(payload);
     policies.value = Array.isArray(res.data) ? res.data : [];
   } catch (e) {
     policies.value = [];

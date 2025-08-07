@@ -13,7 +13,7 @@ defineEmits(['close', 'select']);
   <div class="pickerOverlay" @click.self="$emit('close')">
     <div class="pickerContainer">
       <div class="pickerHeader">
-        <span class="font-18 font-bold">프로필 사진 선택</span>
+        <span class="font-17 font-bold">프로필 사진 선택</span>
         <button class="pickerClose" @click="$emit('close')">
           <img
             src="@/assets/images/icons/common/x.png"
@@ -53,8 +53,8 @@ defineEmits(['close', 'select']);
 .pickerContainer {
   background: #fff;
   border-radius: 8px;
-  max-width: 360px;
-  width: 90%;
+  max-width: 300px;
+  width: 100%;
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -66,7 +66,7 @@ defineEmits(['close', 'select']);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  margin-bottom: 30px;
 }
 
 .pickerClose {
@@ -79,8 +79,8 @@ defineEmits(['close', 'select']);
 }
 
 .closeImgBtn {
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   display: block;
 }
 
@@ -88,7 +88,7 @@ defineEmits(['close', 'select']);
   width: 100%;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 33px 15px;
+  gap: 30px 10px;
   justify-items: center;
   align-items: center;
 }
@@ -101,8 +101,8 @@ defineEmits(['close', 'select']);
   border-radius: 50%;
 }
 .imageBtn img {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: #fff;
   display: block;

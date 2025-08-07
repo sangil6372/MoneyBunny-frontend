@@ -23,13 +23,25 @@ const shareInfo = ref({
 
 // 정책 불러오기
 
+// helper 함수 추가
+const normalizeUrl = (raw) => {
+  if (
+    typeof raw === "string" &&
+    (raw.startsWith("http") || raw.startsWith("www")) &&
+    !raw.includes("localhost")
+  ) {
+    return raw.startsWith("www") ? `https://${raw}` : raw;
+  }
+  return null;
+};
+
 const fetchPolicy = async () => {
   try {
     const savedAuth = localStorage.getItem("auth"); // "auth" 전체 객체 꺼냄
     const parsed = savedAuth ? JSON.parse(savedAuth) : null;
     const token = parsed?.token;
 
-    console.log(token);
+    console.log(token); // undefined: 로그인X
 
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -49,17 +61,9 @@ const fetchPolicy = async () => {
           ? `${data.policyBenefitAmount.toLocaleString()}원`
           : "지원 내용 없음"),
       url:
-        typeof data.applyUrl === "string" &&
-        data.applyUrl.startsWith("http") &&
-        !data.applyUrl.includes("localhost")
-          ? data.applyUrl
-          : typeof data.refUrl1 === "string" &&
-            data.refUrl1.startsWith("http") &&
-            !data.refUrl1.includes("localhost")
-          ? data.refUrl1
-          : `https://money-bunny-frontend.vercel.app/policy/${String(
-              props.policyId
-            )}`,
+        normalizeUrl(data.applyUrl) ||
+        normalizeUrl(data.refUrl1) ||
+        `https://money-bunny-frontend.vercel.app/policy/${policyId.value}`,
     };
 
     console.log("applyUrl from API:", data.applyUrl);

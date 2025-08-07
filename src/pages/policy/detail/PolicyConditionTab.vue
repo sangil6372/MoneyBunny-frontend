@@ -58,10 +58,14 @@ let regionText = '전국 (지역 제한 없음)';
 const regions =
   (props.policy && (props.policy.regions || props.policy.regionList)) || [];
 if (Array.isArray(regions) && regions.length > 0) {
-  const regionNames = regions
-    .map((r) => getRegionNameByCode(r.regionCode || r))
-    .filter(Boolean);
-  regionText = regionNames.length > 0 ? regionNames.join(', ') : regionText;
+  if (regions.length >= 250) {
+    regionText = '전국 (지역 제한 없음)';
+  } else {
+    const regionNames = regions
+      .map((r) => getRegionNameByCode(r.regionCode || r))
+      .filter(Boolean);
+    regionText = regionNames.length > 0 ? regionNames.join(', ') : regionText;
+  }
 }
 
 // 소득조건

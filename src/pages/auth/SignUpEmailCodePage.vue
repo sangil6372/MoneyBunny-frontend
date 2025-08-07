@@ -1,15 +1,15 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
-// 🎵 회원가입 - 이메일 인증코드 입력 페이지
+// 🎵(유정) 회원가입 - 이메일 인증코드 입력 페이지
 const route = useRoute();
-const email = ref(route.query.email || '');
+const email = ref(route.query.email || "");
 
 const router = useRouter();
-const code = ref('');
-const errorMsg = ref('');
+const code = ref("");
+const errorMsg = ref("");
 const showToast = ref(false);
 
 const time = 180; // 180초 == 3분
@@ -20,16 +20,15 @@ const isExpired = computed(() => timeLeft.value === 0);
 // 인증코드 검증 (회원가입용)
 const verify = async () => {
   if (isExpired.value) {
-    errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+    errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     return;
   }
   if (!email.value || !code.value) {
-    errorMsg.value = '이메일과 인증코드를 모두 입력해주세요.';
+    errorMsg.value = "이메일과 인증코드를 모두 입력해주세요.";
     return;
   }
   try {
-    // 실제 API에 맞게 endpoint 수정!
-    await axios.post('/api/auth/verify-signup-code', {
+    await axios.post("/api/auth/verify", {
       email: email.value,
       code: code.value,
     });
@@ -38,11 +37,11 @@ const verify = async () => {
     setTimeout(() => {
       showToast.value = false;
       // 회원가입 입력폼(예: SignUpProfilePage)으로 이동
-      router.push({ name: 'signUpProfile', query: { email: email.value } });
+      router.push({ name: "signUpProfile", query: { email: email.value } });
     }, 1000);
   } catch (err) {
     errorMsg.value =
-      '인증 실패: ' + (err.response?.data?.message || '코드를 확인해주세요');
+      "인증 실패: " + (err.response?.data?.message || "코드를 확인해주세요");
   }
 };
 
@@ -53,7 +52,7 @@ const startTimer = () => {
       timeLeft.value--;
     } else {
       clearInterval(timerInterval);
-      errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+      errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     }
   }, 1000);
 };
@@ -63,8 +62,8 @@ onBeforeUnmount(() => {
 });
 
 const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
-  const seconds = String(timeLeft.value % 60).padStart(2, '0');
+  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
+  const seconds = String(timeLeft.value % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
 });
 </script>
@@ -83,13 +82,13 @@ const formattedTime = computed(() => {
         </div>
       </transition>
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">이메일로 전송된 인증코드를 입력해주세요</p>
-        <div v-if="errorMsg" class="errorMessage font-13">
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-13">이메일로 전송된 인증코드를 입력해주세요</p>
+        <div v-if="errorMsg" class="errorMessage font-12">
           {{ errorMsg }}
         </div>
         <div class="formGroup">
-          <label class="font-14 font-bold" for="email">이메일</label>
+          <label class="font-13 font-bold" for="email">이메일</label>
           <input
             id="email"
             type="email"
@@ -100,7 +99,7 @@ const formattedTime = computed(() => {
           />
         </div>
         <div class="formGroup">
-          <label class="font-14 font-bold" for="code">인증코드</label>
+          <label class="font-13 font-bold" for="code">인증코드</label>
           <div class="inputRow">
             <input
               id="code"
@@ -112,7 +111,7 @@ const formattedTime = computed(() => {
               style="flex: 1"
             />
             <span
-              class="timer font-12"
+              class="timer font-11"
               :style="{
                 color:
                   timeLeft < 30
@@ -125,14 +124,14 @@ const formattedTime = computed(() => {
           </div>
         </div>
         <button
-          class="submitButton font-15"
+          class="submitButton font-14"
           @click="verify"
           :disabled="isExpired"
           :class="{ expired: isExpired }"
         >
-          {{ isExpired ? '인증 만료' : '인증하기' }}
+          {{ isExpired ? "인증 만료" : "인증하기" }}
         </button>
-        <div class="signupLink font-12">
+        <div class="signupLink font-11">
           이미 계정이 있으신가요? <a href="/login">로그인</a>
         </div>
       </div>
@@ -156,7 +155,7 @@ const formattedTime = computed(() => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
 }
 .bunnyImage {
   width: 90px;
@@ -166,10 +165,10 @@ const formattedTime = computed(() => {
 }
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background-color: white;
-  padding: 32px 24px;
+  padding: 28px 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -184,7 +183,7 @@ const formattedTime = computed(() => {
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-bottom: 18px;
+  margin-bottom: 16px;
 }
 .formGroup {
   margin-bottom: 14px;
@@ -192,11 +191,11 @@ const formattedTime = computed(() => {
 .input {
   margin-top: 7px;
   width: 100%;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
 }
 input:focus {
@@ -221,10 +220,10 @@ input:focus {
   width: 100%;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 14px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  margin-top: 12px;
+  margin-top: 6px;
   cursor: pointer;
 }
 .submitButton.expired {
@@ -232,7 +231,7 @@ input:focus {
   cursor: not-allowed;
 }
 .loginLink {
-  margin-top: 16px;
+  margin-top: 12px;
   text-align: center;
   color: var(--text-bluegray);
 }
@@ -243,14 +242,14 @@ input:focus {
 }
 .signupLink {
   text-align: center;
-  margin-top: 12px;
+  margin-top: 14px;
   color: var(--text-lightgray);
 }
 .signupLink a {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 .errorMessage {
   background-color: var(--alert-light-3);
@@ -271,7 +270,7 @@ input:focus {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 300px;
   max-width: 400px;
   pointer-events: none;

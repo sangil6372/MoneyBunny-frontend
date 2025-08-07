@@ -5,6 +5,10 @@
     <div class="content">
       <slot />
     </div>
+    <!-- 💪(상일) 삭제 버튼 -->
+    <button class="delete-btn" @click="$emit('delete')" title="삭제">
+      <img src="@/assets/images/icons/common/x.png" alt="삭제" />
+    </button>
   </div>
 </template>
 
@@ -16,6 +20,9 @@ const props = defineProps({
     default: false,
   },
 });
+
+// 💪(상일) 삭제 이벤트 정의
+defineEmits(["delete"]);
 </script>
 
 <style scoped>
@@ -41,7 +48,7 @@ const props = defineProps({
 
 .content {
   flex: 1;
-  padding: 16px 20px;
+  padding: 16px 20px 16px 20px; /* 오른쪽 패딩 증가로 삭제 버튼 공간 확보 */
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -75,5 +82,33 @@ const props = defineProps({
 ::v-deep(.date) {
   font-size: 12px;
   color: #9ca3af;
+}
+
+/* 💪(상일) 삭제 버튼 스타일 */
+.delete-btn {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.delete-btn:hover {
+  opacity: 1;
+}
+
+.delete-btn img {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 </style>

@@ -21,7 +21,8 @@ export function useSync(type = 'account') {
   }
   function isSyncedWithin10Min() {
     const last = getLastSync();
-    return Date.now() - last < 10 * 60 * 1000;
+    // return Date.now() - last < 10 * 60 * 1000;  // 배포떄는 10분
+    return Date.now() - last < 4 * 60 * 60 * 1000; // 개발떄는 4시간 설정
   }
 
   // 계좌, 카드, 메인 구분

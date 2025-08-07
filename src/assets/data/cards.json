@@ -9,6 +9,52 @@
     "isRepresentative": true,
     "cardTransactions": [
       {
+        "transactionId": "C20250805001",
+        "date": "2025-08-05",
+        "time": "12:00",
+        "merchant": "스타벅스",
+        "category": "식비",
+        "amount": 10000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250801002",
+        "date": "2025-08-01",
+        "time": "10:00",
+        "merchant": "배달의민족",
+        "category": "식비",
+        "amount": 14000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250803003",
+        "date": "2025-08-03",
+        "time": "18:30",
+        "merchant": "이마트",
+        "category": "쇼핑",
+        "amount": 25000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250804004",
+        "date": "2025-08-04",
+        "time": "09:00",
+        "merchant": "지하철",
+        "category": "교통비",
+        "amount": 1200,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250802005",
+        "date": "2025-08-02",
+        "time": "14:00",
+        "merchant": "넷플릭스",
+        "category": "취미/여가",
+        "amount": 17000,
+        "status": "승인"
+      },
+
+      {
         "transactionId": "C20250730001",
         "date": "2025-07-28",
         "time": "14:20",
@@ -18,7 +64,7 @@
         "status": "승인"
       },
       {
-        "transactionId": "C20250730002",
+        "transactionId": "C20250727002",
         "date": "2025-07-27",
         "time": "18:45",
         "merchant": "쿠팡",
@@ -27,25 +73,35 @@
         "status": "승인"
       },
       {
-        "transactionId": "C20250010001",
-        "date": "2025-08-05",
-        "time": "12:00",
-        "merchant": "스타벅스",
-        "category": "식비",
-        "amount": 10000,
-        "status": "승인"
-      },
-      {
-        "transactionId": "C20250020002",
+        "transactionId": "C20250706003",
         "date": "2025-07-06",
         "time": "12:00",
-        "merchant": "쿠팡",
-        "category": "쇼핑",
-        "amount": 20000,
+        "merchant": "GS25",
+        "category": "식비",
+        "amount": 8000,
         "status": "승인"
       },
       {
-        "transactionId": "C20250030003",
+        "transactionId": "C20250708004",
+        "date": "2025-07-08",
+        "time": "11:00",
+        "merchant": "버스",
+        "category": "교통비",
+        "amount": 1350,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250712005",
+        "date": "2025-07-12",
+        "time": "15:00",
+        "merchant": "헬스장",
+        "category": "건강/의료",
+        "amount": 60000,
+        "status": "승인"
+      },
+
+      {
+        "transactionId": "C20250606001",
         "date": "2025-06-06",
         "time": "12:00",
         "merchant": "넷플릭스",
@@ -54,7 +110,44 @@
         "status": "승인"
       },
       {
-        "transactionId": "C20250040004",
+        "transactionId": "C20250604002",
+        "date": "2025-06-04",
+        "time": "13:30",
+        "merchant": "이마트",
+        "category": "쇼핑",
+        "amount": 18000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250602003",
+        "date": "2025-06-02",
+        "time": "19:00",
+        "merchant": "CGV",
+        "category": "취미/여가",
+        "amount": 12000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250609004",
+        "date": "2025-06-09",
+        "time": "08:00",
+        "merchant": "지하철",
+        "category": "교통비",
+        "amount": 1250,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250611005",
+        "date": "2025-06-11",
+        "time": "10:30",
+        "merchant": "올리브영",
+        "category": "생활",
+        "amount": 29000,
+        "status": "승인"
+      },
+
+      {
+        "transactionId": "C20250507001",
         "date": "2025-05-07",
         "time": "12:00",
         "merchant": "버스",
@@ -63,21 +156,30 @@
         "status": "승인"
       },
       {
-        "transactionId": "C20250050005",
-        "date": "2025-04-07",
-        "time": "12:00",
-        "merchant": "이마트",
-        "category": "생활",
-        "amount": 50000,
+        "transactionId": "C20250508002",
+        "date": "2025-05-08",
+        "time": "09:00",
+        "merchant": "스타벅스",
+        "category": "식비",
+        "amount": 7000,
         "status": "승인"
       },
       {
-        "transactionId": "C20250060006",
-        "date": "2025-03-08",
-        "time": "12:00",
-        "merchant": "스타벅스",
-        "category": "식비",
-        "amount": 60000,
+        "transactionId": "C20250509003",
+        "date": "2025-05-09",
+        "time": "19:00",
+        "merchant": "쿠팡",
+        "category": "쇼핑",
+        "amount": 24000,
+        "status": "승인"
+      },
+      {
+        "transactionId": "C20250510004",
+        "date": "2025-05-10",
+        "time": "20:00",
+        "merchant": "병원",
+        "category": "건강/의료",
+        "amount": 30000,
         "status": "승인"
       }
     ]

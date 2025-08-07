@@ -3,7 +3,7 @@
     <!-- 헤더 -->
     <DetailHeader
       :title="headerTitle"
-      :currentMonth="selectedMonth"
+      :current-month="formattedCurrentMonth"
       @back="$emit('back')"
       @month-change="handleMonthChange"
     />
@@ -34,7 +34,7 @@
       <template #additional>
         <div class="transaction-section">
           <div class="section-header">
-            <h4 class="section-title">결제 내역</h4>
+            <h4 class="section-title">거래 내역</h4>
             <span class="transaction-count"
               >{{ filteredTransactions.length }}건</span
             >
@@ -50,14 +50,6 @@
               :key="transaction.id || transaction.transactionId"
               class="transaction-item"
             >
-              <div class="transaction-icon">
-                <div class="icon-circle">
-                  <span class="icon-text">{{
-                    getCategoryInitial(categoryData.name)
-                  }}</span>
-                </div>
-              </div>
-
               <div class="transaction-info">
                 <p class="transaction-title">
                   {{ getTransactionTitle(transaction) }}
@@ -89,22 +81,28 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import DetailHeader from '../detail/DetailHeader.vue';
 import DetailInfoCard from '../detail/DetailInfoCard.vue';
 
 const props = defineProps({
-  categoryData: {
-    type: Object,
-    required: true,
-  },
+  categoryData: Object,
+  selectedDate: { type: Date, required: true },
 });
+
 const emit = defineEmits(['back']);
 
-const selectedMonth = ref(new Date().toISOString().slice(0, 7)); // YYYY-MM
+// 현재 날짜 상태
+const currentDate = ref(new Date(props.selectedDate));
+
+// 선택된 월 상태 (YYYY-MM 형식)
+const selectedMonth = ref(currentDate.value.toISOString().slice(0, 7));
+
+// 헤더에 전달할 현재 월
+const formattedCurrentMonth = computed(() => selectedMonth.value);
 
 // 헤더 제목
-const headerTitle = computed(() => `카테고리별 결제내역`);
+const headerTitle = computed(() => `카테고리별 거래내역`);
 
 // 선택된 월 텍스트
 const getSelectedMonthText = () => {
@@ -112,12 +110,27 @@ const getSelectedMonthText = () => {
   return `${parseInt(month)}월`;
 };
 
-// 월 변경 시 필터링
-const handleMonthChange = (newMonth) => {
-  selectedMonth.value = newMonth;
+// Props 변화 감지
+watch(
+  () => props.selectedDate,
+  (newDate) => {
+    currentDate.value = new Date(newDate);
+    selectedMonth.value = newDate.toISOString().slice(0, 7);
+  }
+);
+
+// DetailHeader에서 월 변경 시 처리 (중복 제거된 통합 로직)
+const handleMonthChange = (newMonthString) => {
+  console.log('Header 월 변경:', newMonthString);
+  selectedMonth.value = newMonthString;
+
+  // 새로운 날짜 객체 생성 (해당 월의 1일로 설정)
+  const [year, month] = newMonthString.split('-');
+  const newDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+  currentDate.value = newDate;
 };
 
-// 거래내역 필터링 (선택된 월 기준)
+// 거래내역 필터링
 const filteredTransactions = computed(() => {
   return props.categoryData.transactions.filter((t) => {
     const date = new Date(t.date.replace(/\./g, '-'));
@@ -143,10 +156,9 @@ const sortedFilteredTransactions = computed(() => {
   });
 });
 
-// 금액 포맷팅
+// 유틸리티 함수들
 const formatAmount = (amount) => `${amount.toLocaleString()}원`;
 
-// 거래내역 제목
 const getTransactionTitle = (transaction) =>
   transaction.merchant ||
   transaction.description ||
@@ -155,24 +167,10 @@ const getTransactionTitle = (transaction) =>
   transaction.memo ||
   '거래';
 
-// 날짜 포맷
 const formatTransactionDate = (dateStr) => {
   if (!dateStr) return '';
   const date = new Date(dateStr.replace(/\./g, '-'));
   return `${date.getMonth() + 1}월 ${date.getDate()}일`;
-};
-
-// 카테고리 초성
-const getCategoryInitial = (categoryName) => {
-  const initials = {
-    식비: '식',
-    교통비: '교',
-    쇼핑: '쇼',
-    '취미/여가': '취',
-    생활: '생',
-    기타: '기',
-  };
-  return initials[categoryName] || categoryName.charAt(0);
 };
 </script>
 
@@ -236,7 +234,7 @@ const getCategoryInitial = (categoryName) => {
   color: var(--text-bluegray);
 }
 
-/* 거래내역 리스트 */
+/* 거래내역 아이템 */
 .transaction-item {
   display: flex;
   align-items: center;
@@ -244,29 +242,8 @@ const getCategoryInitial = (categoryName) => {
   border-bottom: 1px solid var(--input-bg-3);
 }
 
-.transaction-icon {
-  margin-right: 0.75rem;
-}
-
-.icon-circle {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  background-color: var(--base-blue-dark);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.icon-text {
-  color: white;
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
 .transaction-info {
   flex: 1;
-  min-width: 0;
 }
 
 .transaction-title {

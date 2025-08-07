@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import api from '@/api';
+import { policyAPI } from '@/api/policy';
 
 const router = useRouter();
 const searchQuery = ref('');
@@ -31,7 +31,7 @@ const search = () => {
 
 const fetchPopularKeywords = async () => {
   try {
-    const res = await api.get('/api/userPolicy/popular-keywords');
+    const res = await policyAPI.getUserPolicyPopularKeywords();
     popularKeywords.value = Array.isArray(res.data) ? res.data : [];
   } catch (e) {
     console.error('인기 검색어 조회 실패', e);
@@ -40,7 +40,7 @@ const fetchPopularKeywords = async () => {
 
 const fetchRecentKeywords = async () => {
   try {
-    const res = await api.get('/api/userPolicy/recent-keywords');
+    const res = await policyAPI.getUserPolicyRecentKeywords();
     recentKeywords.value = Array.isArray(res.data) ? res.data : [];
   } catch (e) {
     console.error('최근 검색어 조회 실패', e);
@@ -50,7 +50,7 @@ const fetchRecentKeywords = async () => {
 // 사용자 기본 필터 조건 불러오기
 const fetchUserPolicyFilter = async () => {
   try {
-    const res = await api.get('/api/userPolicy');
+    const res = await policyAPI.getUserPolicy();
     const d = res.data || {};
     Object.assign(filterInitial.value, {
       marital: d.marriage ? [d.marriage] : [],

@@ -13,6 +13,9 @@ export const notificationAPI = {
   
   // 알림 읽음 처리
   markAsRead: (notificationId) => axios.put(`/api/push/notifications/${notificationId}/read`),
+  
+  // 알림 삭제
+  deleteNotification: (notificationId) => axios.delete(`/api/push/notifications/${notificationId}`),
 };
 
 // 💪(상일) 구독 관리 API

@@ -56,11 +56,34 @@
   --input-outline: #f1f5f9;
   --input-outline-2: #e5e7eb;
   --gray-medium: #cfd4db;
+  --gray-light: #f0f1f4;
 
-  --reset-button: #f9fafb;
+  --reset-button: #091827;
   --text-hint: #b5b7c3;
 
   --top-rank-1: #304663; /* TOP1: 기본 네이비 */
   --top-rank-2: #5b7bb0; /* TOP2: 조금 밝은 차분한 블루 */
   --top-rank-3: #aac3df; /* TOP3: 밝은 연블루 */
+
+  --priority-bg: #e8ecf5;
+  /* =============================
+     Category Colors
+  ============================== */
+
+  --category-transport: #a3c6df; /* 교통/자동차: 이동, 하늘 느낌 */
+  --category-life: #e3e6f2; /* 생활: 실내·집 느낌의 부드러운 회색 */
+  --category-leisure: #a1a6c6; /* 레저와 여가생활: 여유로운 라벤더 */
+  --category-mart: #cbd1e8; /* 마트: 깔끔하고 친근한 연블루 */
+  --category-convenience: #a5d6d3; /* 편의점: 간단하고 상쾌한 민트 */
+  --category-shopping: #ffe6eb; /* 쇼핑: 감성적인 연핑크 */
+  --category-online-shopping: #999999; /* 온라인 쇼핑: 중성적이고 디지털 느낌 */
+  --category-coffee: #c9ced6; /* 커피와 디저트: 차분하고 부드러운 그레이 */
+  --category-beauty: #f2a9a9; /* 뷰티: 화사함 강조 핑크톤 */
+  --category-food: #10b981; /* 식비: 신선함, 건강의 초록 */
+  --category-finance: #304663; /* 보험과 금융: 안정감 있는 네이비 */
+  --category-health: #b0b4bb; /* 건강과 의료: 전문적이고 차분한 톤 */
+  --category-education: #f2f4fb; /* 교육: 깔끔하고 차분한 연회색 */
+  --category-travel: #f9dada; /* 여행: 설렘과 자유의 연핑크 */
+  --category-alcohol: #cf5959; /* 주류: 묵직한 딥레드 */
+  --category-undefined: #6b7280; /* 카테고리 미지정: 중립적 보조색 */
 }

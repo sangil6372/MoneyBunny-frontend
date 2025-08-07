@@ -15,14 +15,9 @@
       />
     </div>
 
-    <!-- 더보기 버튼 (5개 초과 시에만 표시) -->
-    <div
-      v-if="categories.length > 5 && categories.length > 0"
-      class="show-more-section"
-    >
-      <button class="show-more-button" @click="toggleShowAll">
-        {{ showAll ? '접기' : `더 많은 내역 보기 ↓` }}
-      </button>
+    <!-- 더보기 버튼 (3개 초과이고 아직 펼쳐지지 않았을 때만 표시) -->
+    <div v-if="categories.length > 3 && !showAll" class="show-more-section">
+      <button class="show-more-button" @click="toggleShowAll">더보기 ↓</button>
     </div>
   </div>
 </template>
@@ -45,24 +40,24 @@ const props = defineProps({
 });
 
 // Emits 정의
-const emit = defineEmits(['toggle-show-all', 'category-click']);
+const emit = defineEmits(['toggleShowAll', 'categoryClick']);
 
-// 표시할 카테고리 계산
+// 표시할 카테고리 계산 (3개까지만 기본 표시)
 const displayedCategories = computed(() => {
-  if (props.showAll || props.categories.length <= 5) {
+  if (props.showAll || props.categories.length <= 3) {
     return props.categories;
   }
-  return props.categories.slice(0, 5);
+  return props.categories.slice(0, 3);
 });
 
-// 더보기/접기 토글
+// 더보기 토글 (한번 누르면 모든 내역 표시)
 const toggleShowAll = () => {
-  emit('toggle-show-all');
+  emit('toggleShowAll');
 };
 
 // 카테고리 클릭 핸들러
 const handleCategoryClick = (category) => {
-  emit('category-click', category);
+  emit('categoryClick', category);
 };
 </script>
 
@@ -72,7 +67,6 @@ const handleCategoryClick = (category) => {
   border-radius: 12px;
   padding: 20px;
   margin-top: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .show-more-section {

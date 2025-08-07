@@ -6,6 +6,7 @@ export const useNotificationStore = defineStore('notification', () => {
   // 💪(상일) 알림 관련 상태 관리
   const notifications = ref([]);
   const unreadCount = ref(0);
+  const shouldShakeIcon = ref(false); // 💪(상일) 아이콘 흔들기 트리거
   // 💪(상일) reactive로 변경하여 반응성 보장
   const subscriptionStatus = reactive({
     subscribed: false,
@@ -104,14 +105,34 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   };
 
-  // 💪(상일) 구독 상태 조회
+  // 💪(상일) 알림 삭제 처리
+  const deleteNotification = async (notificationId) => {
+    try {
+      await notificationAPI.deleteNotification(notificationId);
+      // 로컬 상태에서 제거
+      const notificationIndex = notifications.value.findIndex(n => n.id === notificationId);
+      if (notificationIndex !== -1) {
+        const notification = notifications.value[notificationIndex];
+        // 읽지 않은 알림인 경우 카운트 감소
+        if (!notification.read) {
+          unreadCount.value = Math.max(0, unreadCount.value - 1);
+        }
+        // 배열에서 제거
+        notifications.value.splice(notificationIndex, 1);
+      }
+      return true;
+    } catch (err) {
+      console.error('알림 삭제 실패:', err);
+      throw err;
+    }
+  };
+
+  // 💪(상일) 구독 상태 조회 - FCMTokenManager 사용으로 간소화
   const fetchSubscriptionStatus = async () => {
     try {
-      const token = localStorage.getItem('fcm_token');
-      if (!token) {
-        console.error('구독 상태 조회 실패: FCM 토큰 없음');
-        return;
-      }
+      // FCMTokenManager를 통해 유효한 토큰 획득 (없으면 자동 발급)
+      const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+      const token = await fcmTokenManager.getValidToken();
       
       const response = await subscriptionAPI.getStatus(token);
       
@@ -148,15 +169,12 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   };
 
-  // 💪(상일) 초기 구독 설정 생성
+  // 💪(상일) 초기 구독 설정 생성 - FCMTokenManager 사용
   const createInitialSubscription = async () => {
-    const token = localStorage.getItem('fcm_token');
-    if (!token) {
-      console.error('초기 구독 설정 실패: FCM 토큰 없음');
-      return;
-    }
-
     try {
+      const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+      const token = await fcmTokenManager.getValidToken();
+
       const initialData = {
         token,
         isActiveBookmark: false,
@@ -174,12 +192,19 @@ export const useNotificationStore = defineStore('notification', () => {
     }
   };
 
-  // 💪(상일) 개별 알림 타입 토글
+  // 💪(상일) 알림 아이콘 흔들기 트리거
+  const triggerIconShake = () => {
+    shouldShakeIcon.value = true;
+    // 애니메이션 시간 후 자동으로 false로 리셋
+    setTimeout(() => {
+      shouldShakeIcon.value = false;
+    }, 600); // 0.6초 후 리셋
+  };
+
+  // 💪(상일) 개별 알림 타입 토글 - FCMTokenManager 사용
   const toggleNotificationType = async (type, enabled) => {
-    const token = localStorage.getItem('fcm_token');
-    if (!token) {
-      throw new Error('FCM 토큰이 없습니다');
-    }
+    const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+    const token = await fcmTokenManager.getValidToken();
 
     const data = { token, enabled };
     
@@ -249,6 +274,7 @@ export const useNotificationStore = defineStore('notification', () => {
     // 상태
     notifications,
     unreadCount,
+    shouldShakeIcon,
     subscriptionStatus,
     loading,
     error,
@@ -262,9 +288,11 @@ export const useNotificationStore = defineStore('notification', () => {
     fetchNotifications,
     fetchUnreadCount,
     markAsRead,
+    deleteNotification,
     fetchSubscriptionStatus,
     updateSubscription,
     toggleNotificationType,
     createInitialSubscription,
+    triggerIconShake,
   };
 });

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
-import api from "@/api"; // 🛠️ 제승 추가: api import
+import { policyAPI } from "@/api/policy";
+// 🛠️ 제승 추가: api import
 
 // ─── 레이아웃 ──────────────────────────────
 import DefaultLayout from "@/components/layouts/DefaultLayout.vue";
@@ -21,12 +22,11 @@ import SignUpEmailCodePage from "@/pages/auth/SignUpEmailCodePage.vue";
 
 //
 // ─── 마이페이지 관련 ──────────────────────────────────
-import MypageMain from "@/pages/mypage/MypageMain.vue";
-import SettingMain from "@/pages/mypage/settings/SettingMain.vue";
-import ChangePassword from "@/pages/mypage/settings/ChangePassword.vue";
-import PolicyRetestPage from "@/pages/mypage/settings/PolicyRetestPage.vue";
-// 💪(상일) 알림 설정 페이지 import
-import NotificationSettings from "@/pages/mypage/settings/NotificationSettings.vue";
+import MypageMain from '@/pages/mypage/MypageMain.vue';
+import SettingMain from '@/pages/mypage/settings/SettingMain.vue';
+import ChangePassword from '@/pages/mypage/settings/ChangePassword.vue';
+import PolicyRetestPage from '@/pages/mypage/settings/PolicyRetestPage.vue';
+// 💪(상일) 알림 설정은 모달로 변경됨
 
 //
 // ─── 탭 메인 페이지 ────────────────────────────────────
@@ -140,13 +140,7 @@ const routes = [
         component: PolicyRetestPage,
       },
       // 💪(상일) 알림 설정 라우트 추가
-      {
-        path: "notification",
-        name: "notification",
-        path: "mypage/settings/notification",
-        name: "notificationSettings",
-        component: NotificationSettings,
-      },
+      // 💪(상일) 알림 설정은 모달로 변경되어 라우트 제거
       {
         path: "notification",
         name: "notification",
@@ -209,16 +203,30 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
+  // 💪(상일) 라우터 이동 시 스크롤 위치 제어
+  scrollBehavior(to, from, savedPosition) {
+    // 뒤로가기(브라우저 버튼)인 경우 이전 스크롤 위치 복원
+    if (savedPosition) {
+      return savedPosition;
+    }
+
+    // 해시(앵커) 링크가 있는 경우 해당 위치로 이동
+    if (to.hash) {
+      return {
+        el: to.hash,
+        behavior: "smooth",
+      };
+    }
+
+    // 기본적으로 모든 새로운 페이지 이동 시 최상단으로 이동
+    return { top: 0 };
+  },
 });
 
 // 인증 가드
 router.beforeEach(async (to, from, next) => {
-  // const isPolicyDetailPage = /^\/policy\/\d+$/.test(to.path);
-  const isPolicyDetailPage = to.name === "policyDetail";
-
-  // ✅ 상세 페이지는 무조건 접근 허용
-  if (isPolicyDetailPage) {
-    return next(); // 🔥 여기가 핵심
+  if (/^\/policy\/\d+$/.test(to.path)) {
+    return next();
   }
 
   // 🛠️ 제승 추가: 정책 메인 접근 전 조건 체크 네비게이션 가드
@@ -250,14 +258,24 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore();
   const publicPages = [
     "/",
+    // 아이디 찾기: 아이디 찾기 - 인증코드 전송 - 아이디 찾기 결과
     "/findId",
+    "/findIdCode",
+    "/findIdResult",
+
+    // 비밀번호 찾기: 비밀번호 찾기 - 인증코드 전송 - 비밀번호 재설정
     "/findPassword",
+    "/findPasswordCode",
+    "/resetPassword",
+
+    // 회원 가입
+    "/signUpEmailRequest",
+    "/signUpEmailCode",
     "/signUpEmailVerify",
     "/signUpProfile",
-    "/resetPassword",
-    "/findIdResult",
-    "/findIdCode",
-    "/policyDetail",
+
+    // 정책 상세 페이지 (공유)
+    // '/policyDetail',
   ];
 
   const authRequired = !publicPages.includes(to.path);

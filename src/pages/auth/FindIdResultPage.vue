@@ -34,7 +34,10 @@ const goLogin = () => {
       />
 
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-14">
+          입력하신 정보와 일치하는 아이디를 찾았어요.
+        </p>
 
         <div class="resultBox">
           <div class="resultLabel">아이디</div>
@@ -55,11 +58,11 @@ const goLogin = () => {
           </transition>
         </div>
 
-        <button class="goLoginButton font-15" @click="goLogin">
+        <button class="goLoginButton font-14" @click="goLogin">
           로그인하러가기
         </button>
 
-        <div class="signupLink font-12">
+        <div class="signupLink font-11">
           계정이 없으신가요?
           <router-link to="/signUpEmailVerify">회원가입</router-link>
         </div>
@@ -84,7 +87,7 @@ const goLogin = () => {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
 }
 
 .bunnyImage {
@@ -96,10 +99,10 @@ const goLogin = () => {
 
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background-color: white;
-  padding: 32px 24px;
+  padding: 28px 20px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -110,16 +113,20 @@ const goLogin = () => {
 .title {
   text-align: center;
   color: var(--text-login);
-  margin-bottom: 18px;
+  margin-bottom: 8px;
+}
+.subtitle {
+  text-align: center;
+  color: var(--text-bluegray);
+  margin-bottom: 16px;
 }
 
 .resultBox {
   background-color: var(--input-bg-2);
   border-radius: 8px;
-  margin-top: 8px;
-  margin-bottom: px;
+  margin-bottom: 15px;
   width: 100%;
-  min-height: 150px;
+  min-height: 120px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -128,8 +135,8 @@ const goLogin = () => {
 }
 
 .resultLabel {
-  font-size: 18px;
-  margin-bottom: 7px;
+  font-size: 16px;
+  margin-bottom: 5px;
 }
 
 .foundIdRow {
@@ -140,7 +147,7 @@ const goLogin = () => {
 }
 
 .foundId {
-  font-size: 20px;
+  font-size: 17px;
   color: var(--base-blue-dark);
   font-weight: bold;
   letter-spacing: 1px;
@@ -151,14 +158,14 @@ const goLogin = () => {
 }
 
 .copyIcon {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   margin-left: 3px;
 }
 
 .copyMsg {
-  margin-top: 12px;
-  font-size: 12px;
+  margin-top: 8px;
+  font-size: 11px;
   color: var(--base-blue-dark);
 }
 
@@ -169,13 +176,13 @@ const goLogin = () => {
   padding: 12px;
   border-radius: 8px;
   border: none;
-  margin: 12px 0;
   cursor: pointer;
+  margin-top: 6px;
 }
 
 .signupLink {
   text-align: center;
-  margin-top: 14px;
+  margin-top: 12px;
   color: var(--text-lightgray);
 }
 
@@ -183,6 +190,6 @@ const goLogin = () => {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 </style>

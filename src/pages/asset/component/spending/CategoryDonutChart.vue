@@ -1,10 +1,7 @@
 <template>
   <div class="chart-section">
-    <!-- 데이터가 없을 때만 SpendingNodata 표시 -->
-    <div v-if="totalSpending === 0" class="no-data-container">
-      <SpendingNodata />
-    </div>
-
+    <!-- 데이터가 없을 때-->
+    <div v-if="totalSpending === 0" class="chart-list-container"></div>
     <!-- 데이터가 있을 때만 차트 표시 -->
     <div v-else class="chart-container">
       <canvas ref="chartCanvas"></canvas>
@@ -18,15 +15,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  DoughnutController,
-} from 'chart.js';
-ChartJS.register(ArcElement, Tooltip, Legend, DoughnutController);
+import { ref, onMounted, watch, nextTick, onUnmounted } from 'vue';
+import { Chart as ChartJS, ArcElement, DoughnutController } from 'chart.js';
+
+// Chart.js 등록 (필요한 요소만)
+ChartJS.register(ArcElement, DoughnutController);
 
 const props = defineProps({
   totalSpending: {
@@ -39,16 +32,23 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['category-click']);
+// emit 제거 - 클릭 이벤트 불필요
 
 const chartCanvas = ref(null);
 let chartInstance = null;
 
+// 금액 포맷팅 함수
 const formatAmount = (amount) => `${amount.toLocaleString()}원`;
 
+// 차트 생성 함수
 const createChart = () => {
   if (!chartCanvas.value || !props.chartData.datasets) return;
-  if (chartInstance) chartInstance.destroy();
+
+  // 기존 차트 인스턴스 제거
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
 
   const ctx = chartCanvas.value.getContext('2d');
   chartInstance = new ChartJS(ctx, {
@@ -59,15 +59,14 @@ const createChart = () => {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: {
-          enabled: false, // 모바일 앱용: 툴팁 완전 비활성화
-        },
+        tooltip: { enabled: false }, // 모바일 앱용: 툴팁 비활성화
       },
       cutout: '70%',
-      onClick: (_, elements) => {
-        if (elements.length > 0) {
-          emit('category-click', elements[0].index);
-        }
+      animation: {
+        duration: 300, // 모바일 최적화: 짧은 애니메이션
+      },
+      interaction: {
+        intersect: false, // 모바일 터치 최적화
       },
     },
   });
@@ -86,13 +85,21 @@ watch(
 onMounted(() => {
   nextTick(() => createChart());
 });
+
+// 컴포넌트 언마운트 시 차트 정리
+onUnmounted(() => {
+  if (chartInstance) {
+    chartInstance.destroy();
+    chartInstance = null;
+  }
+});
 </script>
 
 <style scoped>
 .chart-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 24px;
+  margin-bottom: 1.5rem;
 }
 
 .chart-container {
@@ -111,14 +118,14 @@ onMounted(() => {
 }
 
 .center-label {
-  font-size: 14px;
+  font-size: 0.875rem;
   color: var(--text-bluegray);
-  margin: 0 0 4px 0;
+  margin: 0 0 0.25rem 0;
   line-height: 1.4;
 }
 
 .center-amount {
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--text-login);
   margin: 0;

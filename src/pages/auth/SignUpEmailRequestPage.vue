@@ -1,35 +1,35 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 // 🎵 회원가입 - 이메일 인증 시작 페이지
 const router = useRouter();
-const signUpEmail = ref('');
+const signUpEmail = ref("");
 const isRequesting = ref(false);
-const errorMsg = ref('');
+const errorMsg = ref("");
 const showToast = ref(false);
 
 // 인증코드 전송
 const requestSignUpCode = async () => {
-  errorMsg.value = '';
+  errorMsg.value = "";
 
   // 이메일 입력 확인
   if (!signUpEmail.value.trim()) {
-    errorMsg.value = '이메일을 입력해주세요.';
+    errorMsg.value = "이메일을 입력해주세요.";
     return;
   }
 
   // 이메일 형식 확인
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(signUpEmail.value)) {
-    errorMsg.value = '올바른 이메일 형식을 입력해주세요.';
+    errorMsg.value = "올바른 이메일 형식을 입력해주세요.";
     return;
   }
 
   try {
     isRequesting.value = true;
-    await axios.post('/api/auth/signup-request-email', {
+    await axios.post("/api/auth/send-join-code", {
       email: signUpEmail.value,
     });
     showToast.value = true;
@@ -37,14 +37,14 @@ const requestSignUpCode = async () => {
       showToast.value = false;
       // 회원가입 인증코드 입력 페이지로 이동 (route 네임은 프로젝트에 맞게!)
       router.push({
-        name: 'signUpEmailCode',
+        name: "signUpEmailCode",
         query: { email: signUpEmail.value },
       });
     }, 1200);
   } catch (err) {
     errorMsg.value =
       err.response?.data?.message ||
-      '이미 가입된 이메일이거나 오류가 발생했습니다.';
+      "이미 가입된 이메일이거나 오류가 발생했습니다.";
   } finally {
     isRequesting.value = false;
   }
@@ -65,13 +65,13 @@ const requestSignUpCode = async () => {
       />
 
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">이메일로 회원가입을 진행합니다</p>
-        <div v-if="errorMsg" class="errorMessage font-13">
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-13">이메일로 회원가입을 진행합니다</p>
+        <div v-if="errorMsg" class="errorMessage font-12">
           {{ errorMsg }}
         </div>
         <div class="formGroup">
-          <label for="signUpEmail" class="font-14">이메일</label>
+          <label for="signUpEmail" class="font-13">이메일</label>
           <input
             type="email"
             id="signUpEmail"
@@ -81,13 +81,13 @@ const requestSignUpCode = async () => {
           />
         </div>
         <button
-          class="submitButton font-15"
+          class="submitButton font-14"
           @click="requestSignUpCode"
           :disabled="isRequesting"
         >
           인증코드 발송
         </button>
-        <div class="loginLink font-12">
+        <div class="loginLink font-11">
           이미 계정이 있으신가요? <a href="/">로그인</a>
         </div>
       </div>
@@ -108,7 +108,7 @@ const requestSignUpCode = async () => {
 .cardBox {
   position: relative;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,12 +121,12 @@ const requestSignUpCode = async () => {
 }
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background: white;
   border-radius: 12px;
   border: none;
-  padding: 32px 24px 32px 24px;
+  padding: 28px 20px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -139,18 +139,18 @@ const requestSignUpCode = async () => {
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 .formGroup {
   width: 100%;
   display: flex;
   flex-direction: column;
-  margin-bottom: 22px;
+  margin-bottom: 14px;
 }
 input {
   margin-top: 7px;
-  font-size: 14px;
-  padding: 12px 16px;
+  font-size: 12px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
@@ -164,13 +164,11 @@ input:focus {
   width: 100%;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 13px;
-  border-radius: 10px;
+  padding: 12px;
+  border-radius: 8px;
   border: none;
-  margin-bottom: 10px;
   cursor: pointer;
-  font-weight: bold;
-  margin-top: 4px;
+  margin-top: 6px;
 }
 .loginLink {
   text-align: center;
@@ -181,7 +179,7 @@ input:focus {
   color: var(--base-lavender);
   text-decoration: none;
   margin-left: 6px;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .errorMessage {
@@ -204,7 +202,7 @@ input:focus {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 260px;
   max-width: 400px;
   text-align: center;

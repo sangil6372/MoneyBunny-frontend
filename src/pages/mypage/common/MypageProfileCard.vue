@@ -8,8 +8,8 @@
       />
 
       <div class="userText">
-        <p class="userName font-20 font-bold">{{ userInfo.name }}</p>
-        <p class="userEmail font-14 font-regular">{{ userInfo.email }}</p>
+        <p class="userName font-18 font-bold">{{ userInfo.name }}</p>
+        <p class="userEmail font-13">{{ userInfo.email }}</p>
       </div>
       <button class="editBtn" @click="$emit('edit')">
         <img src="@/assets/images/icons/mypage/edit.png" alt="수정" />
@@ -25,10 +25,8 @@ defineProps({ userInfo: Object });
 <style scoped>
 .userCard {
   background-color: white;
-  border-radius: 16px;
-  padding: 24px;
   width: 100%;
-  height: 136px;
+  min-height: 120px;
   box-sizing: border-box;
 }
 
@@ -42,8 +40,8 @@ defineProps({ userInfo: Object });
 
 .profileImage {
   margin-left: 10px;
-  width: 85px;
-  height: 85px;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background-color: var(--input-bg-3);
   object-fit: cover;
@@ -55,7 +53,6 @@ defineProps({ userInfo: Object });
   justify-content: center;
   flex: 1;
   gap: 2px;
-  margin-top: 4px;
   min-width: 0;
 }
 
@@ -76,11 +73,11 @@ defineProps({ userInfo: Object });
   border: none;
   padding: 0;
   cursor: pointer;
-  margin-right: 12px;
+  margin-right: 14px;
 }
 
 .editBtn img {
-  width: 23px;
-  height: 23px;
+  width: 20px;
+  height: 20px;
 }
 </style>

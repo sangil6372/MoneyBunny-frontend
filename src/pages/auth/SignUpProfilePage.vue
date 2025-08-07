@@ -1,53 +1,70 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref, reactive, computed } from 'vue';
-import axios from 'axios';
+import { useRouter, useRoute } from "vue-router";
+import { ref, reactive, computed, onMounted } from "vue";
+import axios from "axios";
 
 // 프로필 이미지들
+// 🎵(유정) 마이페이지 - 프사 연동을 위한 로직 변경
 const profileImages = [
-  new URL(
-    '@/assets/images/icons/profile/profile_edit_sprout.png',
-    import.meta.url
-  ).href,
-  new URL(
-    '@/assets/images/icons/profile/profile_edit_beard.png',
-    import.meta.url
-  ).href,
-  new URL(
-    '@/assets/images/icons/profile/profile_edit_eyelash.png',
-    import.meta.url
-  ).href,
-  new URL(
-    '@/assets/images/icons/profile/profile_edit_carrot.png',
-    import.meta.url
-  ).href,
+  {
+    key: "sprout",
+    url: new URL(
+      "@/assets/images/icons/profile/profile_edit_sprout.png",
+      import.meta.url
+    ).href,
+  },
+  {
+    key: "beard",
+    url: new URL(
+      "@/assets/images/icons/profile/profile_edit_beard.png",
+      import.meta.url
+    ).href,
+  },
+  {
+    key: "eyelash",
+    url: new URL(
+      "@/assets/images/icons/profile/profile_edit_eyelash.png",
+      import.meta.url
+    ).href,
+  },
+  {
+    key: "carrot",
+    url: new URL(
+      "@/assets/images/icons/profile/profile_edit_carrot.png",
+      import.meta.url
+    ).href,
+  },
 ];
+
+const selectedImageKey = ref(profileImages[0].key); // 초기값: "sprout"
 
 // 👁️ 비밀번호 보기/숨기기 아이콘
 const eyeView = new URL(
-  '@/assets/images/icons/signup/eye_view.png',
+  "@/assets/images/icons/signup/eye_view.png",
   import.meta.url
 ).href;
 const eyeHide = new URL(
-  '@/assets/images/icons/signup/eye_hide.png',
+  "@/assets/images/icons/signup/eye_hide.png",
   import.meta.url
 ).href;
 
 // form 상태값
+const route = useRoute(); // 이메일 받아오기 위한 route
+
 const selectedImage = ref(profileImages[0]);
-const realName = ref('');
-const username = ref('');
-const email = ref('');
-const password = ref('');
-const confirmPassword = ref('');
+const name = ref("");
+const username = ref("");
+const email = ref("");
+const password = ref("");
+const confirmPassword = ref("");
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 // 안내/에러 메시지
-const usernameMsg = ref('');
-const idStatusType = ref(''); // 'error' | 'success'
-const passwordMsg = ref('');
-const confirmStatusType = ref(''); // 'error' | 'success'
+const usernameMsg = ref("");
+const idStatusType = ref(""); // 'error' | 'success'
+const passwordMsg = ref("");
+const confirmStatusType = ref(""); // 'error' | 'success'
 
 // 약관 체크
 const agreement = reactive({
@@ -70,44 +87,47 @@ const handleAllAgree = () => {
 const pwRule =
   /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()\-_=+{}[\]|\\;:'",.<>/?]).{8,}$/;
 const emailRule = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const nameRule = /^[가-힣a-zA-Z\s]{2,20}$/;
+// 이름 유효성 검사 정규식
+const isValidName = computed(() => nameRule.test(name.value));
 
 // 아이디 중복확인
 const checkUsername = async () => {
-  usernameMsg.value = '';
-  idStatusType.value = '';
+  usernameMsg.value = "";
+  idStatusType.value = "";
   if (!username.value || username.value.length < 6) {
-    usernameMsg.value = '아이디는 6자 이상 입력해야 합니다.';
-    idStatusType.value = 'error';
+    usernameMsg.value = "아이디는 6자 이상 입력해야 합니다.";
+    idStatusType.value = "error";
     return;
   }
   try {
     const res = await axios.get(`/api/member/checkusername/${username.value}`);
     if (res.data === true) {
-      usernameMsg.value = '이미 사용 중인 아이디입니다.';
-      idStatusType.value = 'error';
+      usernameMsg.value = "이미 사용 중인 아이디입니다.";
+      idStatusType.value = "error";
     } else {
-      usernameMsg.value = '사용 가능한 아이디입니다!';
-      idStatusType.value = 'success';
+      usernameMsg.value = "사용 가능한 아이디입니다!";
+      idStatusType.value = "success";
     }
   } catch {
-    usernameMsg.value = '아이디 확인 중 오류가 발생했습니다.';
-    idStatusType.value = 'error';
+    usernameMsg.value = "아이디 확인 중 오류가 발생했습니다.";
+    idStatusType.value = "error";
   }
 };
 
 // 비밀번호 일치 검사
 const validatePassword = () => {
   if (!password.value || !confirmPassword.value) {
-    passwordMsg.value = '';
-    confirmStatusType.value = '';
+    passwordMsg.value = "";
+    confirmStatusType.value = "";
     return;
   }
   if (password.value !== confirmPassword.value) {
-    passwordMsg.value = '비밀번호가 서로 일치하지 않습니다.';
-    confirmStatusType.value = 'error';
+    passwordMsg.value = "비밀번호가 서로 일치하지 않습니다.";
+    confirmStatusType.value = "error";
   } else {
-    passwordMsg.value = '';
-    confirmStatusType.value = 'success';
+    passwordMsg.value = "";
+    confirmStatusType.value = "success";
   }
 };
 
@@ -115,9 +135,9 @@ const validatePassword = () => {
 const canSignUp = computed(() => {
   return (
     selectedImage.value &&
-    realName.value.trim().length > 0 &&
+    name.value.trim().length > 0 &&
     username.value.length >= 6 &&
-    idStatusType.value === 'success' &&
+    idStatusType.value === "success" &&
     email.value.trim().length > 0 &&
     emailRule.test(email.value) &&
     pwRule.test(password.value) &&
@@ -132,17 +152,42 @@ const router = useRouter();
 const showToast = ref(false);
 
 const goBack = () => router.back();
-const goLogin = () => router.push('/');
+const goLogin = () => router.push("/");
 
 // 회원가입 처리 (API는 실제 적용시 추가)
+// 🎵(유정)
 const handleSignUp = async () => {
   if (!canSignUp.value) return;
-  showToast.value = true;
-  setTimeout(() => {
-    showToast.value = false;
-    goLogin();
-  }, 1200);
+
+  try {
+    const payload = {
+      name: name.value,
+      loginId: username.value,
+      email: email.value,
+      password: password.value,
+    };
+
+    await axios.post("/api/member/join", payload);
+
+    // 여기서 localStorage에 저장
+
+    localStorage.setItem("avatarKey", selectedImageKey.value);
+
+    showToast.value = true;
+    setTimeout(() => {
+      showToast.value = false;
+      goLogin(); // 예: 로그인 페이지로 이동
+    }, 1200);
+  } catch (err) {
+    alert(err.response?.data || "회원가입 중 오류가 발생했습니다.");
+  }
 };
+
+onMounted(() => {
+  if (route.query.email) {
+    email.value = route.query.email;
+  }
+});
 </script>
 
 <template>
@@ -159,39 +204,54 @@ const handleSignUp = async () => {
         class="bunnyImage"
       />
       <div class="card">
-        <div class="title font-26 font-extrabold">MoneyBunny</div>
-        <p class="subtitle font-14">새로운 계정을 만들어보세요</p>
+        <div class="title font-24 font-extrabold">MoneyBunny</div>
+        <p class="subtitle font-13">새로운 계정을 만들어보세요</p>
 
         <!-- 프로필 이미지 선택 -->
         <div class="profileImageSection">
-          <div class="font-14 font-bold">프로필 사진 선택</div>
+          <div class="font-13 font-bold">프로필 사진 선택</div>
           <div class="profileImages">
             <img
-              v-for="(img, idx) in profileImages"
-              :key="idx"
-              :src="img"
+              v-for="img in profileImages"
+              :key="img.key"
+              :src="img.url"
               class="profileImage"
-              :class="{ selected: selectedImage === img }"
-              @click="selectedImage = img"
+              :class="{ selected: selectedImageKey === img.key }"
+              @click="selectedImageKey = img.key"
             />
           </div>
-          <p class="profileGuide font-12 font-light">
+          <p class="profileGuide font-11 font-light">
             원하는 프로필 사진을 선택하세요
           </p>
         </div>
 
         <!-- 이름 -->
         <div class="formGroup">
-          <label class="font-14 font-bold">이름</label>
+          <label class="font-13 font-bold">이름</label>
           <input
             type="text"
-            v-model="realName"
+            v-model="name"
+            :class="{ error: !isValidName && name }"
             placeholder="이름을 입력하세요"
           />
+          <p
+            v-if="name"
+            class="font-10 idStatusMsg"
+            :class="{
+              error: !isValidName,
+              success: isValidName,
+            }"
+          >
+            {{
+              isValidName
+                ? "사용 가능한 이름입니다!"
+                : "이름은 2~20자 한글/영문만 입력해주세요."
+            }}
+          </p>
         </div>
         <!-- 아이디 -->
         <div class="formGroup">
-          <label class="font-14 font-bold">아이디</label>
+          <label class="font-13 font-bold">아이디</label>
           <div class="inputRowHorizontal">
             <input
               type="text"
@@ -199,13 +259,13 @@ const handleSignUp = async () => {
               placeholder="아이디를 입력하세요"
               class="idInput"
             />
-            <button class="checkButton font-11" @click="checkUsername">
+            <button class="checkButton font-10" @click="checkUsername">
               중복확인
             </button>
           </div>
           <template v-if="usernameMsg">
             <p
-              class="font-11 idStatusMsg"
+              class="font-10 idStatusMsg"
               :class="{
                 error: idStatusType === 'error',
                 success: idStatusType === 'success',
@@ -215,23 +275,24 @@ const handleSignUp = async () => {
             </p>
           </template>
           <template v-else>
-            <p class="requireMsg font-11 font-light">
+            <p class="requireMsg font-10 font-light">
               영문, 숫자 조합 6자 이상
             </p>
           </template>
         </div>
         <!-- 이메일 -->
         <div class="formGroup">
-          <label class="font-14 font-bold">이메일</label>
+          <label class="font-13 font-bold">이메일</label>
           <input
             type="email"
             v-model="email"
             placeholder="이메일을 입력하세요"
+            readonly
           />
         </div>
         <!-- 비밀번호 -->
         <div class="formGroup">
-          <label class="font-14 font-bold">비밀번호</label>
+          <label class="font-13 font-bold">비밀번호</label>
           <div class="inputRow" style="position: relative">
             <input
               :type="showPassword ? 'text' : 'password'"
@@ -241,17 +302,17 @@ const handleSignUp = async () => {
               @input="validatePassword"
             />
             <img
-              :src="showPassword ? eyeHide : eyeView"
+              :src="showPassword ? eyeView : eyeHide"
               class="icon"
               alt="비밀번호 보기 토글"
               @click="showPassword = !showPassword"
             />
           </div>
-          <p class="font-11 font-light">8자 이상, 영문/숫자/특수문자 포함</p>
+          <p class="font-10 font-light">8자 이상, 영문/숫자/특수문자 포함</p>
         </div>
         <!-- 비밀번호 확인 -->
         <div class="formGroup">
-          <label class="font-14 font-bold">비밀번호 확인</label>
+          <label class="font-13 font-bold">비밀번호 확인</label>
           <div class="inputRow" style="position: relative">
             <input
               :type="showConfirmPassword ? 'text' : 'password'"
@@ -261,7 +322,7 @@ const handleSignUp = async () => {
               @input="validatePassword"
             />
             <img
-              :src="showConfirmPassword ? eyeHide : eyeView"
+              :src="showConfirmPassword ? eyeView : eyeHide"
               class="icon"
               alt="비밀번호 보기 토글"
               @click="showConfirmPassword = !showConfirmPassword"
@@ -269,14 +330,17 @@ const handleSignUp = async () => {
           </div>
           <p
             v-if="passwordMsg"
-            class="font-11 pwStatusMsg"
-            :class="{ error: confirmStatusType === 'error' }"
+            class="pwStatusMsg font-10"
+            :class="{
+              error: confirmStatusType === 'error',
+              success: confirmStatusType === 'success',
+            }"
           >
             {{ passwordMsg }}
           </p>
         </div>
         <!-- 약관동의 -->
-        <div class="agreementGroup font-12">
+        <div class="agreementGroup font-11">
           <label class="checkboxRow">
             <input
               type="checkbox"
@@ -312,10 +376,10 @@ const handleSignUp = async () => {
         </div>
         <!-- 버튼 -->
         <div class="buttonGroup">
-          <button @click="goBack" class="backButton font-15">이전</button>
+          <button @click="goBack" class="backButton font-14">이전</button>
           <button
             @click="handleSignUp"
-            class="submitButton font-15"
+            class="submitButton font-14"
             :disabled="!canSignUp"
             :style="{
               backgroundColor: canSignUp
@@ -344,7 +408,7 @@ const handleSignUp = async () => {
 .cardBox {
   position: relative;
   width: 100%;
-  max-width: 360px;
+  max-width: 320px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -357,12 +421,12 @@ const handleSignUp = async () => {
 }
 .card {
   width: 100%;
-  max-width: 360px;
-  min-height: 460px;
+  max-width: 320px;
+  min-height: 420px;
   background: white;
   border-radius: 12px;
   border: none;
-  padding: 32px 24px 32px 24px;
+  padding: 28px 20px;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
@@ -371,36 +435,37 @@ const handleSignUp = async () => {
 .title {
   text-align: center;
   color: var(--text-login);
+  margin-bottom: 8px;
 }
 
 .subtitle {
   text-align: center;
   color: var(--text-bluegray);
-  margin: 8px 0 32px;
+  margin-bottom: 32px;
 }
 
 .profileImageSection {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-bluegray);
 }
 .profileImages {
   display: flex;
   gap: 10px;
-  margin-top: 10px;
-  margin-bottom: 12px;
+  margin-top: 12px;
+  margin-bottom: 14px;
   justify-content: center;
 }
 
 .profileImage {
-  width: 66px;
-  height: 66px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   cursor: pointer;
   box-sizing: border-box;
 }
 
 .profileImage.selected {
-  border: 1.75px solid var(--base-blue-dark);
+  border: 1.5px solid var(--base-blue-dark);
 }
 
 .profileGuide {
@@ -414,14 +479,14 @@ const handleSignUp = async () => {
   align-items: stretch;
 }
 .formGroup label {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-bluegray);
 }
 
 input {
   margin-top: 7px;
-  font-size: 13px;
-  padding: 12px 16px;
+  font-size: 12px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
@@ -445,11 +510,11 @@ input:focus {
 
 .idInput {
   flex: 1;
-  padding: 12px 16px;
+  padding: 10px 14px;
   border: 1.2px solid var(--input-outline);
   border-radius: 8px;
   background-color: transparent;
-  font-size: 13px;
+  font-size: 12px;
   outline: none;
   min-width: 0;
 }
@@ -458,16 +523,17 @@ input:focus {
 }
 .passwordInput {
   width: 100%;
+  margin-bottom: 3px;
 }
 
 .checkButton {
   flex-shrink: 0;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 5px 10px;
-  border-radius: 8px;
+  padding: 2px 5px;
+  border-radius: 4px;
   border: none;
-  height: 40px;
+  height: 30px;
   margin-left: 3px;
 }
 
@@ -476,8 +542,8 @@ input:focus {
   right: 16px;
   top: 55%;
   transform: translateY(-50%);
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
   user-select: none;
 }
@@ -495,16 +561,16 @@ input:focus {
   cursor: pointer;
   user-select: none;
 }
-.checkboxRow input[type='checkbox'] {
+.checkboxRow input[type="checkbox"] {
   accent-color: var(--base-blue-dark);
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   margin: 0 8px 0 0;
   vertical-align: middle;
   display: inline-block;
 }
 .checkboxRow span {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-bluegray);
   line-height: 1;
   display: inline-block;
@@ -542,13 +608,13 @@ input:focus {
 }
 
 .requireMsg {
-  margin-top: 5px;
+  margin-top: 3px;
   margin-left: 5px;
   margin-bottom: 0;
   color: var(--text-bluegray);
 }
 .idStatusMsg {
-  margin-top: 5px;
+  margin-top: 3px;
   margin-left: 5px;
 }
 .idStatusMsg.error {
@@ -558,9 +624,16 @@ input:focus {
   color: var(--success-text);
 }
 .pwStatusMsg {
-  margin-top: 5px;
+  margin-top: 3px;
   margin-left: 5px;
   color: var(--alert-strong);
+}
+
+.pwStatusMsg.error {
+  color: var(--alert-strong);
+}
+.pwStatusMsg.success {
+  color: var(--success-text);
 }
 
 .toastMsg {
@@ -573,7 +646,7 @@ input:focus {
   color: #fff;
   padding: 10px 20px;
   border-radius: 8px;
-  font-size: 15px;
+  font-size: 14px;
   min-width: 300px;
   max-width: 400px;
   text-align: center;

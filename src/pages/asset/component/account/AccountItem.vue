@@ -88,5 +88,4 @@ const handleDelete = (event) => {
 </script>
 <style scoped>
 @import '@/assets/styles/item-styles.css';
-/* 추가 계좌 전용 스타일이 있다면 여기에 */
 </style>

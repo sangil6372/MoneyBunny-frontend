@@ -1,5 +1,5 @@
 <template>
-  <NotificationItem :is-read="item.read">
+  <NotificationItem :is-read="item.read" @delete="handleDelete">
     <h3 class="title">{{ item.title }}</h3>
     <p class="message">{{ item.description || item.message }}</p>
     <div class="bottom">
@@ -69,6 +69,19 @@ const handleButtonClick = async () => {
     console.error('알림 처리 실패:', error);
     const path = getRoutePath(props.item.type, props.item.targetUrl);
     router.push(path);
+  }
+};
+
+// 💪(상일) 알림 삭제 처리
+const handleDelete = async () => {
+  try {
+    if (confirm('이 알림을 삭제하시겠습니까?')) {
+      await notificationStore.deleteNotification(props.item.id);
+      console.log('✅ 알림 삭제 완료');
+    }
+  } catch (error) {
+    console.error('❌ 알림 삭제 실패:', error);
+    alert('알림 삭제에 실패했습니다.');
   }
 };
 </script>
