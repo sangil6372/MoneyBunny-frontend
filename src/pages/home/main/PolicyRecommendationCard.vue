@@ -2,7 +2,7 @@
   <div class="recommendation-section">
     <template v-if="policyList.length > 0">
       <div class="header">
-        <h2>맞춤정책 추천 Top3</h2>
+        <div>맞춤정책 추천 TOP3</div>
         <span class="more" @click="goToPolicy">더보기</span>
       </div>
       <div class="card-list">
@@ -84,18 +84,17 @@ defineExpose({
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.header h2 {
-  font-size: 1.125rem; /* 18px */
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
+  padding-left: 0.25rem;
 }
 
 .more {
-  font-size: 0.875rem; /* 14px */
-  font-weight: 400;
+  font-size: 0.75rem;
+  font-weight: bold;
+  margin-right: 0.25rem;
   color: var(--text-lightgray);
   cursor: pointer;
 }

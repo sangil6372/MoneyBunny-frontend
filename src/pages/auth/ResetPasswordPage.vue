@@ -1,16 +1,16 @@
 <script setup>
-import { ref, computed } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import axios from "axios";
+import { ref, computed } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
 // 🎵(유정) 이메일 인증(FindPasswordPage) 후 비밀번호 재설정 페이지
 const router = useRouter();
 const route = useRoute(); // loginId
 
-const password = ref("");
-const confirmPassword = ref("");
+const password = ref('');
+const confirmPassword = ref('');
 const showSuccess = ref(false); // ✅ 성공 메시지 표시 여부
-const errorMsg = ref("");
+const errorMsg = ref('');
 const loginId = route.query.loginId; // loginId 가져옴
 
 const showToast = ref(false); // ✅ 토스트용
@@ -28,66 +28,66 @@ const isPasswordValid = computed(() =>
 
 // 힌트/에러/성공 메시지 판별용 computed
 const passwordHintMsg = computed(() => {
-  if (!password.value) return "8자 이상, 영문/숫자/특수문자 모두 포함";
-  if (!isPasswordValid.value) return "비밀번호 조건을 확인하세요.";
-  return "사용 가능한 비밀번호입니다.";
+  if (!password.value) return '8자 이상, 영문/숫자/특수문자 모두 포함';
+  if (!isPasswordValid.value) return '비밀번호 조건을 확인하세요.';
+  return '사용 가능한 비밀번호입니다.';
 });
 const passwordHintClass = computed(() => {
-  if (!password.value) return "inputHint";
-  if (!isPasswordValid.value) return "inputError";
-  return "inputSuccess";
+  if (!password.value) return 'inputHint';
+  if (!isPasswordValid.value) return 'inputError';
+  return 'inputSuccess';
 });
 
 const confirmErrorMsg = computed(() => {
-  if (!confirmPassword.value) return "";
+  if (!confirmPassword.value) return '';
   if (
     password.value &&
     confirmPassword.value &&
     password.value !== confirmPassword.value
   )
-    return "비밀번호가 일치하지 않습니다.";
-  return "";
+    return '비밀번호가 일치하지 않습니다.';
+  return '';
 });
 
 // ✨ 비밀번호 변경 (토스트 → 로그인)
 const handleReset = async () => {
-  errorMsg.value = "";
+  errorMsg.value = '';
   if (!password.value || !confirmPassword.value) {
-    errorMsg.value = "비밀번호를 다시 입력하세요.";
+    errorMsg.value = '비밀번호를 다시 입력하세요.';
     return;
   }
   if (!isPasswordValid.value) {
-    errorMsg.value = "비밀번호 조건을 확인하세요.";
+    errorMsg.value = '비밀번호 조건을 확인하세요.';
     return;
   }
   if (password.value !== confirmPassword.value) {
-    errorMsg.value = "비밀번호가 일치하지 않습니다.";
+    errorMsg.value = '비밀번호가 일치하지 않습니다.';
     return;
   }
   try {
-    await axios.post("/api/auth/reset-password", {
+    await axios.post('/api/auth/reset-password', {
       loginId,
       password: password.value,
     });
-    errorMsg.value = "";
+    errorMsg.value = '';
     showSuccess.value = true;
     showToast.value = true;
-    setTimeout(() => {
-      showToast.value = false;
-      router.push("/");
-    }, 1200);
+    // setTimeout(() => {
+    //   showToast.value = false;
+    //   router.push('/');
+    // }, 1200);
   } catch (err) {
     errorMsg.value =
-      err.response?.data || "비밀번호 변경 중 오류가 발생했습니다.";
+      err.response?.data || '비밀번호 변경 중 오류가 발생했습니다.';
 
     // 비밀번호 값 리셋
-    password.value = "";
-    confirmPassword.value = "";
+    password.value = '';
+    confirmPassword.value = '';
   }
 };
 
 const goToLogin = () => {
-  router.push("/");
+  router.push('/');
 };
 </script>
 
@@ -106,7 +106,7 @@ const goToLogin = () => {
         </div>
       </transition>
 
-      <div class="card" v-if="!showSuccess">
+      <div class="card">
         <div class="title font-24 font-extrabold">MoneyBunny</div>
         <p class="subtitle font-13">새 비밀번호를 입력해주세요</p>
         <!-- 에러창 -->
@@ -151,7 +151,7 @@ const goToLogin = () => {
           class="resetButton font-14"
           @click="showSuccess ? goToLogin() : handleReset()"
         >
-          {{ showSuccess ? "로그인하러 가기" : "비밀번호 변경" }}
+          {{ showSuccess ? '로그인하러 가기' : '비밀번호 변경' }}
         </button>
 
         <div class="loginLink font-11">

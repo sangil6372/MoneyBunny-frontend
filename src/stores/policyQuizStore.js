@@ -139,6 +139,22 @@ export const usePolicyQuizStore = defineStore('policyQuiz', () => {
     };
   }
 
+  function resetQuiz() {
+    educationLevels.value = '';
+    majors.value = '';
+    employmentStatuses.value = '';
+    income.value = '';
+    moneyRank.value = 0;
+    popularityRank.value = 0;
+    periodRank.value = 0;
+    birthYear.value = '';
+    birthMonth.value = '';
+    birthDay.value = '';
+    regionName.value = '';
+    regions.value = '';
+    // ...필요시 추가 필드...
+  }
+
   return {
     // state
     age,
@@ -175,5 +191,6 @@ export const usePolicyQuizStore = defineStore('policyQuiz', () => {
     setPopularityRank,
     setSpecialConditions,
     getRequestPayload,
+    resetQuiz,
   };
 });

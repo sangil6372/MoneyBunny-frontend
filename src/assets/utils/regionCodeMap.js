@@ -309,3 +309,34 @@ export const regionCodeMap = {
     평창군: '52800',
   },
 };
+
+// 지역/구 이름으로 코드 배열 반환 (전체 선택 시 모든 구 코드)
+export function getRegionCodes(region, district) {
+  const regionObj = regionCodeMap[region];
+  if (!regionObj) return [];
+
+  if (district === '전체') {
+    // 전체 선택 시 해당 지역의 모든 구 코드 반환
+    return Object.entries(regionObj)
+      .filter(([key]) => key !== '전체')
+      .map(([, code]) => code)
+      .flat();
+  }
+
+  const code = regionObj[district];
+  return code ? (Array.isArray(code) ? code : [code]) : [];
+}
+
+// 코드로 지역/구 이름 반환 (역매핑)
+export function getRegionNameByCode(code) {
+  for (const [region, districts] of Object.entries(regionCodeMap)) {
+    for (const [district, value] of Object.entries(districts)) {
+      if (Array.isArray(value)) {
+        if (value.includes(code)) return { region, district };
+      } else {
+        if (value === code) return { region, district };
+      }
+    }
+  }
+  return null;
+}

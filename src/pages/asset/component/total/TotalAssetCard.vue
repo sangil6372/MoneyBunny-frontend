@@ -23,6 +23,7 @@ const totalAssetDisplay = computed(() =>
     ? props.summary.totalAsset.toLocaleString() + '원'
     : '-'
 );
+
 const monthlyExpenseDisplay = computed(() =>
   props.summary.thisMonthCardUsed != null
     ? props.summary.thisMonthCardUsed.toLocaleString() + '원'
@@ -32,4 +33,27 @@ const monthlyExpenseDisplay = computed(() =>
 
 <style scoped>
 @import '@/assets/styles/homecard.css';
+
+/* 카드 사이즈만 SummaryCard와 동일하게 조정 */
+.home-card {
+  height: 120px;
+  padding: 1.25rem 1.5rem;
+  /* 좌우 배치를 위한 flexbox 설정 */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* 각 섹션 스타일 조정 */
+.home-card-section {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+/* 우측 섹션은 오른쪽 정렬 */
+.home-card-section:last-child {
+  text-align: right;
+}
 </style>

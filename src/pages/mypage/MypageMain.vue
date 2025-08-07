@@ -23,7 +23,6 @@
       v-if="isModalOpen"
       :name="userInfo.name"
       :email="userInfo.email"
-      :phone="userInfo.phone"
       :profileImage="userInfo.profileImage"
       @close="isModalOpen = false"
       @update="handleUpdate"
@@ -35,6 +34,7 @@
 import { ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useBookmarkStore } from "@/stores/bookmark";
+import axios from "axios";
 
 // 컴포넌트 import
 import MypageProfileCard from "./common/MypageProfileCard.vue";
@@ -53,6 +53,7 @@ const currentTab = ref("profile");
 const isModalOpen = ref(false);
 
 // 프사
+// 🎵(유정) 프사 연동(localStorage)
 const profileImages = [imgSprout, imgBeard, imgEyelash, imgCarrot];
 const avatarMap = {
   sprout: imgSprout,
@@ -63,9 +64,8 @@ const avatarMap = {
 const avatarKey = localStorage.getItem("avatarKey") || "sprout"; // 기본값: sprout
 
 const userInfo = ref({
-  name: "서루피",
-  email: "loopy@gmail.com",
-  phone: "010-1234-5678",
+  name: "",
+  email: "",
   profileImage: avatarMap[avatarKey],
 });
 
@@ -96,7 +96,27 @@ const handleUpdate = (data) => {
 };
 
 // 💪(상일) 컴포넌트 마운트 시 북마크 데이터 미리 로드
+// 🎵(유정) 프로필 호출
 onMounted(async () => {
+  // auth 토큰 꺼내기 (share 컴포넌트 참고)
+  const savedAuth = localStorage.getItem("auth");
+  const parsed = savedAuth ? JSON.parse(savedAuth) : {};
+  const token = parsed.token; // 로그인할 때 저장한 객체에 token 프로퍼티가 있어야 함
+
+  // 헤더 세팅
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+  // 프로필 API 호출
+  try {
+    const res = await axios.get("/api/member/information", { headers });
+    console.log(res);
+    userInfo.value.name = res.data.name;
+    userInfo.value.email = res.data.email;
+  } catch (err) {
+    console.error("프로필 불러오기 실패:", err);
+  }
+
+  // 북마크 로드
   await fetchBookmarks();
 });
 </script>

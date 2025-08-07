@@ -15,20 +15,22 @@ export const useNotificationStore = defineStore('notification', () => {
     isActiveNewPolicy: false,
     isActiveFeedback: false,
     status: 'INACTIVE',
-    message: ''
+    message: '',
   });
   const loading = ref(false);
   const error = ref(null);
 
   // 💪(상일) 계산된 속성들
   const hasUnread = computed(() => unreadCount.value > 0);
-  
-  const policyNotifications = computed(() => 
-    notifications.value.filter(n => ['BOOKMARK', 'TOP3', 'NEW_POLICY'].includes(n.type))
+
+  const policyNotifications = computed(() =>
+    notifications.value.filter((n) =>
+      ['BOOKMARK', 'TOP3', 'NEW_POLICY'].includes(n.type)
+    )
   );
-  
-  const feedbackNotifications = computed(() => 
-    notifications.value.filter(n => n.type === 'FEEDBACK')
+
+  const feedbackNotifications = computed(() =>
+    notifications.value.filter((n) => n.type === 'FEEDBACK')
   );
 
   // 💪(상일) 날짜 변환 유틸리티 함수들
@@ -51,9 +53,9 @@ export const useNotificationStore = defineStore('notification', () => {
     error.value = null;
     try {
       const response = await notificationAPI.getNotifications();
-      
+
       // 💪(상일) API 응답을 컴포넌트가 기대하는 형태로 변환
-      const transformedData = response.data.map(notification => ({
+      const transformedData = response.data.map((notification) => ({
         id: notification.id,
         type: notification.type, // BOOKMARK, TOP3, NEW_POLICY, FEEDBACK
         title: notification.title,
@@ -68,9 +70,9 @@ export const useNotificationStore = defineStore('notification', () => {
         // 누락된 필드들 기본값 설정
         benefit: null,
         dday: null,
-        date: formatDateToString(notification.createdAt)
+        date: formatDateToString(notification.createdAt),
       }));
-      
+
       notifications.value = transformedData;
     } catch (err) {
       error.value = err.message;
@@ -83,10 +85,10 @@ export const useNotificationStore = defineStore('notification', () => {
   // 💪(상일) 미읽은 알림 개수 조회
   const fetchUnreadCount = async () => {
     try {
-      const response = await notificationAPI.getUnreadCount();
-      unreadCount.value = response.data;
+      // const response = await notificationAPI.getUnreadCount();
+      // unreadCount.value = response.data;
     } catch (err) {
-      console.error('미읽은 알림 개수 조회 실패:', err);
+      // console.error('미읽은 알림 개수 조회 실패:', err);
     }
   };
 
@@ -95,7 +97,9 @@ export const useNotificationStore = defineStore('notification', () => {
     try {
       await notificationAPI.markAsRead(notificationId);
       // 로컬 상태 업데이트
-      const notification = notifications.value.find(n => n.id === notificationId);
+      const notification = notifications.value.find(
+        (n) => n.id === notificationId
+      );
       if (notification) {
         notification.isRead = true;
         unreadCount.value = Math.max(0, unreadCount.value - 1);
@@ -110,7 +114,9 @@ export const useNotificationStore = defineStore('notification', () => {
     try {
       await notificationAPI.deleteNotification(notificationId);
       // 로컬 상태에서 제거
-      const notificationIndex = notifications.value.findIndex(n => n.id === notificationId);
+      const notificationIndex = notifications.value.findIndex(
+        (n) => n.id === notificationId
+      );
       if (notificationIndex !== -1) {
         const notification = notifications.value[notificationIndex];
         // 읽지 않은 알림인 경우 카운트 감소
@@ -133,12 +139,12 @@ export const useNotificationStore = defineStore('notification', () => {
       // FCMTokenManager를 통해 유효한 토큰 획득 (없으면 자동 발급)
       const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
       const token = await fcmTokenManager.getValidToken();
-      
+
       const response = await subscriptionAPI.getStatus(token);
-      
+
       if (response.data) {
         const data = response.data;
-        
+
         // 💪(상일) API 응답 구조에 맞게 정확한 필드명 사용
         subscriptionStatus.subscribed = data.subscribed ?? false;
         subscriptionStatus.status = data.status || 'INACTIVE';
@@ -150,7 +156,7 @@ export const useNotificationStore = defineStore('notification', () => {
       }
     } catch (err) {
       console.error('구독 상태 조회 실패:', err);
-      
+
       // 💪(상일) 404나 구독 데이터가 없는 경우 초기 구독 설정 필요
       if (err.response?.status === 404 || err.response?.status === 400) {
         await createInitialSubscription();
@@ -180,11 +186,11 @@ export const useNotificationStore = defineStore('notification', () => {
         isActiveBookmark: false,
         isActiveTop3: false,
         isActiveNewPolicy: false,
-        isActiveFeedback: false
+        isActiveFeedback: false,
       };
-      
+
       await subscriptionAPI.subscribe(initialData);
-      
+
       // 상태 재조회
       await fetchSubscriptionStatus();
     } catch (err) {
@@ -207,10 +213,10 @@ export const useNotificationStore = defineStore('notification', () => {
     const token = await fcmTokenManager.getValidToken();
 
     const data = { token, enabled };
-    
+
     try {
       // 💪(상일) 즉시 UI 업데이트 (낙관적 업데이트)
-      switch(type) {
+      switch (type) {
         case 'bookmark':
           subscriptionStatus.isActiveBookmark = enabled;
           break;
@@ -224,9 +230,9 @@ export const useNotificationStore = defineStore('notification', () => {
           subscriptionStatus.isActiveFeedback = enabled;
           break;
       }
-      
+
       // API 호출
-      switch(type) {
+      switch (type) {
         case 'bookmark':
           await subscriptionAPI.toggleBookmark(data);
           break;
@@ -240,19 +246,18 @@ export const useNotificationStore = defineStore('notification', () => {
           await subscriptionAPI.toggleFeedback(data);
           break;
       }
-      
     } catch (err) {
       console.error(`${type} 알림 토글 실패:`, err);
-      
+
       // 💪(상일) 구독 데이터가 없는 경우 초기 설정 후 재시도
       if (err.response?.status === 404 || err.response?.status === 400) {
         await createInitialSubscription();
         await toggleNotificationType(type, enabled);
         return;
       }
-      
+
       // 💪(상일) API 실패 시 로컬 상태를 이전으로 롤백
-      switch(type) {
+      switch (type) {
         case 'bookmark':
           subscriptionStatus.isActiveBookmark = !enabled;
           break;
@@ -278,12 +283,12 @@ export const useNotificationStore = defineStore('notification', () => {
     subscriptionStatus,
     loading,
     error,
-    
+
     // 계산된 속성
     hasUnread,
     policyNotifications,
     feedbackNotifications,
-    
+
     // 액션
     fetchNotifications,
     fetchUnreadCount,

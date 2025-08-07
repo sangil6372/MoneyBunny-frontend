@@ -59,7 +59,7 @@ import CategoryDonutChart from '../component/spending/CategoryDonutChart.vue';
 import CategoryList from '../component/spending/CategoryList.vue';
 import CategoryChart from '../component/spending/CategoryChart.vue';
 import CategoryDetailView from '../component/spending/CategoryDetailView.vue';
-import DetailModal from '../component/common/DetailModal.vue';
+import DetailModal from '../component/detail/DetailModal.vue';
 
 // 지출 데이터 composable 사용
 const {

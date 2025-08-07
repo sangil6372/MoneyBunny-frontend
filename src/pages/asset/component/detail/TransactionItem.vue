@@ -1,5 +1,5 @@
 <template>
-  <div class="transaction-item">
+  <div class="transaction-item" @click="handleClick">
     <div class="transaction-left">
       <p class="transaction-title">
         {{ data.description }}
@@ -31,6 +31,8 @@ const props = defineProps({
   type: { type: String, required: true }, // 'card' | 'account'
 });
 
+const emit = defineEmits(['click']);
+
 const formattedAmount = computed(() => props.data.amount.toLocaleString());
 
 // 카드면 환불이면 입금, 아니면 지출
@@ -47,6 +49,11 @@ const amountSign = computed(() => {
   }
   return props.data.type === '입금' ? '+' : '-';
 });
+
+//🥕 거래내역 클릭 시 부모로 거래 데이터 전송
+const handleClick = () => {
+  emit('click', props.data);
+};
 </script>
 
 <style scoped>
@@ -57,6 +64,15 @@ const amountSign = computed(() => {
   padding: 0.75rem 0; /* 카드 내부 간격 축소 */
   background: transparent; /* 개별 아이템 배경 제거 (리스트 카드 내 배경 유지) */
   border-bottom: 1px solid var(--input-bg-3); /* 리스트 구분선 */
+
+  /* 🥕 클릭 가능하도록 추가 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* 🥕 터치 시 피드백 */
+.transaction-item:active {
+  background-color: var(--input-bg-1);
 }
 
 .transaction-item:last-child {

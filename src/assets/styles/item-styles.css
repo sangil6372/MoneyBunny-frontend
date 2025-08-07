@@ -7,14 +7,16 @@
 .account-item,
 .card-item {
   display: flex;
-  align-items: center;
+  align-items: stretch; /* 모든 자식 요소가 같은 높이를 가지도록 */
   justify-content: space-between;
   background: var(--input-bg-2);
   border-radius: 0.75rem;
   padding: 1rem;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
   border: 1px solid #f0f0f0;
+  position: relative; /*배지 고정 위치 기준 */
 }
+
 /* 클릭 시 색상 변화 */
 .account-item:active,
 .card-item:active {
@@ -40,32 +42,67 @@
   border-radius: 0.25rem;
 }
 
-/* 공통 정보 영역 */
+/* ✅ 공통 정보 영역 */
 .account-info,
 .card-info {
   flex: 1;
   cursor: default;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* 요소들을 위아래로 분산 배치 */
+  gap: 0.3rem; /* 요소 간 간격 */
 }
 
+/* 정보 상단 그룹 (계좌명, 계좌번호) */
+.info-top-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
 .info-top {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
+  justify-content: flex-start; /* 좌측 정렬 */
+  gap: 0.5rem;
 }
 
-/* 공통 이름 스타일 */
+/* 정보 하단 그룹 (잔액) */
+.info-bottom-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ✅ info-top - 계좌명만 표시 (대표 배지 제거) */
+.info-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 양끝 정렬 */
+}
+
+/* ✅ 이름은 한 줄로 고정 */
 .bank-name,
 .card-name {
   font-size: 1rem;
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1; /* 남은 공간 차지 */
 }
 
+/* ✅ 대표 배지는 계좌명 옆에 고정 */
 .main-badge {
-  background: var(--text-bluegray);
+  background: var(--base-lavender);
   color: white;
-  font-size: 0.7rem;
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 1rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
 }
 
 /* 공통 서브 텍스트 */
@@ -73,7 +110,7 @@
 .card-number {
   font-size: 0.9rem;
   color: var(--text-lightgray);
-  margin-top: 0.2rem;
+  margin: 0; /* 기존 margin 제거 */
 }
 
 /* 공통 금액 스타일 */
@@ -82,16 +119,18 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--base-blue-dark);
-  margin-top: 0.5rem;
+  margin: 0; /* 기존 margin 제거 */
 }
 
-/* 공통 컨트롤 영역 */
+/* 공통 컨트롤 영역 - 대표 라벨과 대표 설정 버튼 위치 */
 .account-control,
 .card-control {
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.5rem;
+  align-items: flex-end; /* 하단 정렬 */
+  justify-content: space-between; /* 상하 분산 배치 */
+  flex-shrink: 0;
+  align-self: flex-end; /* 부모의 하단에 정렬 */
+  height: 100%; /* 전체 높이 사용 */
 }
 
 .main-label {
@@ -99,6 +138,22 @@
   color: var(--base-blue-dark);
   background: none;
   border: none;
+  white-space: nowrap;
+  align-self: flex-end; /* 우측 상단에 위치 */
+}
+
+.main-badge.top-right {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.7rem;
+  background: var(--base-lavender); /*🥕 대표 뱃지 색상*/
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.15rem 0.6rem;
+  border-radius: 1rem;
+  white-space: nowrap;
+  z-index: 2;
 }
 
 .set-main-btn {
@@ -109,26 +164,12 @@
   padding: 0.25rem 0.6rem;
   border-radius: 1rem;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.1s ease;
+  white-space: nowrap;
 }
 
-.set-main-btn:hover {
+/* ✅ 모바일 터치 피드백 */
+.set-main-btn:active {
   background: var(--sub-skyblue);
-}
-
-.delete-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.delete-btn img {
-  width: 24px;
-  height: 24px;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
-}
-
-.delete-btn:hover img {
-  opacity: 0.8;
+  transform: scale(0.97); /* 살짝 눌리는 효과 */
 }

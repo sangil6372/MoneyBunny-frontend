@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="question font-20">최종 학력을 선택해주세요</div>
+      <div class="question font-18">최종 학력을 선택해주세요</div>
 
       <ul class="options">
         <li
@@ -30,9 +30,9 @@
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-18" @click="goToPrevStep">이전</button>
+      <button class="prevButton font-15" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-18"
+        class="nextButton font-15"
         :disabled="!selectedOption"
         @click="goToNextStep"
       >
@@ -107,7 +107,6 @@ export default {
 }
 
 .quizHeader {
-  margin-top: 10px;
   text-align: center;
   background-color: var(--base-blue-dark);
   border-radius: 12px;
@@ -117,7 +116,7 @@ export default {
   width: 100%;
 }
 .quizContainer {
-  max-width: 390px;
+  max-width: 396px;
   margin: 0 auto;
   padding: 24px;
   background-color: #fff;

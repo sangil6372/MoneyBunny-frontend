@@ -100,6 +100,7 @@ onUnmounted(() => {
   display: flex;
   justify-content: center;
   margin-bottom: 1.5rem;
+  background-color: white;
 }
 
 .chart-container {

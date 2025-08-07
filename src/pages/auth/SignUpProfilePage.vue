@@ -1,36 +1,49 @@
 <script setup>
-import { useRouter, useRoute } from "vue-router";
-import { ref, reactive, computed, onMounted } from "vue";
-import axios from "axios";
+import { useRouter, useRoute } from 'vue-router';
+import { ref, reactive, computed, onMounted } from 'vue';
+import axios from 'axios';
+
+import ServiceTermsModal from './components/ServiceTermsModal.vue';
+import PrivacyTermsModal from './components/PrivacyTermsModal.vue';
+import MarketingTermsModal from './components/MarketingTermsModal.vue';
+
+// 👸🏻(은진) : 약관동의 모달창
+const showTermsModal = ref(false);
+const showPrivacyModal = ref(false);
+const showMarketingModal = ref(false);
+
+const openTermsModal = () => (showTermsModal.value = true);
+const openPrivacyModal = () => (showPrivacyModal.value = true);
+const openMarketingModal = () => (showMarketingModal.value = true);
 
 // 프로필 이미지들
 // 🎵(유정) 마이페이지 - 프사 연동을 위한 로직 변경
 const profileImages = [
   {
-    key: "sprout",
+    key: 'sprout',
     url: new URL(
-      "@/assets/images/icons/profile/profile_edit_sprout.png",
+      '@/assets/images/icons/profile/profile_edit_sprout.png',
       import.meta.url
     ).href,
   },
   {
-    key: "beard",
+    key: 'beard',
     url: new URL(
-      "@/assets/images/icons/profile/profile_edit_beard.png",
+      '@/assets/images/icons/profile/profile_edit_beard.png',
       import.meta.url
     ).href,
   },
   {
-    key: "eyelash",
+    key: 'eyelash',
     url: new URL(
-      "@/assets/images/icons/profile/profile_edit_eyelash.png",
+      '@/assets/images/icons/profile/profile_edit_eyelash.png',
       import.meta.url
     ).href,
   },
   {
-    key: "carrot",
+    key: 'carrot',
     url: new URL(
-      "@/assets/images/icons/profile/profile_edit_carrot.png",
+      '@/assets/images/icons/profile/profile_edit_carrot.png',
       import.meta.url
     ).href,
   },
@@ -40,11 +53,11 @@ const selectedImageKey = ref(profileImages[0].key); // 초기값: "sprout"
 
 // 👁️ 비밀번호 보기/숨기기 아이콘
 const eyeView = new URL(
-  "@/assets/images/icons/signup/eye_view.png",
+  '@/assets/images/icons/signup/eye_view.png',
   import.meta.url
 ).href;
 const eyeHide = new URL(
-  "@/assets/images/icons/signup/eye_hide.png",
+  '@/assets/images/icons/signup/eye_hide.png',
   import.meta.url
 ).href;
 
@@ -52,19 +65,19 @@ const eyeHide = new URL(
 const route = useRoute(); // 이메일 받아오기 위한 route
 
 const selectedImage = ref(profileImages[0]);
-const name = ref("");
-const username = ref("");
-const email = ref("");
-const password = ref("");
-const confirmPassword = ref("");
+const name = ref('');
+const username = ref('');
+const email = ref('');
+const password = ref('');
+const confirmPassword = ref('');
 const showPassword = ref(false);
 const showConfirmPassword = ref(false);
 
 // 안내/에러 메시지
-const usernameMsg = ref("");
-const idStatusType = ref(""); // 'error' | 'success'
-const passwordMsg = ref("");
-const confirmStatusType = ref(""); // 'error' | 'success'
+const usernameMsg = ref('');
+const idStatusType = ref(''); // 'error' | 'success'
+const passwordMsg = ref('');
+const confirmStatusType = ref(''); // 'error' | 'success'
 
 // 약관 체크
 const agreement = reactive({
@@ -93,41 +106,41 @@ const isValidName = computed(() => nameRule.test(name.value));
 
 // 아이디 중복확인
 const checkUsername = async () => {
-  usernameMsg.value = "";
-  idStatusType.value = "";
+  usernameMsg.value = '';
+  idStatusType.value = '';
   if (!username.value || username.value.length < 6) {
-    usernameMsg.value = "아이디는 6자 이상 입력해야 합니다.";
-    idStatusType.value = "error";
+    usernameMsg.value = '아이디는 6자 이상 입력해야 합니다.';
+    idStatusType.value = 'error';
     return;
   }
   try {
     const res = await axios.get(`/api/member/checkusername/${username.value}`);
     if (res.data === true) {
-      usernameMsg.value = "이미 사용 중인 아이디입니다.";
-      idStatusType.value = "error";
+      usernameMsg.value = '이미 사용 중인 아이디입니다.';
+      idStatusType.value = 'error';
     } else {
-      usernameMsg.value = "사용 가능한 아이디입니다!";
-      idStatusType.value = "success";
+      usernameMsg.value = '사용 가능한 아이디입니다!';
+      idStatusType.value = 'success';
     }
   } catch {
-    usernameMsg.value = "아이디 확인 중 오류가 발생했습니다.";
-    idStatusType.value = "error";
+    usernameMsg.value = '아이디 확인 중 오류가 발생했습니다.';
+    idStatusType.value = 'error';
   }
 };
 
 // 비밀번호 일치 검사
 const validatePassword = () => {
   if (!password.value || !confirmPassword.value) {
-    passwordMsg.value = "";
-    confirmStatusType.value = "";
+    passwordMsg.value = '';
+    confirmStatusType.value = '';
     return;
   }
   if (password.value !== confirmPassword.value) {
-    passwordMsg.value = "비밀번호가 서로 일치하지 않습니다.";
-    confirmStatusType.value = "error";
+    passwordMsg.value = '비밀번호가 서로 일치하지 않습니다.';
+    confirmStatusType.value = 'error';
   } else {
-    passwordMsg.value = "";
-    confirmStatusType.value = "success";
+    passwordMsg.value = '';
+    confirmStatusType.value = 'success';
   }
 };
 
@@ -137,7 +150,7 @@ const canSignUp = computed(() => {
     selectedImage.value &&
     name.value.trim().length > 0 &&
     username.value.length >= 6 &&
-    idStatusType.value === "success" &&
+    idStatusType.value === 'success' &&
     email.value.trim().length > 0 &&
     emailRule.test(email.value) &&
     pwRule.test(password.value) &&
@@ -152,7 +165,7 @@ const router = useRouter();
 const showToast = ref(false);
 
 const goBack = () => router.back();
-const goLogin = () => router.push("/");
+const goLogin = () => router.push('/');
 
 // 회원가입 처리 (API는 실제 적용시 추가)
 // 🎵(유정)
@@ -167,11 +180,11 @@ const handleSignUp = async () => {
       password: password.value,
     };
 
-    await axios.post("/api/member/join", payload);
+    await axios.post('/api/member/join', payload);
 
     // 여기서 localStorage에 저장
 
-    localStorage.setItem("avatarKey", selectedImageKey.value);
+    localStorage.setItem('avatarKey', selectedImageKey.value);
 
     showToast.value = true;
     setTimeout(() => {
@@ -179,7 +192,7 @@ const handleSignUp = async () => {
       goLogin(); // 예: 로그인 페이지로 이동
     }, 1200);
   } catch (err) {
-    alert(err.response?.data || "회원가입 중 오류가 발생했습니다.");
+    alert(err.response?.data || '회원가입 중 오류가 발생했습니다.');
   }
 };
 
@@ -188,6 +201,22 @@ onMounted(() => {
     email.value = route.query.email;
   }
 });
+
+const onAgreeTerms = () => {
+  agreement.terms = true;
+  handleIndividualCheck();
+  showTermsModal.value = false;
+};
+const onAgreePrivacy = () => {
+  agreement.privacy = true;
+  handleIndividualCheck();
+  showPrivacyModal.value = false;
+};
+const onAgreeMarketing = () => {
+  agreement.marketing = true;
+  handleIndividualCheck();
+  showMarketingModal.value = false;
+};
 </script>
 
 <template>
@@ -244,8 +273,8 @@ onMounted(() => {
           >
             {{
               isValidName
-                ? "사용 가능한 이름입니다!"
-                : "이름은 2~20자 한글/영문만 입력해주세요."
+                ? '사용 가능한 이름입니다!'
+                : '이름은 2~20자 한글/영문만 입력해주세요.'
             }}
           </p>
         </div>
@@ -339,7 +368,6 @@ onMounted(() => {
             {{ passwordMsg }}
           </p>
         </div>
-        <!-- 약관동의 -->
         <div class="agreementGroup font-11">
           <label class="checkboxRow">
             <input
@@ -347,7 +375,11 @@ onMounted(() => {
               v-model="agreement.terms"
               @change="handleIndividualCheck"
             />
-            <span>[필수] 서비스 이용약관에 동의합니다</span>
+            <span
+              @click.stop.prevent="openTermsModal"
+              :class="['agreeText', 'clickable', { checked: agreement.terms }]"
+              >[필수] 서비스 이용약관에 동의합니다</span
+            >
           </label>
           <label class="checkboxRow">
             <input
@@ -355,7 +387,15 @@ onMounted(() => {
               v-model="agreement.privacy"
               @change="handleIndividualCheck"
             />
-            <span>[필수] 개인정보 수집 및 이용에 동의합니다</span>
+            <span
+              @click.stop.prevent="openPrivacyModal"
+              :class="[
+                'agreeText',
+                'clickable',
+                { checked: agreement.privacy },
+              ]"
+              >[필수] 개인정보 수집 및 이용에 동의합니다</span
+            >
           </label>
           <label class="checkboxRow">
             <input
@@ -363,7 +403,15 @@ onMounted(() => {
               v-model="agreement.marketing"
               @change="handleIndividualCheck"
             />
-            <span>[선택] 마케팅 정보 수신에 동의합니다</span>
+            <span
+              @click.stop.prevent="openMarketingModal"
+              :class="[
+                'agreeText',
+                'clickable',
+                { checked: agreement.marketing },
+              ]"
+              >[선택] 마케팅 정보 수신에 동의합니다</span
+            >
           </label>
           <label class="checkboxRow">
             <input
@@ -393,6 +441,11 @@ onMounted(() => {
       </div>
     </div>
   </div>
+
+  <!-- 약관 모달 3종 -->
+  <ServiceTermsModal v-model="showTermsModal" @agree="onAgreeTerms" />
+  <PrivacyTermsModal v-model="showPrivacyModal" @agree="onAgreePrivacy" />
+  <MarketingTermsModal v-model="showMarketingModal" @agree="onAgreeMarketing" />
 </template>
 
 <style scoped>
@@ -561,7 +614,7 @@ input:focus {
   cursor: pointer;
   user-select: none;
 }
-.checkboxRow input[type="checkbox"] {
+.checkboxRow input[type='checkbox'] {
   accent-color: var(--base-blue-dark);
   width: 14px;
   height: 14px;
@@ -647,11 +700,20 @@ input:focus {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   text-align: center;
   pointer-events: none;
   box-sizing: border-box;
   white-space: nowrap;
+}
+
+.agreeText.clickable {
+  text-decoration: underline;
+  cursor: pointer;
+  color: var(--text-bluegray); /* 기본 전체동의랑 같은 색상 */
+}
+.agreeText.clickable.checked {
+  color: var(--base-blue-dark); /* 체크 시 네이비 강조 */
 }
 </style>

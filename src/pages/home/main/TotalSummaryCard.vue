@@ -1,18 +1,18 @@
 <template>
-  <div class="home-card">
-    <div class="home-card-section">
-      <div class="label-row">
-        <span class="home-card-label">총 자산</span>
-        <!-- <span class="home-card-rate">{{ rate }}</span> -->
+  <div class="homeCard">
+    <div class="homeCardSection">
+      <div class="labelRow">
+        <span class="homeCardLabel">총 자산</span>
+        <!-- <span class="homeCardRate">{{ rate }}</span> -->
       </div>
-      <div class="home-card-value">{{ totalAssetDisplay }}</div>
+      <div class="homeCardValue">{{ totalAssetDisplay }}</div>
     </div>
 
-    <div class="home-card-section">
-      <div class="home-card-label">이번 달 지출</div>
-      <div class="home-card-value">{{ monthlyExpenseDisplay }}</div>
+    <div class="homeCardSection">
+      <div class="homeCardLabel">이번 달 지출</div>
+      <div class="homeCardValue">{{ monthlyExpenseDisplay }}</div>
     </div>
-    <div v-if="assetStore.loading" style="font-size: 12px; color: gray">
+    <div v-if="assetStore.loading" style="font-size: 11px; color: gray">
       불러오는 중...
     </div>
     <div v-if="assetStore.error" style="color: tomato">
@@ -27,20 +27,15 @@ import { useAssetStore } from '@/stores/asset';
 
 const assetStore = useAssetStore();
 
-// 마운트 시 API 호출 (데이터 없으면만)
 onMounted(() => {
   assetStore.loadSummary();
 });
 
 console.log('setup 함수 진입!');
 
-// computed로 바인딩 (안전하게 null 체크)
 const summary = computed(() => assetStore.summary || {});
 
-// 전월 대비 변동률, 이번달 지출 가공(예시)
-const rate = computed(
-  () => summary.value.rate ?? '+0%' // rate 필드는 백엔드에서 필요하면 추가!
-);
+const rate = computed(() => summary.value.rate ?? '+0%');
 const totalAssetDisplay = computed(() =>
   summary.value.totalAsset != null
     ? summary.value.totalAsset.toLocaleString() + '원'
@@ -59,12 +54,54 @@ defineExpose({
 </script>
 
 <style scoped>
-@import '@/assets/styles/homecard.css';
+.homeCard {
+  background-color: var(--base-blue-dark);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  color: white;
+  margin-bottom: 1rem;
+  height: 170px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 
-.label-row {
+.homeCardLabel {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--base-blue-light);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.25rem;
+}
+
+.homeCardRate {
+  font-size: 0.7rem;
+  font-weight: 400;
+  color: var(--text-rate);
+  line-height: 1.4;
+}
+
+.homeCardValue {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: white;
+  line-height: 1.2;
+  margin-bottom: 0.75rem;
+  margin-top: 0;
+}
+
+.homeCardValue.positive {
+  color: var(--text-green);
+}
+
+.homeCardSection {
+  margin-bottom: 1rem;
+}
+
+.labelRow {
   display: flex;
   align-items: baseline;
   gap: 0.375rem;
-  margin-bottom: 0.25rem; /* 간격 줄이기 */
+  margin-bottom: 0.1rem;
 }
 </style>

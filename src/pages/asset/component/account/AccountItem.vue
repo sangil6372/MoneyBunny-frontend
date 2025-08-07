@@ -1,5 +1,8 @@
 <template>
   <div class="account-item">
+    <!-- ✅ 대표 뱃지: 계좌 박스의 오른쪽 상단 고정 -->
+    <span v-if="account.isMain" class="main-badge top-right">대표</span>
+
     <!-- 은행 로고 -->
     <img
       :src="getBankLogoByCode(account.bankCode)"
@@ -7,18 +10,19 @@
       class="bank-logo"
     />
 
-    <!-- 계좌 정보 (클릭 시 상세 모달 열림) -->
+    <!-- 계좌 정보 -->
     <div class="account-info" @click="openDetail">
       <div class="info-top">
         <span class="bank-name">
           {{ getBankName(account.bankCode) }} {{ account.accountName }}
         </span>
-        <span v-if="account.isMain" class="main-badge">대표</span>
       </div>
+
       <p class="account-number">
         {{ getBankName(account.bankCode) }} •
         {{ formatAccountNumber(account.accountNumber) }}
       </p>
+
       <p class="balance">{{ formatWon(account.balance) }}</p>
     </div>
 
@@ -34,35 +38,18 @@
       >
         대표 설정
       </button>
-      <button class="delete-btn" @click.stop="isDeleteModalOpen = true">
-        <img src="@/assets/images/icons/common/Trash.png" alt="삭제" />
-      </button>
     </div>
-
-    <!-- 삭제 확인 모달 -->
-    <DeleteConfirmModal
-      :visible="isDeleteModalOpen"
-      title="계좌 삭제"
-      message="계좌를 삭제하시겠습니까?"
-      :subtitle="`${getBankName(account.bankCode)} • ${formatAccountNumber(
-        account.accountNumber
-      )}`"
-      warning="삭제된 계좌는 복구할 수 없습니다."
-      @close="isDeleteModalOpen = false"
-      @confirm="handleDelete"
-    />
-
-    <!-- 계좌 상세 모달 -->
-    <DetailModal :visible="showDetail" @close="showDetail = false">
-      <AccountDetail :accountData="account" @close="showDetail = false" />
-    </DetailModal>
   </div>
+
+  <!-- 상세 모달 -->
+  <DetailModal :visible="showDetail" @close="showDetail = false">
+    <AccountDetail :accountData="account" @close="showDetail = false" />
+  </DetailModal>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import DeleteConfirmModal from '@/pages/asset/component/common/DeleteConfirmModal.vue';
-import DetailModal from '../common/DetailModal.vue';
+import DetailModal from '../detail/DetailModal.vue';
 import AccountDetail from './AccountDetail.vue';
 import { getBankLogoByCode } from '@/assets/utils/bankLogoMap.js';
 import { getBankName } from '@/assets/utils/bankCodeMap.js';
@@ -86,6 +73,6 @@ const handleDelete = (event) => {
   isDeleteModalOpen.value = false;
 };
 </script>
-<style scoped>
+<style>
 @import '@/assets/styles/item-styles.css';
 </style>

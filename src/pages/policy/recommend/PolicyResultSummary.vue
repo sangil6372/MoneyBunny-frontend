@@ -151,8 +151,19 @@ export default {
       return dateStr;
     }
 
-    const redoQuiz = () => {
-      router.push({ name: 'policyIntroForm' });
+    const redoQuiz = async () => {
+      try {
+        await policyAPI.deleteUserPolicy();
+        policyQuizStore.resetQuiz(); // 스토어 값 완전 초기화
+        localStorage.removeItem('policyQuiz');
+        sessionStorage.removeItem('policyQuiz');
+        router.push({ name: 'policyIntroForm' });
+      } catch (e) {
+        policyQuizStore.resetQuiz();
+        localStorage.removeItem('policyQuiz');
+        sessionStorage.removeItem('policyQuiz');
+        router.push({ name: 'policyIntroForm' });
+      }
     };
 
     const goToAllPolicies = () => {

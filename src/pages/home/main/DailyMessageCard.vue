@@ -32,18 +32,21 @@ defineProps({
   display: flex;
   align-items: center;
   justify-content: center; /* 세로 가운데 정렬 */
-  min-height: 6.25rem; /* 최소 높이 설정 (카드가 너무 낮지 않게) */
-  background-color: var(--base-pink);
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.05);
+  min-height: 5rem; /* 최소 높이 설정 (카드가 너무 낮지 않게) */
+  background: #fff0f4;
+  /* background: #f5f6ff; */
+  /* background: #e6faf7; */
+
+  border-radius: 0.5rem;
+  padding: 0.65rem 0.9rem;
 }
 .icon-area {
-  margin-right: 0.625rem;
+  margin-left: 0.35rem;
+  margin-right: 0.7rem;
 }
 .bunny-icon {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 3rem;
+  height: 3rem;
   object-fit: contain;
 }
 
@@ -55,21 +58,18 @@ defineProps({
 }
 
 .main-message {
-  font-weight: 600;
-  font-size: 1rem;
-  margin: 0 0 0.375rem 0; /* 아래쪽 마진만 살짝 추가 */
+  font-size: 0.9rem;
+  margin: 0;
   color: var(--text-login);
 }
 
 .sub-message {
-  font-weight: 400;
-  font-size: 0.875rem;
-
+  font-size: 0.8rem;
   color: var(--text-darkgray);
 }
 
 .cta {
-  font-size: 0.8125rem;
+  font-size: 0.8rem;
   color: var(--text-darkgray);
   margin-bottom: 0;
 }

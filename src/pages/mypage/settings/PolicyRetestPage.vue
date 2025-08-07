@@ -202,15 +202,27 @@ const save = async () => {
     ],
     ...rankObj,
   };
-  await policyAPI.saveUserPolicy(payload);
+  await policyAPI.updateUserPolicy(payload);
   router.push({ name: 'mypage' });
+};
+
+const resetSummaryAndPriority = () => {
+  summary.value = {
+    학력: '',
+    '전공 요건': '',
+    '현재 상황': '',
+  };
+  priorityOrder.value = [];
+  originalData.value = {};
 };
 
 const redoQuiz = async () => {
   try {
     await policyAPI.deleteUserPolicy();
+    resetSummaryAndPriority(); // 모든 필드 초기화
     router.push({ path: '/policy' });
   } catch (e) {
+    resetSummaryAndPriority();
     router.push({ path: '/policy' });
   }
 };

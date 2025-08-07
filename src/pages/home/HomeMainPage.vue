@@ -1,5 +1,5 @@
 <template>
-  <div class="home-container">
+  <div class="homeContainer">
     <TotalSummaryCard ref="totalSummaryCardRef" />
     <AssetCompareCard
       :totalAsset="totalAsset"
@@ -7,9 +7,9 @@
     />
     <PolicyRecommendationCard
       ref="policyRecommendationCardRef"
-      class="with-gap-top"
+      class="withGapTop"
     />
-    <DailyMessageCard class="tight-top-margin" />
+    <DailyMessageCard class="tightTopMargin" />
   </div>
 </template>
 
@@ -49,19 +49,12 @@ watch(
 </script>
 
 <style scoped>
-.home-container {
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
 /* 한마디 카드는 아래 간격만 살짝 줄여주기 */
-.tight-top-margin {
-  margin-top: 0.5rem;
+.tightTopMargin {
+  margin-top: 1rem;
 }
 
-.with-gap-top {
-  margin-top: 0.5rem;
+.withGapTop {
+  margin-top: 1rem;
 }
 </style>

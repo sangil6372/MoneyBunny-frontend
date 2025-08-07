@@ -151,23 +151,22 @@ onMounted(() => {
 .searchInput {
   width: 100%;
   height: 40px;
-  padding: 12px 44px 12px 16px;
+  padding: 10px 45px 10px 15px;
   border: 1px solid var(--input-outline-2);
   border-radius: 8px;
   background: #fff;
-  font-size: 16px;
+  font-size: 15px;
   outline: none;
   box-sizing: border-box;
-  transition: border-color 0.2s;
 }
 
 .searchInput:focus {
-  border: 2px solid var(--gray-medium);
+  border: 1.5px solid var(--gray-medium);
 }
 
 .searchIconBtn {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: transparent;
@@ -179,20 +178,19 @@ onMounted(() => {
 }
 
 .searchIcon {
-  width: 22px;
-  height: 22px;
-  opacity: 0.65;
+  width: 20px;
+  height: 20px;
 }
 
 .filterIcon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 }
 
 .goBackIcon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 }
 </style>

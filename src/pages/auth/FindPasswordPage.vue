@@ -1,32 +1,32 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter } from "vue-router";
-import axios from "axios";
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
-const loginId = ref("");
-const email = ref("");
-const errorMessage = ref("");
+const loginId = ref('');
+const email = ref('');
+const errorMessage = ref('');
 const showToast = ref(false);
 
 const router = useRouter();
 
 const handleSendCode = async () => {
   if (!loginId.value || !email.value) {
-    errorMessage.value = "아이디와 이메일을 모두 입력해주세요.";
-    setTimeout(() => (errorMessage.value = ""), 2000);
+    errorMessage.value = '아이디와 이메일을 모두 입력해주세요.';
+    setTimeout(() => (errorMessage.value = ''), 2000);
     return;
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email.value)) {
-    errorMessage.value = "올바른 이메일 형식을 입력해주세요.";
-    setTimeout(() => (errorMessage.value = ""), 2000);
+    errorMessage.value = '올바른 이메일 형식을 입력해주세요.';
+    setTimeout(() => (errorMessage.value = ''), 2000);
     return;
   }
 
   try {
     // ✅ 인증코드 전송 API 호출
-    await axios.post("/api/auth/send-find-password-code", {
+    await axios.post('/api/auth/send-find-password-code', {
       email: email.value,
       loginId: loginId.value,
     });
@@ -37,18 +37,18 @@ const handleSendCode = async () => {
       showToast.value = false;
       // 실제 이동
       router.push({
-        path: "/findPasswordCode",
+        path: '/findPasswordCode',
         query: { loginId: loginId.value, email: email.value },
       });
     }, 1200); // 1.2초 후 이동
   } catch (err) {
     console.error(
-      "[handleSendCode] 이메일 전송 실패:",
+      '[handleSendCode] 이메일 전송 실패:',
       err.response?.data || err.message
     );
     errorMessage.value =
-      err.response?.data?.message || "이메일 전송에 실패했습니다.";
-    setTimeout(() => (errorMessage.value = ""), 2000);
+      err.response?.data?.message || '이메일 전송에 실패했습니다.';
+    setTimeout(() => (errorMessage.value = ''), 2000);
   }
 };
 </script>
@@ -227,8 +227,8 @@ input:focus {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   pointer-events: none;
   text-align: center;
   box-sizing: border-box;

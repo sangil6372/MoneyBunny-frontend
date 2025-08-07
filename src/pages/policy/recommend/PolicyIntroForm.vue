@@ -78,14 +78,14 @@ onMounted(() => {
 <template>
   <header class="introHeader">
     <div class="headerCard">
-      <h1 class="title font-18">정책 추천을 위한 기본 정보</h1>
-      <p class="subtitle font-15">개인 맞춤 분석</p>
+      <div class="title font-18">정책 추천을 위한 기본 정보</div>
+      <p class="subtitle font-1">개인 맞춤 분석</p>
     </div>
   </header>
 
   <div class="introContainer">
     <section class="formSection">
-      <label class="label font-18">생년월일을 입력해주세요</label>
+      <label class="label font-16">생년월일을 입력해주세요</label>
       <div class="birthSelects">
         <Dropdown
           v-model="birth.year"
@@ -110,7 +110,7 @@ onMounted(() => {
         />
       </div>
 
-      <label class="label font-18 regionLabel">
+      <label class="label font-16 regionLabel">
         지역을 선택해주세요
         <img
           :src="rightArrow"
@@ -121,7 +121,7 @@ onMounted(() => {
       </label>
 
       <!-- 선택된 주소 미리보기 -->
-      <p v-if="address" class="selectedAddress font-15">
+      <p v-if="address" class="selectedAddress font-14">
         {{ address }}
       </p>
 
@@ -136,7 +136,7 @@ onMounted(() => {
 
   <div class="footer">
     <button
-      class="nextButton font-16"
+      class="nextButton font-15"
       :disabled="!isFormValid"
       :class="{ disabled: !isFormValid }"
       @click="goToPolicyQuiz1"
@@ -148,47 +148,49 @@ onMounted(() => {
 
 <style scoped>
 .introContainer {
-  padding: 24px;
+  padding: 20px;
   background-color: #fff;
   border-radius: 12px;
-  max-width: 390px;
-  margin: 0 20px;
+  max-width: 360px;
+  margin-bottom: 20px;
 }
 
 .introHeader {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  margin-bottom: 25px;
 }
 
 .headerCard {
-  margin-top: 10px;
   text-align: center;
   background-color: var(--base-blue-dark);
   border-radius: 12px;
-  padding: 19px;
+  padding: 16px;
   color: white;
-  max-width: 390px;
-  height: 90px;
+  max-width: 360px;
+  height: 100px;
   width: 100%;
+}
+.title {
+  margin: 5px 0 7px 0;
 }
 
 .label {
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   display: block;
   color: var(--text-login);
 }
 
 .birthSelects {
   display: flex;
-  gap: 10px;
-  margin-bottom: 35px;
+  gap: 6px;
+  margin-bottom: 30px;
 }
 
 .addressInput {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .searchButton {
@@ -202,21 +204,21 @@ onMounted(() => {
 
 .disclaimer {
   color: var(--text-bluegray);
-  margin-top: 15px;
+  margin-top: 10px;
 }
 
 .footer {
-  margin-top: 50px;
+  margin-top: 25px;
   text-align: center;
 }
 
 .nextButton {
-  width: 267px;
-  height: 47px;
+  width: 100%;
+  height: 50px;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 10px 32px;
-  border-radius: 12px;
+  padding: 8px 20px;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
 }
@@ -229,12 +231,12 @@ onMounted(() => {
 .regionLabel {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
 .arrowIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 

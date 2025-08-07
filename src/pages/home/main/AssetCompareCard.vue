@@ -1,33 +1,31 @@
 <template>
-  <div class="asset-compare-card">
-    <h2 class="title">정책 적용 후 자산비교</h2>
-
-    <!-- 자산 비교 -->
-    <div class="asset-box">
-      <div class="block light">
-        <div class="label">현재 자산</div>
-        <div class="amount">{{ currentAssetDisplay }}</div>
+  <div class="assetCompareCard">
+    <div class="compareTitle">정책 적용 후 자산비교</div>
+    <div class="assetRow">
+      <div class="assetBlock nowAsset">
+        <div class="assetLabel">현재 자산</div>
+        <div class="assetAmount">{{ currentAssetDisplay }}</div>
       </div>
-      <div class="block dark">
-        <div class="label">예상 자산</div>
-        <div class="amount">{{ expectedAssetDisplay }}</div>
+      <div class="assetBlock expectedAsset">
+        <div class="assetLabel">예상 자산</div>
+        <div class="assetAmount">{{ expectedAssetDisplay }}</div>
       </div>
     </div>
-
-    <!-- 자산 증가율 -->
-    <div class="growth-box">
-      <div class="growth-left">
+    <div class="growthRow">
+      <div class="growthLeft">
         <img
           src="@/assets/images/icons/common/increase.png"
           alt="자산 증가 아이콘"
-          class="icon"
+          class="growthIcon"
         />
-        <span class="text">
-          <strong>자산 증가율</strong><br />
-          예상 증가금액: {{ increaseAmountDisplay }}
+        <span>
+          <span class="growthTitle">자산 증가율</span><br />
+          <span class="growthDesc"
+            >예상 증가금액: {{ increaseAmountDisplay }}</span
+          >
         </span>
       </div>
-      <div class="growth-rate">{{ increaseRateDisplay }}</div>
+      <span class="growthRate">{{ increaseRateDisplay }}</span>
     </div>
   </div>
 </template>
@@ -77,77 +75,103 @@ const increaseRateDisplay = computed(() =>
 </script>
 
 <style scoped>
-.asset-compare-card {
+.assetCompareCard {
   background: #fff;
-  padding: 1.5rem;
   border-radius: 1rem;
+  padding: 1.35rem 1.1rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-.title {
-  font-size: 1.125rem;
-  font-weight: bold;
+.compareTitle {
+  padding-left: 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--base-blue-dark, #2a3557);
+}
+
+.assetRow {
+  display: flex;
+  gap: 0.75rem;
   margin-bottom: 0.25rem;
 }
 
-/* 자산 박스 */
-.asset-box {
-  display: flex;
-  gap: 1rem;
-}
-
-.block {
+.assetBlock {
   flex: 1;
   border-radius: 0.75rem;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-
-.light {
-  background-color: #f9fafb;
-  color: var(--text-login);
-}
-
-.dark {
-  background-color: var(--base-blue-dark);
-  color: white;
-}
-
-.label {
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.amount {
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin: 0.5rem 0;
-}
-
-/* 자산 증가율 */
-.growth-box {
-  background: #eef2ff;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
+  min-width: 0;
+  min-height: 80px;
   align-items: center;
 }
 
-.growth-left .icon {
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-right: 0.4rem;
-  object-fit: contain;
+.nowAsset {
+  background: #f8fafd;
+  /* border: 1.5px solid #e3e7f1; */
+  color: #2a3557;
 }
 
-.growth-rate {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: var(--text-green);
+.expectedAsset {
+  background: var(--base-blue-dark, #2a3557);
+  color: #fff;
+  /* border: 1.5px solid #dde0ec; */
+}
+
+.assetLabel {
+  font-size: 0.8rem;
+  margin-bottom: 0.2em;
+}
+
+.assetAmount {
+  font-size: 1.15rem;
+  font-weight: 600;
+  word-break: break-all;
+}
+
+.growthRow {
+  background: #f3f6fd;
+  border-radius: 0.75rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.growthLeft {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+}
+
+.growthIcon {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.275rem;
+}
+
+.growthTitle {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--base-blue-dark, #2a3557);
+}
+
+.growthDesc {
+  font-size: 0.75rem;
+  color: #222c42;
+}
+
+.growthRate {
+  font-size: 1.3rem;
+  font-weight: 700;
+  /* color: #3a57e8; */
+  color: #6a7de7;
+  min-width: 4.6rem;
+  text-align: right;
+  margin-right: 0.6rem;
 }
 </style>

@@ -5,8 +5,11 @@ export const policyAPI = {
   // 사용자 정책 정보 조회
   getUserPolicy: () => axios.get('/api/userPolicy'),
 
-  // 사용자 정책 정보 저장/수정
-  saveUserPolicy: (payload) => axios.put('/api/userPolicy', payload),
+  // 사용자 정책 정보 저장 (신규)
+  createUserPolicy: (payload) => axios.post('/api/userPolicy', payload),
+
+  // 사용자 정책 정보 수정
+  updateUserPolicy: (payload) => axios.put('/api/userPolicy', payload),
 
   // 사용자 정책 정보 삭제
   deleteUserPolicy: () => axios.delete('/api/userPolicy'),

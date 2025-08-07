@@ -1,10 +1,13 @@
 <template>
   <div class="category-detail-view">
     <!-- 헤더 -->
-    <DetailHeader
-      :title="headerTitle"
-      :current-month="formattedCurrentMonth"
-      @back="$emit('back')"
+    <DetailHeader :title="headerTitle" @back="$emit('back')" />
+
+    <!-- 필터 + 월 선택 -->
+    <TransactionFilter
+      v-model="currentFilter"
+      :current-month="selectedMonth"
+      type="category"
       @month-change="handleMonthChange"
     />
 
@@ -14,18 +17,20 @@
       <template #custom-icon>
         <div
           class="category-icon"
-          :style="{ backgroundColor: categoryData.color + '20' }"
+          :style="{ backgroundColor: (categoryData.color || '#999') + '20' }"
         >
           <div
             class="category-dot"
-            :style="{ backgroundColor: categoryData.color }"
+            :style="{ backgroundColor: categoryData.color || '#999' }"
           ></div>
         </div>
       </template>
 
       <!-- 카테고리 정보 -->
       <template #custom-content>
-        <p class="category-name">{{ categoryData.name }}</p>
+        <p class="category-name">
+          {{ categoryData.name || '알 수 없는 카테고리' }}
+        </p>
         <p class="category-period">{{ getSelectedMonthText() }} 총 지출</p>
         <p class="category-amount">{{ formatAmount(filteredAmount) }}</p>
       </template>
@@ -47,7 +52,9 @@
           >
             <div
               v-for="transaction in sortedFilteredTransactions"
-              :key="transaction.id || transaction.transactionId"
+              :key="
+                transaction.id || transaction.transactionId || Math.random()
+              "
               class="transaction-item"
             >
               <div class="transaction-info">
@@ -62,7 +69,9 @@
 
               <div class="transaction-amount">
                 <p class="amount-text">
-                  -{{ formatAmount(transaction.amount || transaction.price) }}
+                  -{{
+                    formatAmount(transaction.amount || transaction.price || 0)
+                  }}
                 </p>
               </div>
             </div>
@@ -71,7 +80,8 @@
           <!-- 거래내역 없음 -->
           <div v-else class="no-transactions">
             <p class="no-transactions-text">
-              이 카테고리의 거래 내역이 없습니다
+              {{ getSelectedMonthText() }}에는 이 카테고리의 거래 내역이
+              없습니다
             </p>
           </div>
         </div>
@@ -84,10 +94,19 @@
 import { ref, computed, watch } from 'vue';
 import DetailHeader from '../detail/DetailHeader.vue';
 import DetailInfoCard from '../detail/DetailInfoCard.vue';
+import TransactionFilter from '../detail/TransactionFilter.vue';
 
 const props = defineProps({
-  categoryData: Object,
-  selectedDate: { type: Date, required: true },
+  categoryData: {
+    type: Object,
+    required: true,
+    default: () => ({ name: '', color: '#999', transactions: [] }),
+  },
+  selectedDate: {
+    type: Date,
+    required: true,
+    default: () => new Date(),
+  },
 });
 
 const emit = defineEmits(['back']);
@@ -98,8 +117,8 @@ const currentDate = ref(new Date(props.selectedDate));
 // 선택된 월 상태 (YYYY-MM 형식)
 const selectedMonth = ref(currentDate.value.toISOString().slice(0, 7));
 
-// 헤더에 전달할 현재 월
-const formattedCurrentMonth = computed(() => selectedMonth.value);
+// 필터 상태
+const currentFilter = ref('전체');
 
 // 헤더 제목
 const headerTitle = computed(() => `카테고리별 거래내역`);
@@ -114,17 +133,16 @@ const getSelectedMonthText = () => {
 watch(
   () => props.selectedDate,
   (newDate) => {
-    currentDate.value = new Date(newDate);
-    selectedMonth.value = newDate.toISOString().slice(0, 7);
+    if (newDate) {
+      currentDate.value = new Date(newDate);
+      selectedMonth.value = newDate.toISOString().slice(0, 7);
+    }
   }
 );
 
-// DetailHeader에서 월 변경 시 처리 (중복 제거된 통합 로직)
+// 월 변경 처리
 const handleMonthChange = (newMonthString) => {
-  console.log('Header 월 변경:', newMonthString);
   selectedMonth.value = newMonthString;
-
-  // 새로운 날짜 객체 생성 (해당 월의 1일로 설정)
   const [year, month] = newMonthString.split('-');
   const newDate = new Date(parseInt(year), parseInt(month) - 1, 1);
   currentDate.value = newDate;
@@ -132,45 +150,82 @@ const handleMonthChange = (newMonthString) => {
 
 // 거래내역 필터링
 const filteredTransactions = computed(() => {
+  if (
+    !props.categoryData?.transactions ||
+    !Array.isArray(props.categoryData.transactions)
+  ) {
+    return [];
+  }
+
   return props.categoryData.transactions.filter((t) => {
-    const date = new Date(t.date.replace(/\./g, '-'));
-    const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      '0'
-    )}`;
-    return month === selectedMonth.value;
+    if (!t.date) return false;
+
+    try {
+      let dateStr = t.date;
+      if (typeof dateStr === 'string') {
+        dateStr = dateStr.replace(/\./g, '-');
+      }
+
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return false;
+
+      const month = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, '0')}`;
+      return month === selectedMonth.value;
+    } catch (error) {
+      return false;
+    }
   });
 });
 
 // 거래내역 총합
-const filteredAmount = computed(() =>
-  filteredTransactions.value.reduce((sum, t) => sum + (t.amount || t.price), 0)
-);
+const filteredAmount = computed(() => {
+  return filteredTransactions.value.reduce((sum, t) => {
+    const amount = t.amount || t.price || 0;
+    return sum + (typeof amount === 'number' ? amount : 0);
+  }, 0);
+});
 
 // 최신순 정렬
 const sortedFilteredTransactions = computed(() => {
   return [...filteredTransactions.value].sort((a, b) => {
-    const dateA = new Date(a.date.replace(/\./g, '-'));
-    const dateB = new Date(b.date.replace(/\./g, '-'));
-    return dateB - dateA;
+    try {
+      const dateA = new Date(a.date.replace(/\./g, '-'));
+      const dateB = new Date(b.date.replace(/\./g, '-'));
+      return dateB - dateA;
+    } catch (error) {
+      return 0;
+    }
   });
 });
 
 // 유틸리티 함수들
-const formatAmount = (amount) => `${amount.toLocaleString()}원`;
+const formatAmount = (amount) => {
+  if (typeof amount !== 'number' || isNaN(amount)) return '0원';
+  return `${amount.toLocaleString()}원`;
+};
 
-const getTransactionTitle = (transaction) =>
-  transaction.merchant ||
-  transaction.description ||
-  transaction.storeName ||
-  transaction.title ||
-  transaction.memo ||
-  '거래';
+const getTransactionTitle = (transaction) => {
+  return (
+    transaction.merchant ||
+    transaction.description ||
+    transaction.storeName ||
+    transaction.title ||
+    transaction.memo ||
+    '거래'
+  );
+};
 
 const formatTransactionDate = (dateStr) => {
-  if (!dateStr) return '';
-  const date = new Date(dateStr.replace(/\./g, '-'));
-  return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  try {
+    if (!dateStr) return '';
+    const date = new Date(dateStr.replace(/\./g, '-'));
+    if (isNaN(date.getTime())) return dateStr;
+    return `${date.getMonth() + 1}월 ${date.getDate()}일`;
+  } catch (error) {
+    return dateStr || '';
+  }
 };
 </script>
 
@@ -201,17 +256,20 @@ const formatTransactionDate = (dateStr) => {
   font-size: 1.125rem;
   font-weight: 700;
   color: var(--base-blue-dark);
+  margin: 0 0 0.25rem 0;
 }
 
 .category-period {
   font-size: 0.875rem;
   color: var(--text-bluegray);
+  margin: 0 0 0.5rem 0;
 }
 
 .category-amount {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--base-blue-dark);
+  margin: 0;
 }
 
 /* 거래내역 섹션 */
@@ -220,6 +278,7 @@ const formatTransactionDate = (dateStr) => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--input-bg-3);
 }
 
@@ -227,6 +286,7 @@ const formatTransactionDate = (dateStr) => {
   font-size: 1rem;
   font-weight: 600;
   color: var(--text-login);
+  margin: 0;
 }
 
 .transaction-count {
@@ -242,6 +302,10 @@ const formatTransactionDate = (dateStr) => {
   border-bottom: 1px solid var(--input-bg-3);
 }
 
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
 .transaction-info {
   flex: 1;
 }
@@ -253,17 +317,20 @@ const formatTransactionDate = (dateStr) => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  margin: 0 0 0.25rem 0;
 }
 
 .transaction-meta {
   font-size: 0.75rem;
   color: var(--text-bluegray);
+  margin: 0;
 }
 
 .transaction-amount .amount-text {
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--alert-red);
+  margin: 0;
 }
 
 .no-transactions {
@@ -274,5 +341,6 @@ const formatTransactionDate = (dateStr) => {
 .no-transactions-text {
   font-size: 0.875rem;
   color: var(--text-lightgray);
+  margin: 0;
 }
 </style>

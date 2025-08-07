@@ -30,8 +30,6 @@ const tabs = ['메인', '계좌', '카드', '지출'];
   border-radius: 1rem;
   padding: 0.5rem;
   gap: 0.5rem;
-  margin-bottom: 1.5rem;
-  margin-top: 0.5rem;
 }
 
 .tab {

@@ -161,48 +161,46 @@ onMounted(() => {
 }
 
 .section {
-  /* margin: 10px; */
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   background: #fff;
-  border-radius: 18px;
-  box-shadow: 0 2px 16px 0 rgba(50, 70, 100, 0.07);
+  border-radius: 12px;
   padding: 28px 24px 24px 24px;
 }
 
 .title {
   font-weight: bold;
-  margin-bottom: 21px;
-  font-size: 20px;
+  margin-bottom: 20px;
+  font-size: 18px;
 }
 
 .chipList {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
 }
 
 .chip {
   background-color: var(--input-bg-1);
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 15px;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 14px;
   color: var(--text-bluegray);
 }
 
 .popularGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
+  gap: 10px;
 }
 
 .popularItem {
   background-color: var(--input-bg-1);
   border-radius: 8px;
-  padding: 12px;
+  padding: 10px;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .number {
@@ -213,28 +211,28 @@ onMounted(() => {
 .tip {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  margin-top: 16px;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .tipIcon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 .filterIcon {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
 }
 
 .tipTitle {
   font-weight: bold;
-  margin-bottom: 5px;
-  font-size: 15px;
+  margin-bottom: 4px;
+  font-size: 14px;
 }
 
 .tipText {
   margin: 0;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-bluegray);
 }
 </style>

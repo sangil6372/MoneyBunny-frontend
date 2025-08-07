@@ -86,7 +86,8 @@ export default {
       const payload = policyQuizStore.getRequestPayload();
 
       try {
-        await policyAPI.saveUserPolicy(payload);
+        // 정책 정보 저장(신규)
+        await policyAPI.createUserPolicy(payload);
         router.push({
           name: 'policyResultSummary',
           query: {

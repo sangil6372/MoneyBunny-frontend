@@ -4,8 +4,8 @@
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#42b983",
-  "theme_color": "#42b983",
+  "background_color": "#f8fafc",
+  "theme_color": "#f8fafc",
   "description": "머니버니 앱입니다.",
   "icons": [
     {

@@ -86,4 +86,7 @@
   --category-travel: #f9dada; /* 여행: 설렘과 자유의 연핑크 */
   --category-alcohol: #cf5959; /* 주류: 묵직한 딥레드 */
   --category-undefined: #6b7280; /* 카테고리 미지정: 중립적 보조색 */
+
+  --modal-divider: #f2f4f6;
+  --modal-overlay: rgba(44, 53, 79, 0.35);
 }
