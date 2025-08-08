@@ -87,22 +87,12 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       // 💪(상일) 로그아웃 전 필요한 토큰들 미리 수집
-      const fcmToken = localStorage.getItem('fcm_token');
       const authToken = state.value.token;
       
-      console.log("[Logout] 토큰 수집 완료 - FCM:", !!fcmToken, "Auth:", !!authToken);
+      console.log("[Logout] Auth 토큰 수집 완료:", !!authToken);
 
-      // 💪(상일) FCM 토큰 정리 (토큰 손실 방지)
-      if (fcmToken) {
-        try {
-          await FCMTokenManager.cleanupWithToken(fcmToken);
-          console.log("[Logout] FCM 토큰 정리 완료");
-        } catch (error) {
-          console.warn("[Logout] FCM 토큰 정리 실패:", error);
-        }
-      } else {
-        console.log("[Logout] FCM 토큰 없음 - 정리 건너뜀");
-      }
+      // 💪(상일) FCM 토큰은 유지 (로그아웃 후에도 알림 수신)
+      // FCM 토큰과 구독 정보는 삭제하지 않음
 
       // 💪(상일) 백엔드 로그아웃 요청
       if (authToken) {
@@ -141,8 +131,9 @@ export const useAuthStore = defineStore('auth', () => {
         
         // 각 스토어 초기 상태로 리셋
         bookmarkStore.$reset();
-        notificationStore.$reset();
+        notificationStore.resetStore(); // 수동 초기화 함수 사용
         assetStore.$reset();
+        assetStore.clearSummary(); // 추가 초기화
         policyQuizStore.$reset();
         policyMatchingStore.$reset();
         
@@ -151,10 +142,20 @@ export const useAuthStore = defineStore('auth', () => {
         console.warn("[Logout] 일부 스토어 초기화 실패:", storeError);
       }
       
-      // 💪(상일) 무조건 로컬 상태 완전 초기화 (원자성 보장)
+      // 💪(상일) FCM 토큰만 보존하고 나머지는 초기화
+      const fcmToken = localStorage.getItem('fcm_token');
+      
+      // localStorage 완전 초기화
       localStorage.clear();
+      
+      // FCM 토큰만 영구 보존 (로그아웃 후에도 알림 수신을 위해)
+      if (fcmToken) {
+        localStorage.setItem('fcm_token', fcmToken);
+        console.log("[Logout] FCM 토큰 영구 보존");
+      }
+      
       state.value = { ...initState };
-      console.log("[Logout] 로컬 상태 및 localStorage 완전 초기화 완료");
+      console.log("[Logout] 로컬 상태 초기화 완료 (FCM 토큰만 보존)");
     }
   };
 

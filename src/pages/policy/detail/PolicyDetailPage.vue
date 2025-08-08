@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, watchEffect, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { policyAPI } from '@/api/policy'; // 변경: policyAPI import
 // 💪(상일) 정책 신청 기능
 import { policyInteractionAPI } from '@/api/policyInteraction';

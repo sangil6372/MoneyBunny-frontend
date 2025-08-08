@@ -28,6 +28,15 @@ export const policyAPI = {
   getUserPolicyRecentKeywords: () =>
     axios.get('/api/userPolicy/recent-keywords'),
 
+  // 최근 검색어 전체 삭제
+  clearAllRecentKeywords: () => axios.delete('/api/userPolicy/recent-keywords'),
+
+  // 선택한 최근 검색어 삭제
+  removeRecentKeyword: (keyword) =>
+    axios.delete(
+      `/api/userPolicy/recent-keywords/${encodeURIComponent(keyword)}`
+    ),
+
   // 정책 상세 조회
   getPolicyDetail: (policyId) => axios.get(`/api/policy/detail/${policyId}`),
 };

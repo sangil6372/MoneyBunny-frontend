@@ -204,21 +204,28 @@ const router = createRouter({
   routes,
   // 💪(상일) 라우터 이동 시 스크롤 위치 제어
   scrollBehavior(to, from, savedPosition) {
-    // 뒤로가기(브라우저 버튼)인 경우 이전 스크롤 위치 복원
-    if (savedPosition) {
-      return savedPosition;
+    // #app 요소의 스크롤을 직접 제어
+    const app = document.querySelector('#app');
+    
+    if (savedPosition && app) {
+      // 뒤로가기 시 저장된 위치로 복원
+      app.scrollTop = savedPosition.top || 0;
+      return;
     }
-
-    // 해시(앵커) 링크가 있는 경우 해당 위치로 이동
+    
     if (to.hash) {
-      return {
-        el: to.hash,
-        behavior: "smooth",
-      };
+      // 해시 링크가 있는 경우
+      const element = document.querySelector(to.hash);
+      if (element && app) {
+        app.scrollTop = element.offsetTop;
+      }
+      return;
     }
-
-    // 기본적으로 모든 새로운 페이지 이동 시 최상단으로 이동
-    return { top: 0 };
+    
+    // 새로운 페이지로 이동 시 최상단으로
+    if (app) {
+      app.scrollTop = 0;
+    }
   },
 });
 

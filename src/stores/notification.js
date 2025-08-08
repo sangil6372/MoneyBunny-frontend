@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import { ref, computed, reactive } from 'vue';
-import { notificationAPI, subscriptionAPI } from '@/api/notification';
+import { defineStore } from "pinia";
+import { ref, computed, reactive } from "vue";
+import { notificationAPI, subscriptionAPI } from "@/api/notification";
 
-export const useNotificationStore = defineStore('notification', () => {
+export const useNotificationStore = defineStore("notification", () => {
   // 💪(상일) 알림 관련 상태 관리
   const notifications = ref([]);
   const unreadCount = ref(0);
@@ -14,8 +14,8 @@ export const useNotificationStore = defineStore('notification', () => {
     isActiveTop3: false,
     isActiveNewPolicy: false,
     isActiveFeedback: false,
-    status: 'INACTIVE',
-    message: '',
+    status: "INACTIVE",
+    message: "",
   });
   const loading = ref(false);
   const error = ref(null);
@@ -25,12 +25,12 @@ export const useNotificationStore = defineStore('notification', () => {
 
   const policyNotifications = computed(() =>
     notifications.value.filter((n) =>
-      ['BOOKMARK', 'TOP3', 'NEW_POLICY'].includes(n.type)
+      ["BOOKMARK", "TOP3", "NEW_POLICY"].includes(n.type)
     )
   );
 
   const feedbackNotifications = computed(() =>
-    notifications.value.filter((n) => n.type === 'FEEDBACK')
+    notifications.value.filter((n) => n.type === "FEEDBACK")
   );
 
   // 💪(상일) 날짜 변환 유틸리티 함수들
@@ -42,7 +42,7 @@ export const useNotificationStore = defineStore('notification', () => {
   };
 
   const formatDateToString = (dateArray) => {
-    if (!dateArray || !Array.isArray(dateArray)) return '';
+    if (!dateArray || !Array.isArray(dateArray)) return "";
     const [year, month, day] = dateArray;
     return `${month}월 ${day}일`;
   };
@@ -76,7 +76,7 @@ export const useNotificationStore = defineStore('notification', () => {
       notifications.value = transformedData;
     } catch (err) {
       error.value = err.message;
-      console.error('알림 조회 실패:', err);
+      console.error("알림 조회 실패:", err);
     } finally {
       loading.value = false;
     }
@@ -85,10 +85,10 @@ export const useNotificationStore = defineStore('notification', () => {
   // 💪(상일) 미읽은 알림 개수 조회
   const fetchUnreadCount = async () => {
     try {
-      // const response = await notificationAPI.getUnreadCount();
-      // unreadCount.value = response.data;
+      const response = await notificationAPI.getUnreadCount();
+      unreadCount.value = response.data;
     } catch (err) {
-      // console.error('미읽은 알림 개수 조회 실패:', err);
+      console.error("미읽은 알림 개수 조회 실패:", err);
     }
   };
 
@@ -105,7 +105,7 @@ export const useNotificationStore = defineStore('notification', () => {
         unreadCount.value = Math.max(0, unreadCount.value - 1);
       }
     } catch (err) {
-      console.error('알림 읽음 처리 실패:', err);
+      console.error("알림 읽음 처리 실패:", err);
     }
   };
 
@@ -128,7 +128,7 @@ export const useNotificationStore = defineStore('notification', () => {
       }
       return true;
     } catch (err) {
-      console.error('알림 삭제 실패:', err);
+      console.error("알림 삭제 실패:", err);
       throw err;
     }
   };
@@ -137,7 +137,7 @@ export const useNotificationStore = defineStore('notification', () => {
   const fetchSubscriptionStatus = async () => {
     try {
       // FCMTokenManager를 통해 유효한 토큰 획득 (없으면 자동 발급)
-      const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+      const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
       const token = await fcmTokenManager.getValidToken();
 
       const response = await subscriptionAPI.getStatus(token);
@@ -147,15 +147,15 @@ export const useNotificationStore = defineStore('notification', () => {
 
         // 💪(상일) API 응답 구조에 맞게 정확한 필드명 사용
         subscriptionStatus.subscribed = data.subscribed ?? false;
-        subscriptionStatus.status = data.status || 'INACTIVE';
-        subscriptionStatus.message = data.message || '';
+        subscriptionStatus.status = data.status || "INACTIVE";
+        subscriptionStatus.message = data.message || "";
         subscriptionStatus.isActiveBookmark = data.activeBookmark ?? false;
         subscriptionStatus.isActiveTop3 = data.activeTop3 ?? false;
         subscriptionStatus.isActiveNewPolicy = data.activeNewPolicy ?? false;
         subscriptionStatus.isActiveFeedback = data.activeFeedback ?? false;
       }
     } catch (err) {
-      console.error('구독 상태 조회 실패:', err);
+      console.error("구독 상태 조회 실패:", err);
 
       // 💪(상일) 404나 구독 데이터가 없는 경우 초기 구독 설정 필요
       if (err.response?.status === 404 || err.response?.status === 400) {
@@ -170,7 +170,7 @@ export const useNotificationStore = defineStore('notification', () => {
       await subscriptionAPI.subscribe(data);
       await fetchSubscriptionStatus();
     } catch (err) {
-      console.error('구독 설정 업데이트 실패:', err);
+      console.error("구독 설정 업데이트 실패:", err);
       throw err;
     }
   };
@@ -178,7 +178,7 @@ export const useNotificationStore = defineStore('notification', () => {
   // 💪(상일) 초기 구독 설정 생성 - FCMTokenManager 사용
   const createInitialSubscription = async () => {
     try {
-      const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+      const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
       const token = await fcmTokenManager.getValidToken();
 
       const initialData = {
@@ -194,7 +194,7 @@ export const useNotificationStore = defineStore('notification', () => {
       // 상태 재조회
       await fetchSubscriptionStatus();
     } catch (err) {
-      console.error('초기 구독 설정 실패:', err);
+      console.error("초기 구독 설정 실패:", err);
     }
   };
 
@@ -207,9 +207,36 @@ export const useNotificationStore = defineStore('notification', () => {
     }, 600); // 0.6초 후 리셋
   };
 
+  // 💪(상일) 스토어 수동 초기화 (로그아웃 시 사용)
+  const resetStore = () => {
+    loading.value = true; // 초기화 중임을 표시
+    
+    notifications.value = [];
+    unreadCount.value = 0;
+    shouldShakeIcon.value = false;
+    
+    // reactive 객체 초기화
+    subscriptionStatus.subscribed = false;
+    subscriptionStatus.isActiveBookmark = false;
+    subscriptionStatus.isActiveTop3 = false;
+    subscriptionStatus.isActiveNewPolicy = false;
+    subscriptionStatus.isActiveFeedback = false;
+    subscriptionStatus.status = "INACTIVE";
+    subscriptionStatus.message = "";
+    
+    error.value = null;
+    
+    // 다음 렌더링 사이클에서 loading 해제
+    setTimeout(() => {
+      loading.value = false;
+    }, 0);
+    
+    console.log("✅ NotificationStore 수동 초기화 완료");
+  };
+
   // 💪(상일) 개별 알림 타입 토글 - FCMTokenManager 사용
   const toggleNotificationType = async (type, enabled) => {
-    const { fcmTokenManager } = await import('@/firebase/FCMTokenManager');
+    const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
     const token = await fcmTokenManager.getValidToken();
 
     const data = { token, enabled };
@@ -217,32 +244,32 @@ export const useNotificationStore = defineStore('notification', () => {
     try {
       // 💪(상일) 즉시 UI 업데이트 (낙관적 업데이트)
       switch (type) {
-        case 'bookmark':
+        case "bookmark":
           subscriptionStatus.isActiveBookmark = enabled;
           break;
-        case 'top3':
+        case "top3":
           subscriptionStatus.isActiveTop3 = enabled;
           break;
-        case 'newPolicy':
+        case "newPolicy":
           subscriptionStatus.isActiveNewPolicy = enabled;
           break;
-        case 'feedback':
+        case "feedback":
           subscriptionStatus.isActiveFeedback = enabled;
           break;
       }
 
       // API 호출
       switch (type) {
-        case 'bookmark':
+        case "bookmark":
           await subscriptionAPI.toggleBookmark(data);
           break;
-        case 'top3':
+        case "top3":
           await subscriptionAPI.toggleTop3(data);
           break;
-        case 'newPolicy':
+        case "newPolicy":
           await subscriptionAPI.toggleNewPolicy(data);
           break;
-        case 'feedback':
+        case "feedback":
           await subscriptionAPI.toggleFeedback(data);
           break;
       }
@@ -258,16 +285,16 @@ export const useNotificationStore = defineStore('notification', () => {
 
       // 💪(상일) API 실패 시 로컬 상태를 이전으로 롤백
       switch (type) {
-        case 'bookmark':
+        case "bookmark":
           subscriptionStatus.isActiveBookmark = !enabled;
           break;
-        case 'top3':
+        case "top3":
           subscriptionStatus.isActiveTop3 = !enabled;
           break;
-        case 'newPolicy':
+        case "newPolicy":
           subscriptionStatus.isActiveNewPolicy = !enabled;
           break;
-        case 'feedback':
+        case "feedback":
           subscriptionStatus.isActiveFeedback = !enabled;
           break;
       }
@@ -299,5 +326,6 @@ export const useNotificationStore = defineStore('notification', () => {
     toggleNotificationType,
     createInitialSubscription,
     triggerIconShake,
+    resetStore,
   };
 });

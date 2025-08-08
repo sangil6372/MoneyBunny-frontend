@@ -6,7 +6,6 @@
       :to="item.path"
       class="nav-item"
       :class="{ active: isActive(item.path) }"
-      @click.prevent="handleNavClick(item)"
     >
       <img
         :src="isActive(item.path) ? item.iconActive : item.icon"

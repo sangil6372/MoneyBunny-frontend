@@ -1,6 +1,5 @@
 <template>
   <div class="policyWrapper">
-
     <!-- 정책 검색창 -->
     <div class="searchBar" @click="goToSearchPage" style="cursor: pointer">
       <img
@@ -96,7 +95,11 @@
     v-model="showStatusModal"
     :policyTitle="currentApplication?.title || ''"
     @submit="handleStatusSubmit"
-    @later="() => { showStatusModal = false; }"
+    @later="
+      () => {
+        showStatusModal = false;
+      }
+    "
   />
 </template>
 
@@ -143,7 +146,7 @@ const handleShowStatusModal = (applicationData) => {
   // 신청 모달 닫고 상태 모달 표시
   showApplyModal.value = false;
   selectedPolicy.value = null;
-  
+
   // 현재 신청 정보 설정
   currentApplication.value = applicationData;
   showStatusModal.value = true;
@@ -181,22 +184,28 @@ const checkIncompleteApplication = async () => {
 // 💪(상일) 모달 응답 처리
 const handleStatusSubmit = async (status) => {
   if (!currentApplication.value) return;
-  
+
   try {
-    switch(status) {
+    switch (status) {
       case 'applied':
         // 신청 완료 처리
-        await policyInteractionAPI.completeApplication(currentApplication.value.policyId);
+        await policyInteractionAPI.completeApplication(
+          currentApplication.value.policyId
+        );
         break;
-        
+
       case 'notYet':
         // 신청 기록 삭제
-        await policyInteractionAPI.removeApplication(currentApplication.value.policyId);
+        await policyInteractionAPI.removeApplication(
+          currentApplication.value.policyId
+        );
         break;
-        
+
       case 'notEligible':
         // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제
-        await policyInteractionAPI.removeApplication(currentApplication.value.policyId);
+        await policyInteractionAPI.removeApplication(
+          currentApplication.value.policyId
+        );
         break;
     }
   } catch (error) {
@@ -208,19 +217,14 @@ const handleStatusSubmit = async (status) => {
 };
 
 onMounted(async () => {
-  // 정책 데이터 로드
-  if (policyMatchingStore.recommendedPolicies.length > 0) {
-    ALL_POLICIES.value = policyMatchingStore.recommendedPolicies;
-  } else {
-    try {
-      const res = await policyAPI.getUserPolicySearch(); // GET 방식으로 변경
-      policyMatchingStore.setRecommendedPolicies(res.data);
-      ALL_POLICIES.value = res.data;
-    } catch (e) {
-      ALL_POLICIES.value = [];
-    }
+  try {
+    const res = await policyAPI.getUserPolicySearch(); // 항상 요청
+    policyMatchingStore.setRecommendedPolicies(res.data);
+    ALL_POLICIES.value = res.data;
+  } catch (e) {
+    ALL_POLICIES.value = [];
   }
-  
+
   // 💪(상일) 미완료 신청 체크
   await checkIncompleteApplication();
 });

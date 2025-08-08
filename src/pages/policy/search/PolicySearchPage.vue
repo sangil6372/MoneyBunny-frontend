@@ -10,14 +10,24 @@ const recentKeywords = ref([]);
 
 // 👸🏻(은진)
 // 최근검색어 삭제
-const removeRecent = (idx) => {
-  recentKeywords.value.splice(idx, 1);
-  // 필요하면 API에도 삭제 호출
+const removeRecent = async (idx) => {
+  const keyword = recentKeywords.value[idx];
+  try {
+    await policyAPI.removeRecentKeyword(keyword);
+    recentKeywords.value.splice(idx, 1);
+  } catch (e) {
+    // 에러 무시, UI는 삭제
+    recentKeywords.value.splice(idx, 1);
+  }
 };
 // 최근검색어 전체삭제
-const clearAllRecent = () => {
-  recentKeywords.value = [];
-  // 필요하면 API에도 전체 삭제 호출
+const clearAllRecent = async () => {
+  try {
+    await policyAPI.clearAllRecentKeywords();
+    recentKeywords.value = [];
+  } catch (e) {
+    recentKeywords.value = [];
+  }
 };
 
 // 기본 필터(사용자 조건) 저장
