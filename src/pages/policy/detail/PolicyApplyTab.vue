@@ -25,7 +25,7 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
 <template>
   <div class="applyTab">
     <!-- 신청 절차 -->
-    <div v-if="applicationMethod" class="font-18 font-bold mb-3">신청 절차</div>
+    <div v-if="applicationMethod" class="font-16 font-bold mb-3">신청 절차</div>
     <ul v-if="applicationMethod" class="stepsBox">
       <li
         v-for="(step, idx) in splitLines(applicationMethod)"
@@ -37,17 +37,17 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
     </ul>
 
     <!-- 제출 서류 -->
-    <div v-if="submitDocuments" class="font-18 font-bold mb-2 mt-4">
+    <div v-if="submitDocuments" class="font-16 font-bold mb-2 mt-4">
       제출 서류
     </div>
-    <ul v-if="submitDocuments" class="docsBox font-12">
+    <ul v-if="submitDocuments" class="docsBox font-11">
       <li v-for="(doc, idx) in splitLines(submitDocuments)" :key="idx">
         {{ doc }}
       </li>
     </ul>
 
     <!-- 심사 및 발표 -->
-    <div v-if="screeningMethod" class="font-18 font-bold mt-4 mb-2">
+    <div v-if="screeningMethod" class="font-16 font-bold mt-4 mb-2">
       심사 및 발표
     </div>
     <ul v-if="screeningMethod" class="reviewBox">
@@ -57,7 +57,7 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
     </ul>
 
     <!-- 참고 사이트 -->
-    <div v-if="refUrl1 || refUrl2" class="font-18 font-bold mt-4 mb-2">
+    <div v-if="refUrl1 || refUrl2" class="font-16 font-bold mt-4 mb-2">
       참고 사이트
     </div>
     <div v-if="refUrl1 || refUrl2" class="siteBadgeColumn">
@@ -84,8 +84,8 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
     </div>
 
     <!-- 기타 정보 -->
-    <div v-if="etcNotes" class="font-18 font-bold mt-4 mb-2">기타 정보</div>
-    <div v-if="etcNotes" class="etcBox font-12">
+    <div v-if="etcNotes" class="font-16 font-bold mt-4 mb-2">기타 정보</div>
+    <div v-if="etcNotes" class="etcBox font-11">
       {{ etcNotes }}
     </div>
   </div>
@@ -107,7 +107,7 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
 .stepsBox li,
 .reviewBox li {
   color: var(--text-bluegray);
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 7px;
 }
 .stepsBox li:last-child,
@@ -122,7 +122,7 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
 }
 .docsBox li {
   color: var(--text-bluegray);
-  font-size: 12px;
+  font-size: 11px;
   margin-bottom: 6px;
 }
 .docsBox li:last-child {
@@ -142,7 +142,7 @@ const etcNotes = computed(() => props.policy?.etcNotes || '');
   padding: 9px 18px;
   border-radius: 8px;
   color: var(--base-blue-dark);
-  font-size: 13px;
+  font-size: 12px;
   text-decoration: none;
   border: none;
   cursor: pointer;

@@ -10,6 +10,7 @@ import { majorCodeMap } from '@/assets/utils/majorCodeMap.js';
 import { employmentStatusCodeMap } from '@/assets/utils/employmentStatusCodeMap.js';
 import { specialConditionCodeMap } from '@/assets/utils/specialConditionCodeMap.js';
 import { regionCodeMap } from '@/assets/utils/regionCodeMap.js';
+import { usePolicyFilterStore } from '@/stores/policyFilterStore'; // Pinia 스토어 import
 
 // 코드→라벨 역매핑 생성
 const educationLevelLabelMap = Object.fromEntries(
@@ -174,7 +175,31 @@ const reset = () => {
   selectedSpecialty.value = [];
 };
 const emit = defineEmits(['close', 'confirm', 'reset']);
+const store = usePolicyFilterStore();
+
+// 필터값을 스토어에서 불러와서 초기값으로 세팅
+onMounted(() => {
+  selectedMarital.value = store.marital ? [...store.marital] : [];
+  selectedRegion.value = store.region ? [...store.region] : [];
+  age.value = store.age || '';
+  income.value = store.income || '';
+  selectedEducation.value = store.education ? [...store.education] : [];
+  selectedMajor.value = store.major ? [...store.major] : [];
+  selectedJobStatus.value = store.jobStatus ? [...store.jobStatus] : [];
+  selectedSpecialty.value = store.specialty ? [...store.specialty] : [];
+});
+
+// confirm 시 스토어에 값 저장
 const confirm = () => {
+  store.marital = [...selectedMarital.value];
+  store.region = [...selectedRegion.value];
+  store.age = age.value;
+  store.income = income.value;
+  store.education = [...selectedEducation.value];
+  store.major = [...selectedMajor.value];
+  store.jobStatus = [...selectedJobStatus.value];
+  store.specialty = [...selectedSpecialty.value];
+
   emit('confirm', {
     region:
       selectedRegion.value && selectedRegion.value.length > 0
@@ -290,46 +315,71 @@ function regionNameToCode(name) {
   return name;
 }
 
-onMounted(() => {
+// 사용자 정보 자동입력 함수 (예시: 실제 데이터는 props나 API 등에서 받아와야 함)
+function autoFillUserInfo() {
+  // 예시: userInfo는 실제 사용자 정보 객체로 교체 필요
+  const userInfo = {
+    marital: props.initialMarital,
+    region: props.initialRegion,
+    age: props.initialAge,
+    income: props.initialIncome,
+    education: props.initialEducation,
+    major: props.initialMajor,
+    jobStatus: props.initialJobStatus,
+    specialty: props.initialSpecialty,
+  };
+
   // 혼인여부 코드 → 라벨
-  if (props.initialMarital && props.initialMarital.length > 0) {
-    selectedMarital.value = props.initialMarital
-      .map((code) => maritalCodeToLabel[code])
-      .filter(Boolean);
-  }
+  selectedMarital.value =
+    userInfo.marital && userInfo.marital.length > 0
+      ? userInfo.marital.map((code) => maritalCodeToLabel[code]).filter(Boolean)
+      : [];
   // 지역 코드 → 지역명 변환
-  if (props.initialRegion && props.initialRegion.length > 0) {
-    selectedRegion.value = props.initialRegion
-      .map((code) => codeToRegionName(code))
-      .filter(Boolean);
-  }
-  if (props.initialAge) age.value = props.initialAge;
-  if (props.initialIncome) income.value = props.initialIncome;
+  selectedRegion.value =
+    userInfo.region && userInfo.region.length > 0
+      ? userInfo.region.map((code) => codeToRegionName(code)).filter(Boolean)
+      : [];
+  age.value = userInfo.age || '';
+  income.value = userInfo.income || '';
   // 학력 코드 → 라벨
-  if (props.initialEducation && props.initialEducation.length > 0) {
-    selectedEducation.value = props.initialEducation
-      .map((code) => educationLevelLabelMap[code])
-      .filter(Boolean);
-  }
+  selectedEducation.value =
+    userInfo.education && userInfo.education.length > 0
+      ? userInfo.education
+          .map((code) => educationLevelLabelMap[code])
+          .filter(Boolean)
+      : [];
   // 전공 코드 → 라벨
-  if (props.initialMajor && props.initialMajor.length > 0) {
-    selectedMajor.value = props.initialMajor
-      .map((code) => majorLabelMap[code])
-      .filter(Boolean);
-  }
+  selectedMajor.value =
+    userInfo.major && userInfo.major.length > 0
+      ? userInfo.major.map((code) => majorLabelMap[code]).filter(Boolean)
+      : [];
   // 취업상태 코드 → 라벨
-  if (props.initialJobStatus && props.initialJobStatus.length > 0) {
-    selectedJobStatus.value = props.initialJobStatus
-      .map((code) => employmentStatusLabelMap[code])
-      .filter(Boolean);
-  }
+  selectedJobStatus.value =
+    userInfo.jobStatus && userInfo.jobStatus.length > 0
+      ? userInfo.jobStatus
+          .map((code) => employmentStatusLabelMap[code])
+          .filter(Boolean)
+      : [];
   // 특화분야 코드 → 라벨
-  if (props.initialSpecialty && props.initialSpecialty.length > 0) {
-    selectedSpecialty.value = props.initialSpecialty
-      .map((code) => specialConditionLabelMap[code])
-      .filter(Boolean);
-  }
-});
+  selectedSpecialty.value =
+    userInfo.specialty && userInfo.specialty.length > 0
+      ? userInfo.specialty
+          .map((code) => specialConditionLabelMap[code])
+          .filter(Boolean)
+      : [];
+}
+
+// // onMounted에서 초기값 세팅 부분 제거 (모두 선택 안된 상태로)
+// onMounted(() => {
+//   selectedMarital.value = [];
+//   selectedRegion.value = [];
+//   age.value = '';
+//   income.value = '';
+//   selectedEducation.value = [];
+//   selectedMajor.value = [];
+//   selectedJobStatus.value = [];
+//   selectedSpecialty.value = [];
+// });
 
 // AreaSelectModal에 지역 코드값을 넘겨서, 사용자가 이전에 선택한 지역이 선택된 상태로 보이게 함
 const areaSelectModalProps = computed(() => ({
@@ -373,7 +423,7 @@ const areaSelectModalProps = computed(() => ({
       <hr class="divider" />
 
       <div v-if="page === 'main'" class="modalBody">
-        <div class="fieldLabel font-15 font-bold">지역</div>
+        <div class="fieldLabel font-14 font-bold">지역</div>
         <div class="selectOpenInput" @click="showRegionModal = true">
           <span v-if="selectedRegion.length">{{ displayRegionText }}</span>
           <span v-else class="placeholder">지역 선택</span>
@@ -383,12 +433,12 @@ const areaSelectModalProps = computed(() => ({
           />
         </div>
         <!-- 혼인여부 -->
-        <div class="fieldLabel font-15 font-bold">혼인 여부</div>
+        <div class="fieldLabel font-14 font-bold">혼인 여부</div>
         <div class="selectGroup">
           <button
             v-for="s in maritalOptions"
             :key="s"
-            class="selectBtn font-14"
+            class="selectBtn font-13"
             :class="{ active: selectedMarital.includes(s) }"
             @click="toggleMarital(s)"
             type="button"
@@ -398,8 +448,8 @@ const areaSelectModalProps = computed(() => ({
         </div>
 
         <!-- 연령 -->
-        <div class="fieldLabel font-15 font-bold">연령</div>
-        <div class="inputRow font-14">
+        <div class="fieldLabel font-14 font-bold">연령</div>
+        <div class="inputRow font-13">
           <span class="font-14">만</span>
           <input
             type="number"
@@ -409,24 +459,24 @@ const areaSelectModalProps = computed(() => ({
             @blur="isAgeFocus = false"
             class="miniInput"
           />
-          <span class="font-14">세</span>
+          <span class="font-13">세</span>
         </div>
         <!-- 연소득 -->
-        <div class="fieldLabel font-15 font-bold">연소득</div>
+        <div class="fieldLabel font-14 font-bold">연소득</div>
         <div class="inputRow">
-          <span class="font-14">약</span>
+          <span class="font-13">약</span>
           <input
             type="number"
-            class="longInput font-14"
+            class="longInput font-13"
             :placeholder="isIncomeFocus ? '' : '0'"
             v-model="income"
             @focus="isIncomeFocus = true"
             @blur="isIncomeFocus = false"
           />
-          <span class="font-14">만원</span>
+          <span class="font-13">만원</span>
         </div>
         <!-- 학력 -->
-        <div class="fieldLabel font-15 font-bold">학력</div>
+        <div class="fieldLabel font-14 font-bold">학력</div>
         <div class="selectOpenInput" @click="page = 'education'">
           <span v-if="selectedEducation.length">
             {{ displayEducationText }}
@@ -438,7 +488,7 @@ const areaSelectModalProps = computed(() => ({
           />
         </div>
         <!-- 전공 요건 -->
-        <div class="fieldLabel font-15 font-bold">전공 요건</div>
+        <div class="fieldLabel font-14 font-bold">전공 요건</div>
         <div class="selectOpenInput" @click="page = 'major'">
           <span v-if="selectedMajor.length">
             {{ displayMajorText }}
@@ -450,7 +500,7 @@ const areaSelectModalProps = computed(() => ({
           />
         </div>
         <!-- 취업 상태 -->
-        <div class="fieldLabel font-15 font-bold">취업 상태</div>
+        <div class="fieldLabel font-14 font-bold">취업 상태</div>
         <div class="selectOpenInput" @click="page = 'jobStatus'">
           <span v-if="selectedJobStatus.length">
             {{ displayJobStatusText }}
@@ -462,7 +512,7 @@ const areaSelectModalProps = computed(() => ({
           />
         </div>
         <!-- 특화 분야 -->
-        <div class="fieldLabel font-15 font-bold">특화 분야</div>
+        <div class="fieldLabel font-14 font-bold">특화 분야</div>
         <div class="selectOpenInput" @click="page = 'specialty'">
           <span v-if="selectedSpecialty.length">
             {{ displaySpecialtyText }}
@@ -500,13 +550,13 @@ const areaSelectModalProps = computed(() => ({
       </div>
 
       <div class="modalFooter">
-        <button class="autoFillBtn font-16" @click="$emit('autoFill')">
+        <button class="autoFillBtn font-16" @click="autoFillUserInfo">
           내 정보 자동입력
         </button>
         <div class="footerBtnRow">
-          <button class="resetBtn font-16" @click="reset">초기화</button>
+          <button class="resetBtn font-15" @click="reset">초기화</button>
           <button
-            class="saveBtn font-16"
+            class="saveBtn font-15"
             @click="page === 'main' ? confirm() : (page = 'main')"
           >
             {{ page === 'main' ? '저장' : '적용' }}
@@ -535,8 +585,8 @@ const areaSelectModalProps = computed(() => ({
   justify-content: center;
 }
 .modalContent {
-  width: 95vw;
-  max-width: 350px;
+  width: 100vw;
+  max-width: 330px;
   background: #fff;
   border-radius: 12px;
   display: flex;
@@ -544,7 +594,7 @@ const areaSelectModalProps = computed(() => ({
   position: relative;
   overflow-y: auto;
   max-height: 96vh;
-  padding: 5px;
+  padding: 10px;
 }
 
 .modalHeader {
@@ -553,12 +603,10 @@ const areaSelectModalProps = computed(() => ({
   justify-content: space-between;
   padding: 12px 12px 0 12px;
 }
-.modalTitle {
-  color: var(--base-blue-dark);
-}
+
 .iconBack {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
   margin-right: 4px;
   vertical-align: middle;
@@ -578,7 +626,7 @@ const areaSelectModalProps = computed(() => ({
 .closeBtn {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 18px;
   color: #222;
   cursor: pointer;
 }
@@ -705,7 +753,7 @@ const areaSelectModalProps = computed(() => ({
   flex-direction: column;
   gap: 0px;
   padding: 0 16px 16px 16px;
-  margin-top: 10px;
+  margin-top: 5px;
 }
 
 .resetBtn,
@@ -714,7 +762,6 @@ const areaSelectModalProps = computed(() => ({
   align-items: center;
   justify-content: center;
   height: 45px;
-  font-size: 18px;
   border-radius: 8px;
   box-sizing: border-box;
 }
@@ -745,8 +792,8 @@ const areaSelectModalProps = computed(() => ({
   min-height: 32px;
   border: 1px solid var(--input-outline-2);
   border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 8px 14px;
+  font-size: 12px;
   margin-bottom: 12px;
   color: var(--text-bluegray);
   display: flex;
@@ -757,6 +804,7 @@ const areaSelectModalProps = computed(() => ({
 .selectOpenInput span,
 .selectOpenInput .placeholder {
   background: transparent !important;
+  font-size: 13px;
 }
 
 .selectOpenInput .selectDownIcon {

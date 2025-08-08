@@ -8,6 +8,18 @@ const searchQuery = ref('');
 const popularKeywords = ref([]);
 const recentKeywords = ref([]);
 
+// 👸🏻(은진)
+// 최근검색어 삭제
+const removeRecent = (idx) => {
+  recentKeywords.value.splice(idx, 1);
+  // 필요하면 API에도 삭제 호출
+};
+// 최근검색어 전체삭제
+const clearAllRecent = () => {
+  recentKeywords.value = [];
+  // 필요하면 API에도 전체 삭제 호출
+};
+
 // 기본 필터(사용자 조건) 저장
 const filterInitial = ref({
   marital: [],
@@ -89,32 +101,51 @@ onMounted(() => {
 <template>
   <div class="policySearchPage">
     <section class="section">
-      <div class="title">최근 검색어</div>
+      <div class="recentHeader">
+        <span class="title">최근 검색어</span>
+        <button class="clearAllBtn" @click="clearAllRecent">전체 삭제</button>
+      </div>
       <div class="chipList">
         <span
           class="chip"
-          v-for="(item, idx) in recentKeywords"
+          v-for="(item, idx) in recentKeywords.slice(0, 7)"
           :key="idx"
-          @click="searchWithKeyword(item)"
-          style="cursor: pointer"
-          >{{ item }}</span
         >
+          <span class="chipText" @click="searchWithKeyword(item)">{{
+            item
+          }}</span>
+          <span class="deleteBtn" @click="removeRecent(idx)">
+            <img src="@/assets/images/icons/common/x.png" alt="삭제" />
+          </span>
+        </span>
       </div>
     </section>
 
     <!-- 인기 검색어 -->
     <section class="section">
       <div class="title">인기 검색어</div>
-      <div class="popularGrid">
-        <div
-          class="popularItem"
-          v-for="(item, index) in popularKeywords"
-          :key="index"
-          @click="searchWithKeyword(item)"
-          style="cursor: pointer"
-        >
-          <span class="number">{{ index + 1 }}</span>
-          <span class="text">{{ item }}</span>
+      <div class="popularRankGrid">
+        <div class="rankCol">
+          <div
+            class="popularItem"
+            v-for="(item, i) in popularKeywords.slice(0, 5)"
+            :key="i"
+            @click="searchWithKeyword(item)"
+          >
+            <span class="number">{{ i + 1 }}</span>
+            <span class="text">{{ item }}</span>
+          </div>
+        </div>
+        <div class="rankCol">
+          <div
+            class="popularItem"
+            v-for="(item, i) in popularKeywords.slice(5, 10)"
+            :key="i + 5"
+            @click="searchWithKeyword(item)"
+          >
+            <span class="number">{{ i + 6 }}</span>
+            <span class="text">{{ item }}</span>
+          </div>
         </div>
       </div>
     </section>
@@ -178,13 +209,31 @@ onMounted(() => {
   flex-wrap: wrap;
   gap: 8px;
 }
-
+.chipText {
+  max-width: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
 .chip {
+  display: flex;
+  align-items: center;
   background-color: var(--input-bg-1);
   padding: 4px 10px;
   border-radius: 12px;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-bluegray);
+  gap: 4px;
+  min-width: 40px;
+}
+.chip span:first-child {
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+  vertical-align: middle;
 }
 
 .popularGrid {
@@ -192,7 +241,6 @@ onMounted(() => {
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
-
 .popularItem {
   background-color: var(--input-bg-1);
   border-radius: 8px;
@@ -201,8 +249,18 @@ onMounted(() => {
   gap: 8px;
   align-items: center;
   font-size: 13px;
+  cursor: pointer;
+  max-width: 120px;
+  overflow: hidden;
 }
-
+.popularItem .text {
+  display: inline-block;
+  max-width: 70px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;
+}
 .number {
   font-weight: bold;
   color: var(--base-blue-dark);
@@ -234,5 +292,45 @@ onMounted(() => {
   margin: 0;
   font-size: 12px;
   color: var(--text-bluegray);
+}
+
+.recentHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.clearAllBtn {
+  margin-top: -10px;
+  background: none;
+  border: none;
+  color: #b0b0b0;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 0;
+}
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  cursor: pointer;
+}
+.deleteBtn img {
+  width: 12px;
+  height: 12px;
+  object-fit: contain;
+  display: block;
+}
+
+.popularRankGrid {
+  display: flex;
+  gap: 10px;
+}
+.rankCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>

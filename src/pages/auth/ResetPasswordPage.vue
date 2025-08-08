@@ -3,6 +3,20 @@ import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import axios from 'axios';
 
+// 👁️ 눈 아이콘 상태
+const showPassword = ref(false);
+const showConfirmPassword = ref(false);
+
+// 👁️ 아이콘 경로
+const eyeView = new URL(
+  '@/assets/images/icons/signup/eye_view.png',
+  import.meta.url
+).href;
+const eyeHide = new URL(
+  '@/assets/images/icons/signup/eye_hide.png',
+  import.meta.url
+).href;
+
 // 🎵(유정) 이메일 인증(FindPasswordPage) 후 비밀번호 재설정 페이지
 const router = useRouter();
 const route = useRoute(); // loginId
@@ -119,13 +133,22 @@ const goToLogin = () => {
         </div>
         <div class="formGroup">
           <label for="password" class="font-13">새 비밀번호</label>
-          <input
-            id="password"
-            type="password"
-            v-model="password"
-            placeholder="새 비밀번호를 입력하세요"
-            autocomplete="new-password"
-          />
+          <div class="inputRow">
+            <input
+              id="password"
+              :type="showPassword ? 'text' : 'password'"
+              v-model="password"
+              class="passwordInput"
+              placeholder="새 비밀번호를 입력하세요"
+              autocomplete="new-password"
+            />
+            <img
+              :src="showPassword ? eyeView : eyeHide"
+              class="icon"
+              alt="비밀번호 보기 토글"
+              @click="showPassword = !showPassword"
+            />
+          </div>
           <div :class="[passwordHintClass, 'font-10']">
             {{ passwordHintMsg }}
           </div>
@@ -133,14 +156,22 @@ const goToLogin = () => {
 
         <div class="formGroup">
           <label for="confirmPassword" class="font-13">비밀번호 확인</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            v-model="confirmPassword"
-            placeholder="비밀번호를 다시 입력하세요"
-            autocomplete="new-password"
-          />
-          <!-- ✨ 에러 메시지 (불일치) -->
+          <div class="inputRow">
+            <input
+              id="confirmPassword"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              v-model="confirmPassword"
+              class="passwordInput"
+              placeholder="비밀번호를 다시 입력하세요"
+              autocomplete="new-password"
+            />
+            <img
+              :src="showConfirmPassword ? eyeView : eyeHide"
+              class="icon"
+              alt="비밀번호 보기 토글"
+              @click="showConfirmPassword = !showConfirmPassword"
+            />
+          </div>
           <div v-if="confirmErrorMsg" class="inputError font-11">
             {{ confirmErrorMsg }}
           </div>
@@ -307,8 +338,8 @@ input:focus {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   pointer-events: none;
   text-align: center;
   box-sizing: border-box;
@@ -333,5 +364,41 @@ input:focus {
   color: var(--alert-red);
   font-size: 10px;
   margin-left: 4px;
+}
+.inputRow {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.passwordInput {
+  width: 100%;
+  font-size: 14px;
+  padding: 12px 44px 12px 14px;
+  border: 1.2px solid var(--input-outline);
+  border-radius: 8px;
+  background-color: transparent;
+  outline: none;
+  box-sizing: border-box;
+  transition: border 0.18s;
+}
+.passwordInput:focus {
+  border: 1.5px solid var(--input-outline-2);
+}
+.icon {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 2;
+  background: #fff;
+  border-radius: 50%;
+  padding: 2px;
 }
 </style>

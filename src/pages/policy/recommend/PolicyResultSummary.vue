@@ -1,7 +1,7 @@
 <template>
   <header class="introHeader">
-    <div class="resultHeader">
-      <h3>맞춤 정책 분석 완료!</h3>
+    <div class="resultHeader font-18">
+      <div>맞춤 정책 분석 완료!</div>
       <img
         src="@/assets/images/icons/bunny/personality_done_bunny.png"
         alt="토끼"
@@ -11,7 +11,7 @@
   </header>
   <div class="resultContainer">
     <section class="summarySection">
-      <div class="font-18 font-bold">당신의 응답 결과</div>
+      <div class="font-16 font-bold">응답 결과</div>
       <div class="summaryRow" v-for="(value, label) in summary" :key="label">
         <span class="summaryLabel">{{ label }}</span>
         <span class="summaryValue">{{ value }}</span>
@@ -19,7 +19,7 @@
     </section>
 
     <div class="prioritySection">
-      <div class="font-18 font-bold">정책 신청 시 중요하게 여긴 항목</div>
+      <div class="font-16 font-bold">정책 신청 시 중요하게 여긴 항목</div>
       <ul class="priorityList">
         <li
           v-for="(item, index) in priorityOrder"
@@ -33,7 +33,7 @@
     </div>
 
     <section class="recommendSection">
-      <h3 class="font-18 font-bold">추천 정책 미리보기</h3>
+      <h3 class="font-16 font-bold">추천 정책 미리보기</h3>
       <div
         class="policyCard"
         v-for="policy in previewPolicies.slice(0, 2)"
@@ -186,75 +186,65 @@ export default {
 .introHeader {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 }
 .resultHeader {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  flex-direction: column; /* 세로 정렬! */
+  align-items: center; /* 수평 중앙정렬 */
+  justify-content: center; /* 수직 중앙정렬 */
   background-color: var(--base-blue-dark);
-  border-radius: 12px;
-  padding: 16px 35px;
+  border-radius: 8px;
+  padding: 20px;
   color: white;
-  max-width: 390px;
   width: 100%;
   box-sizing: border-box;
-}
-
-.resultHeader h3 {
-  margin: 0;
-  flex: 1;
-  text-align: center;
+  gap: 5px;
 }
 
 .resultHeader .bunny {
-  height: 50px;
+  height: 55px;
   flex-shrink: 0;
 }
 
 .resultContainer {
-  max-width: 390px;
-  margin: 10px auto;
+  margin: 0 auto;
   padding: 24px;
   background: white;
-  border-radius: 16px;
-}
-
-.summarySection,
-.recommendSection {
-  max-width: 393px;
+  border-radius: 12px;
 }
 
 .summarySection {
-  margin-bottom: 32px;
+  margin-bottom: 10px;
 }
 
 .recommendSection {
-  margin-top: 32px;
-  margin-bottom: 32px;
+  margin-bottom: 20px;
 }
 
 .summaryRow {
   display: flex;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 10px 14px;
   background-color: var(--input-bg-2);
   border-radius: 10px;
   margin: 12px 0;
 }
 
 .summaryLabel {
+  font-size: 14px;
   color: var(--text-lightgray);
 }
 
 .summaryValue {
+  font-size: 14px;
   color: var(--text-login);
 }
 
 .policyCard {
   padding: 16px 16px 8px 16px;
   border: 1px solid var(--input-outline);
-  border-radius: 12px;
+  border-radius: 8px;
   margin-bottom: 8px;
   background-color: white;
 }
@@ -269,18 +259,18 @@ export default {
 }
 
 .policyCard .title {
-  font-size: 15px;
+  font-size: 13px;
   margin-bottom: 6px;
 }
 
 .policyCard .desc {
-  font-size: 13px;
+  font-size: 12px;
   margin-bottom: 8px;
   color: #555;
 }
 
 .policyCard .match {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   color: var(--base-blue-dark);
 }
@@ -295,13 +285,13 @@ export default {
 .btn-grey,
 .btn-blue {
   padding: 12px 0;
-  font-size: 16px;
-  border-radius: 10px;
+  font-size: 15px;
+  border-radius: 8px;
   width: 100%;
 }
 
 .btn-grey {
-  background-color: var(--input-bg-3);
+  background-color: var(--input-bg-1);
   color: var(--text-login);
   border: none;
 }
@@ -337,14 +327,14 @@ export default {
 .priorityRank {
   background-color: var(--base-blue-dark);
   color: white;
-  font-size: 12px;
+  font-size: 11px;
   border-radius: 10px;
   padding: 4px 8px;
   margin-right: 12px;
 }
 
 .priorityLabel {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-login);
 }
 </style>

@@ -14,7 +14,7 @@
         </div>
       </div>
 
-      <div class="question font-20">현재 어떤 상황에 계신가요?</div>
+      <div class="question font-18">현재 어떤 상황에 계신가요?</div>
 
       <ul class="options">
         <li
@@ -30,9 +30,9 @@
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-18" @click="goToPrevStep">이전</button>
+      <button class="prevButton font-15" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-18"
+        class="nextButton font-15"
         :disabled="!selectedOption"
         @click="goToNextStep"
       >
@@ -107,21 +107,20 @@ export default {
 }
 
 .quizHeader {
-  margin-top: 10px;
   text-align: center;
   background-color: var(--base-blue-dark);
-  border-radius: 12px;
-  padding: 19px;
+  border-radius: 8px;
+  padding: 20px;
   color: white;
-  max-width: 390px;
+  /* max-width: 390px; */
   width: 100%;
 }
 .quizContainer {
-  max-width: 390px;
+  /* max-width: 396px; */
   margin: 0 auto;
   padding: 24px;
   background-color: #fff;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .progressBarWrapper {
@@ -133,17 +132,16 @@ export default {
   background-color: var(--input-bg-1);
   border-radius: 2px;
   overflow: hidden;
-  margin-top: 17px;
+  margin-top: 15px;
 }
 
 .progress {
   height: 100%;
   background-color: var(--base-blue-dark);
-  transition: width 0.3s ease;
 }
 
 .question {
-  margin-bottom: 20px;
+  margin-bottom: 15px;
   color: var(--text-login);
 }
 
@@ -157,23 +155,29 @@ export default {
 }
 
 .optionItem {
-  padding: 12px 16px;
-  border: 1px solid var(--input-outline);
+  padding: 11px 15px;
+  border: 1px solid var(--input-outline-2);
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .optionItem.selected {
   border-color: var(--input-bg-3);
-  background-color: var(--input-bg-3);
+  /* background-color: var(--input-bg-3); */
+  /* color: #28417a;
+  background-color: rgba(62, 89, 189, 0.12); */
+  /* background-color: #e8efff;
+  color: #243570; */
+  background-color: #f0f6ff;
+  color: #1d3557;
 }
 
 .quizFooter {
-  margin-top: 32px;
+  margin-top: 16px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
 }
 
@@ -181,7 +185,7 @@ export default {
 .nextButton {
   flex: 1;
   padding: 12px 0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
 }
 

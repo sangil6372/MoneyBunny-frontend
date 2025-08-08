@@ -1,15 +1,18 @@
 <template>
   <div class="transaction-item" @click="handleClick">
     <div class="transaction-left">
+      <p class="transaction-sub">
+        {{ data.date2 }}
+        <span v-if="type === 'card' && data.category">
+          · {{ data.category }}</span
+        >
+        <!-- <span v-else> · {{ data.type }}</span> -->
+      </p>
       <p class="transaction-title">
         {{ data.description }}
       </p>
       <p class="transaction-sub">
-        {{ data.date }} · {{ data.time }}
-        <span v-if="type === 'card' && data.category">
-          · {{ data.category }}</span
-        >
-        <span v-else> · {{ data.type }}</span>
+        {{ data.memo }}
       </p>
     </div>
     <div class="transaction-right">

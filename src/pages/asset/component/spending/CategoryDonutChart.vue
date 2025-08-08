@@ -32,8 +32,6 @@ const props = defineProps({
   },
 });
 
-// emit 제거 - 클릭 이벤트 불필요
-
 const chartCanvas = ref(null);
 let chartInstance = null;
 
@@ -59,15 +57,13 @@ const createChart = () => {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
-        tooltip: { enabled: false }, // 모바일 앱용: 툴팁 비활성화
+        tooltip: { enabled: false },
       },
       cutout: '70%',
       animation: {
-        duration: 300, // 모바일 최적화: 짧은 애니메이션
+        duration: 300,
       },
-      interaction: {
-        intersect: false, // 모바일 터치 최적화
-      },
+      // interaction 설정 제거 (불필요)
     },
   });
 };
@@ -115,14 +111,12 @@ onUnmounted(() => {
   left: 50%;
   transform: translate(-50%, -50%);
   text-align: center;
-  pointer-events: none;
 }
 
 .center-label {
   font-size: 0.875rem;
   color: var(--text-bluegray);
   margin: 0 0 0.25rem 0;
-  line-height: 1.4;
 }
 
 .center-amount {
@@ -130,6 +124,5 @@ onUnmounted(() => {
   font-weight: 700;
   color: var(--text-login);
   margin: 0;
-  line-height: 1.2;
 }
 </style>

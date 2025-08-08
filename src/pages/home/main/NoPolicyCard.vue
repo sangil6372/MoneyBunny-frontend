@@ -22,42 +22,40 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 1rem;
   background-color: white;
 }
 
 .bunny-img {
-  width: 100px;
+  width: 90px;
   margin-bottom: 1rem;
 }
 
 .main-text {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: bold;
   margin-bottom: 0.5rem;
   color: var(--base-blue-dark);
 }
 
 .sub-text {
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   color: var(--text-lightgray);
-  margin-bottom: 1.5rem;
-  line-height: 1.4;
+  margin-bottom: 1.25rem;
 }
 
 .start-btn {
   background-color: var(--base-blue-dark);
   color: white;
-  font-weight: 600;
   padding: 0.5rem 1.25rem;
   border-radius: 0.5rem;
-  margin-bottom: 1rem;
   cursor: pointer;
+  font-size: 0.9rem;
 }
 
 .see-all {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-bluegray);
   text-decoration: underline;
   cursor: pointer;

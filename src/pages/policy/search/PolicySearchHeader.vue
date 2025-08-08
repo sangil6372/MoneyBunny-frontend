@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { policyAPI } from '@/api/policy';
 import PolicyFilterModal from '../filter/PolicyFilterModal.vue';
 
@@ -9,12 +9,29 @@ const showFilterModal = ref(false);
 const openFilter = () => (showFilterModal.value = true);
 
 const router = useRouter();
-const searchQuery = ref('');
+const props = defineProps({
+  searchQuery: {
+    type: String,
+    default: '',
+  },
+});
+const searchQuery = ref(props.searchQuery);
 const goBack = () => router.back();
+const emit = defineEmits(['confirm']);
 
 function handleConfirm(selected) {
   filterData.value = selected;
   showFilterModal.value = false;
+  emit('confirm', selected); // 부모로 필터 데이터 전달
+
+  // 저장(적용) 시 검색 결과 페이지로 이동
+  router.push({
+    name: 'policySearchResult',
+    query: {
+      q: searchQuery.value,
+      filter: encodeURIComponent(JSON.stringify(selected)),
+    },
+  });
 }
 
 function onSearch() {
@@ -26,6 +43,13 @@ function onSearch() {
     },
   });
 }
+
+watch(
+  () => props.searchQuery,
+  (val) => {
+    searchQuery.value = val;
+  }
+);
 
 // 🟦 모달에 넘길 초기값 (PolicyFilterModal이 기대하는 구조)
 const filterInitial = ref({
@@ -99,10 +123,12 @@ onMounted(() => {
       <input
         type="text"
         class="searchInput"
-        placeholder="정책을 검색해보세요 (예: 청년, 주거, 창업)"
+        placeholder="정책을 검색해보세요"
         v-model="searchQuery"
         @keyup.enter="onSearch"
+        maxlength="40"
       />
+
       <button class="searchIconBtn" @click="onSearch" aria-label="검색">
         <img src="@/assets/images/icons/policy/search.png" class="searchIcon" />
       </button>
@@ -129,7 +155,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   max-width: 390px;
-  height: 65px;
+  height: 60px;
   width: 100%;
   margin: 0 auto;
   z-index: 1000;
@@ -150,12 +176,12 @@ onMounted(() => {
 
 .searchInput {
   width: 100%;
-  height: 40px;
+  height: 35px;
   padding: 10px 45px 10px 15px;
   border: 1px solid var(--input-outline-2);
   border-radius: 8px;
   background: #fff;
-  font-size: 15px;
+  font-size: 14px;
   outline: none;
   box-sizing: border-box;
 }
@@ -178,19 +204,19 @@ onMounted(() => {
 }
 
 .searchIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .filterIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 
 .goBackIcon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
 }
 </style>

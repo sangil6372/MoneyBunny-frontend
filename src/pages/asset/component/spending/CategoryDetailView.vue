@@ -56,14 +56,15 @@
                 transaction.id || transaction.transactionId || Math.random()
               "
               class="transaction-item"
+              @click="openTransactionDetail(transaction)"
             >
               <div class="transaction-info">
-                <p class="transaction-title">
-                  {{ getTransactionTitle(transaction) }}
-                </p>
                 <p class="transaction-meta">
                   {{ formatTransactionDate(transaction.date) }}
-                  {{ transaction.time || '' }}
+                </p>
+
+                <p class="transaction-title">
+                  {{ getTransactionTitle(transaction) }}
                 </p>
               </div>
 
@@ -87,6 +88,13 @@
         </div>
       </template>
     </DetailInfoCard>
+
+    <!-- 카테고리 거래 상세보기 모달 -->
+    <CategoryTransactionDetailModal
+      :show="showDetailModal"
+      :transaction="selectedTransaction"
+      @close="closeTransactionDetail"
+    />
   </div>
 </template>
 
@@ -95,6 +103,7 @@ import { ref, computed, watch } from 'vue';
 import DetailHeader from '../detail/DetailHeader.vue';
 import DetailInfoCard from '../detail/DetailInfoCard.vue';
 import TransactionFilter from '../detail/TransactionFilter.vue';
+import CategoryTransactionDetailModal from '../detail/CategoryTransactionDetailModal.vue';
 
 const props = defineProps({
   categoryData: {
@@ -119,6 +128,10 @@ const selectedMonth = ref(currentDate.value.toISOString().slice(0, 7));
 
 // 필터 상태
 const currentFilter = ref('전체');
+
+// 거래 상세보기 모달 상태
+const showDetailModal = ref(false);
+const selectedTransaction = ref({});
 
 // 헤더 제목
 const headerTitle = computed(() => `카테고리별 거래내역`);
@@ -146,6 +159,19 @@ const handleMonthChange = (newMonthString) => {
   const [year, month] = newMonthString.split('-');
   const newDate = new Date(parseInt(year), parseInt(month) - 1, 1);
   currentDate.value = newDate;
+};
+
+// 거래 상세보기 모달 열기
+const openTransactionDetail = (transaction) => {
+  console.log('카테고리 거래 상세보기 열기:', transaction);
+  selectedTransaction.value = transaction;
+  showDetailModal.value = true;
+};
+
+// 거래 상세보기 모달 닫기
+const closeTransactionDetail = () => {
+  showDetailModal.value = false;
+  selectedTransaction.value = {};
 };
 
 // 거래내역 필터링
@@ -294,12 +320,19 @@ const formatTransactionDate = (dateStr) => {
   color: var(--text-bluegray);
 }
 
-/* 거래내역 아이템 */
+/* 거래내역 아이템 - 클릭 기능 추가 */
 .transaction-item {
   display: flex;
   align-items: center;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--input-bg-3);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+/* 거래내역 아이템 터치 피드백 */
+.transaction-item:active {
+  background-color: var(--input-bg-1);
 }
 
 .transaction-item:last-child {

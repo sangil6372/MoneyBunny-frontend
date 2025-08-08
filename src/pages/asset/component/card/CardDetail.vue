@@ -16,10 +16,12 @@
 
     <!-- 🥕 카드 거래내역 상세 모달 -->
     <TransactionDetailModal
+      v-if="showTransactionModal && selectedTransaction"
       :show="showTransactionModal"
-      :transaction="selectedTransaction || {}"
+      :transaction="selectedTransaction"
       type="card"
       @close="closeTransactionModal"
+      @memo-updated="onMemoUpdated"
     />
   </div>
 </template>
@@ -56,6 +58,17 @@ const closeTransactionModal = () => {
   showTransactionModal.value = false;
   selectedTransaction.value = null;
 };
+
+// 👇 이걸 <script setup>에 추가!
+function onMemoUpdated({ id, memo }) {
+  // 1. 현재 상세 모달에서만 memo 반영 (이미 하고 있을 수 있음)
+  if (selectedTransaction.value && selectedTransaction.value.id === id) {
+    selectedTransaction.value.memo = memo;
+  }
+  // 2. 만약 상위 거래 리스트(예: 거래내역 배열)에도 반영하고 싶으면
+  // cardTransactions.value.find((tx) => tx.id === id).memo = memo;
+  //   (부모에서 거래내역 배열을 관리 중일 때 필요)
+}
 </script>
 
 <style scoped>

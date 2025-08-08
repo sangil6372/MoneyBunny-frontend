@@ -23,23 +23,23 @@ const splitLines = (str) =>
 
 <template>
   <div class="tabContent">
-    <div class="font-bold font-18 mb-2">정책 설명</div>
-    <div class="font-14 text-bluegray mb-4">
+    <div class="font-bold font-16 mb-2">정책 설명</div>
+    <div class="font-13 text-bluegray mb-4">
       <template v-for="(line, idx) in splitLines(description)" :key="idx">
         <span>{{ line }}</span
         ><br v-if="idx !== splitLines(description).length - 1" />
       </template>
     </div>
 
-    <div class="font-bold font-18 mb-2">지원 내용</div>
+    <div class="font-bold font-16 mb-2">지원 내용</div>
     <div class="supportBox">
       <template v-for="(line, idx) in splitLines(supportContent)" :key="idx">
-        <span class="font-13 text-bluegray">{{ line }}</span
+        <span class="font-12 text-bluegray">{{ line }}</span
         ><br v-if="idx !== splitLines(supportContent).length - 1" />
       </template>
     </div>
 
-    <div class="font-18 font-bold mb-2 mt-4">신청 기간</div>
+    <div class="font-16 font-bold mb-2 mt-4">신청 기간</div>
     <div class="periodBox">
       <img
         src="@/assets/images/icons/policy/calendar.png"
@@ -47,10 +47,10 @@ const splitLines = (str) =>
         class="calendarIcon"
       />
       <div class="periodContent">
-        <div class="periodText font-14 font-bold">
+        <div class="periodText font-13 font-bold">
           {{ formatPeriod(applyPeriod) }}
         </div>
-        <span v-if="!applyPeriod" class="periodSub font-12">
+        <span v-if="!applyPeriod" class="periodSub font-11">
           연중 상시 접수 (예산 소진 시 조기 마감)
         </span>
       </div>
@@ -100,8 +100,8 @@ const splitLines = (str) =>
   gap: 12px;
 }
 .calendarIcon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   margin-top: 3px;
   flex-shrink: 0;
 }

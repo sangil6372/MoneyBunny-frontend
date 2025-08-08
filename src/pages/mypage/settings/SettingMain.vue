@@ -75,6 +75,8 @@ import LogoutConfirmModal from './LogoutConfirmModal.vue';
 // 👸🏻(은진) 알림 설정 모달창
 import NotificationSettingsModal from '../modals/NotificationSettingsModal.vue';
 import ChangePasswordModal from '../modals/ChangePasswordModal.vue';
+// 정책 정보 조회 API import 추가
+import { policyAPI } from '@/api/policy';
 const router = useRouter();
 const authStore = useAuthStore();
 const showLogoutModal = ref(false);
@@ -116,8 +118,24 @@ const goToChangePassword = () => {
   router.push({ name: 'changePassword' });
 };
 
-const goToPolicyRetest = () => {
-  router.push({ name: 'myPageSettingsPolicy' });
+const goToPolicyRetest = async () => {
+  try {
+    const { data } = await policyAPI.getUserPolicy();
+    // 조건이 없으면(예: data가 없거나 주요 필드가 비어있으면) 검사 페이지로 이동
+    if (
+      !data ||
+      !data.educationLevels?.length ||
+      !data.majors?.length ||
+      !data.employmentStatuses?.length
+    ) {
+      router.push({ path: '/policy' });
+    } else {
+      router.push({ name: 'myPageSettingsPolicy' });
+    }
+  } catch (e) {
+    // 조회 실패 시에도 검사 페이지로 이동
+    router.push({ path: '/policy' });
+  }
 };
 </script>
 

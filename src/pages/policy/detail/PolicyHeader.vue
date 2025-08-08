@@ -1,7 +1,7 @@
 <template>
   <div class="policyHeader">
     <div class="headerTop">
-      <div class="title font-bold font-20">{{ title || policy.title }}</div>
+      <div class="title font-bold font-18">{{ title || policy.title }}</div>
       <!-- 로그인한 경우에만 북마크 아이콘 -->
       <img
         v-if="authStore.isLogin"
@@ -11,7 +11,7 @@
         @click="toggleBookmark"
       />
     </div>
-    <p class="desc font-14 font-regular">
+    <p class="desc font-13">
       {{ description || policy.description }}
     </p>
 
@@ -21,15 +21,15 @@
       }}</span>
     </div>
 
-    <p class="supportAmount font-bold font-18">
+    <p class="supportAmount font-bold font-17">
       {{ policy.supportAmount }}
     </p>
 
     <div class="actions">
-      <button class="applyButton font-14" @click="openApplyModal(policy)">
+      <button class="applyButton font-13" @click="openApplyModal(policy)">
         바로 신청하기
       </button>
-      <button class="shareButton font-14" @click="toggleShareModal">
+      <button class="shareButton font-13" @click="toggleShareModal">
         <img :src="shareIcon" alt="공유" class="shareIcon" />
         공유하기
       </button>
@@ -45,20 +45,22 @@
     v-if="showApplyModal"
     :policyTitle="selectedPolicy?.title"
     :applyUrl="selectedPolicy?.applyUrl"
+    :policyId="selectedPolicy?.policyId"
     @close="closeApplyModal"
+    @showStatusModal="handleShowStatusModal"
   />
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
-import { bookmarkAPI } from "@/api/bookmark";
+import { bookmarkAPI } from "@/api/policyInteraction";
 
-import ShareModal from "./ShareModal.vue";
-import PolicyApplyModal from "../component/PolicyApplyModal.vue";
-import bookmarkBefore from "@/assets/images/icons/policy/bookmark_before.png";
-import bookmarkAfter from "@/assets/images/icons/policy/bookmark_after.png";
-import shareIcon from "@/assets/images/icons/policy/share.png";
+import ShareModal from './ShareModal.vue';
+import PolicyApplyModal from '../component/PolicyApplyModal.vue';
+import bookmarkBefore from '@/assets/images/icons/policy/bookmark_before.png';
+import bookmarkAfter from '@/assets/images/icons/policy/bookmark_after.png';
+import shareIcon from '@/assets/images/icons/policy/share.png';
 
 const props = defineProps({
   policy: {
@@ -74,6 +76,9 @@ const props = defineProps({
     required: false,
   },
 });
+
+// 💪(상일) 부모 컴포넌트로 이벤트 전달용
+const emit = defineEmits(['showStatusModal']);
 
 const showApplyModal = ref(false);
 const selectedPolicy = ref(null);
@@ -93,7 +98,7 @@ async function fetchBookmarkStatus() {
       (item) => item.id === policyId || item.policyId === policyId
     );
   } catch (e) {
-    console.warn("북마크 상태 조회 실패:", e);
+    console.warn('북마크 상태 조회 실패:', e);
   }
 }
 
@@ -114,7 +119,7 @@ const toggleBookmark = async () => {
       bookmark.value = false;
     }
   } catch (e) {
-    console.warn("북마크 토글 실패:", e);
+    console.warn('북마크 토글 실패:', e);
   }
 };
 
@@ -124,7 +129,7 @@ const toggleShareModal = () => {
 
 // helper: www로 시작하면 https:// 붙여주는 함수
 const normalizeUrl = (url) => {
-  if (typeof url === "string" && url.startsWith("www")) {
+  if (typeof url === 'string' && url.startsWith('www')) {
     return `https://${url}`;
   }
   return url;
@@ -133,13 +138,27 @@ const normalizeUrl = (url) => {
 function openApplyModal(policy) {
   // applyUrl 이 www.xxx 로 시작하면 프로토콜 붙이고, 아니면 그대로
   const fixedUrl = normalizeUrl(policy.applyUrl);
-  selectedPolicy.value = { ...policy, applyUrl: fixedUrl };
+  selectedPolicy.value = { 
+    ...policy, 
+    applyUrl: fixedUrl,
+    policyId: policy.policyId || policy.id // 💪(상일) policyId 확실히 전달
+  };
   showApplyModal.value = true;
 }
 
 function closeApplyModal() {
   showApplyModal.value = false;
 }
+
+// 💪(상일) 신청 후 즉시 상태 모달 표시 - 부모 컴포넌트로 전달
+const handleShowStatusModal = (applicationData) => {
+  // 신청 모달 닫기
+  showApplyModal.value = false;
+  selectedPolicy.value = null;
+  
+  // 부모 컴포넌트(PolicyDetailPage)로 이벤트 전달
+  emit('showStatusModal', applicationData);
+};
 </script>
 
 <style scoped>
@@ -157,8 +176,8 @@ function closeApplyModal() {
 }
 
 .headerIcon {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   cursor: pointer;
 }
 
@@ -176,7 +195,7 @@ function closeApplyModal() {
 .tag {
   background-color: var(--input-outline);
   color: var(--text-bluegray);
-  font-size: 13px;
+  font-size: 12px;
   padding: 4px 10px;
   border-radius: 4px;
 }
@@ -213,7 +232,7 @@ function closeApplyModal() {
 }
 
 .shareIcon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 </style>

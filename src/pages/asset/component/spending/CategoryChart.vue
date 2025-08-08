@@ -16,7 +16,7 @@
       <div class="chart-bars">
         <div
           v-for="(value, index) in chartData.amounts"
-          :key="`bar-${index}`"
+          :key="index"
           class="chart-bar"
           :style="{
             height: `${getBarHeight(value)}%`,
@@ -28,7 +28,7 @@
       <div class="chart-labels">
         <span
           v-for="(label, index) in chartData.months"
-          :key="`label-${index}`"
+          :key="index"
           class="chart-label"
           :class="{ active: isCurrentMonth(index) }"
         >
@@ -42,46 +42,48 @@
 <script setup>
 import { computed } from 'vue';
 
+// Props 정의 (월별 추이 데이터와 현재 선택된 월)
 const props = defineProps({
   monthlyTrendData: {
     type: Object,
-    required: true,
-    default: () => ({ months: [], amounts: [] }),
+    default: () => ({ months: [], amounts: [] }), // 기본값: 빈 배열
   },
   selectedMonth: {
     type: Number,
-    required: true,
+    default: new Date().getMonth() + 1, // 기본값: 현재 월
   },
 });
 
+// Props에서 받은 차트 데이터
 const chartData = computed(() => props.monthlyTrendData);
 
+// 차트 데이터가 비어있는지 확인
 const isEmpty = computed(() => {
   const amounts = chartData.value.amounts || [];
   return amounts.length === 0 || amounts.every((val) => val === 0);
 });
 
+// 차트 높이 계산용 최대값 구하기
 const maxValue = computed(() => {
   const amounts = chartData.value.amounts || [];
   return Math.max(...amounts, 1);
 });
 
-// 막대 높이 계산 (최소 높이 보장)
+// 막대 높이 계산 (퍼센트 반환)
 const getBarHeight = (value) => {
-  if (!value || value === 0) return 3; // 최소 높이 2px → 3px (모바일 가시성)
-  return Math.max((value / maxValue.value) * 100, 3);
+  if (!value || value === 0) return 5; // 최소 높이 5%
+  return Math.max((value / maxValue.value) * 100, 5);
 };
 
-// 현재 월인지 확인 (인덱스 기반)
+// 현재 월인지 확인 (강조 표시용)
 const isCurrentMonth = (index) => {
   const monthStr = chartData.value.months[index];
   if (!monthStr) return false;
-
   const monthNum = parseInt(monthStr.replace('월', ''));
   return monthNum === props.selectedMonth;
 };
 
-// 막대 색상 결정 (단순화)
+// 막대 색상 결정 (현재 월은 진한색, 나머지는 연한색)
 const getBarColor = (index) => {
   return isCurrentMonth(index)
     ? 'var(--base-blue-dark)'
@@ -94,6 +96,7 @@ const getBarColor = (index) => {
   background: white;
   border-radius: 0.75rem;
   padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   margin-top: 1.5rem;
 }
 
@@ -133,8 +136,7 @@ const getBarColor = (index) => {
 .chart-bar {
   flex: 1;
   border-radius: 0.25rem 0.25rem 0 0;
-  transition: background-color 0.2s ease; /* 모바일 최적화: transition 단순화 */
-  min-height: 3px; /* 모바일 가시성 개선 */
+  min-height: 5px;
 }
 
 .chart-labels {
@@ -148,10 +150,8 @@ const getBarColor = (index) => {
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-bluegray);
-  transition: color 0.2s ease;
 }
 
-/* 현재 월 라벨 강조 */
 .chart-label.active {
   color: var(--base-blue-dark);
   font-weight: 600;

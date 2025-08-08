@@ -28,18 +28,40 @@
 
 <script setup>
 import { defineProps, defineEmits } from 'vue';
+// 💪(상일) 정책 신청 API 추가
+import { policyInteractionAPI } from '@/api/policyInteraction';
+
 const props = defineProps({
   policyTitle: { type: String, required: true },
   applyUrl: { type: String, required: true },
+  policyId: { type: Number, required: true }, // 💪(상일) 신청 등록용 정책 ID 추가
 });
-const emit = defineEmits(['close']);
+const emit = defineEmits(['close', 'showStatusModal']); // 💪(상일) 상태 모달 이벤트 추가
 
 function handleClose() {
   emit('close');
 }
-function handleGoApply() {
-  window.open(props.applyUrl, '_blank');
-  handleClose();
+// 💪(상일) 신청 페이지로 이동 시 신청 등록 처리 및 즉시 상태 모달 표시
+async function handleGoApply() {
+  try {
+    // 1. 신청 등록 API 호출
+    await policyInteractionAPI.addApplication(props.policyId);
+    
+    // 2. 외부 URL 열기 (새 탭)
+    window.open(props.applyUrl, '_blank');
+    
+    // 3. 신청 모달 닫고 상태 모달 즉시 표시
+    emit('showStatusModal', {
+      policyId: props.policyId,
+      title: props.policyTitle
+    });
+    handleClose();
+  } catch (error) {
+    console.error('신청 등록 실패:', error);
+    // 에러가 있어도 외부 URL은 열어줌
+    window.open(props.applyUrl, '_blank');
+    handleClose();
+  }
 }
 </script>
 

@@ -15,6 +15,17 @@ const id = ref('');
 const password = ref('');
 const isLoading = ref(false);
 const errorMessage = ref('');
+const showPassword = ref(false);
+
+// 👁️ 비밀번호 보기/숨기기 아이콘
+const eyeView = new URL(
+  '@/assets/images/icons/signup/eye_view.png',
+  import.meta.url
+).href;
+const eyeHide = new URL(
+  '@/assets/images/icons/signup/eye_hide.png',
+  import.meta.url
+).href;
 
 // 🔐 실제 서버 로그인 로직 구현
 const handleLogin = async () => {
@@ -149,14 +160,23 @@ watch(errorMessage, () => {
 
         <div class="formGroup">
           <label for="password" class="font-13 font-bold">비밀번호</label>
-          <input
-            type="password"
-            id="password"
-            v-model="password"
-            placeholder="비밀번호를 입력하세요"
-            @keypress="handleKeyPress"
-            :disabled="isLoading"
-          />
+          <div class="inputRow">
+            <input
+              :type="showPassword ? 'text' : 'password'"
+              id="password"
+              v-model="password"
+              class="passwordInput"
+              placeholder="비밀번호를 입력하세요"
+              @keypress="handleKeyPress"
+              :disabled="isLoading"
+            />
+            <img
+              :src="showPassword ? eyeView : eyeHide"
+              class="icon"
+              alt="비밀번호 보기 토글"
+              @click="showPassword = !showPassword"
+            />
+          </div>
         </div>
 
         <button
@@ -255,6 +275,39 @@ input:focus {
   border: 1.5px solid var(--input-outline-2);
 }
 
+.inputRow {
+  position: relative;
+  width: 100%;
+}
+.passwordInput {
+  width: 100%;
+  font-size: 12px;
+  padding: 10px 42px 10px 14px;
+  border: 1.2px solid var(--input-outline);
+  border-radius: 8px;
+  background-color: transparent;
+  outline: none;
+  box-sizing: border-box;
+}
+.passwordInput:focus {
+  border: 1.5px solid var(--input-outline-2);
+}
+.inputRowHorizontal {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.icon {
+  position: absolute;
+  right: 16px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  user-select: none;
+  z-index: 2;
+}
 .loginButton {
   width: 100%;
   background-color: var(--base-blue-dark);
@@ -324,8 +377,8 @@ input:disabled {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   pointer-events: none;
   text-align: center;
   box-sizing: border-box;

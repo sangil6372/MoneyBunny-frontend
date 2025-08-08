@@ -1,56 +1,69 @@
-// src/assets/utils/useSpendingData.js
+// src/assets/utils/useSpendingData.js (수정된 버전)
 import { ref, computed } from 'vue';
-import cardsData from '@/assets/data/cards.json';
+import cardsData from '@/assets/data/cards.json'; // 🥕 더미데이터
+import { normalizeCard } from './dataAdapter';
 
-// 카테고리별 색상 매핑 (실제 색상값 사용)
+// ✅ CSS 변수에서 색상 추출 함수
+function getCssVar(hexVarName) {
+  return getComputedStyle(document.documentElement)
+    .getPropertyValue(hexVarName)
+    .trim();
+}
+
+// ✅ 카테고리별 색상 매핑 (CSS 변수 기반)
 const CATEGORY_COLORS = {
-  '교통/자동차': '#bcdffb', // 파스텔 블루
-  생활: '#dfe4ea', // 연한 그레이톤
-  '레저와 여가생활': '#ffd6a5', // 파스텔 오렌지
-  마트: '#fff3b0', // 파스텔 옐로우
-  편의점: '#c7f9cc', // 민트톤
-  쇼핑: '#f7d6e0', // 파스텔 핑크
-  '온라인 쇼핑': '#d6d6d6', // 연한 그레이
-  '커피와 디저트': '#e4c9b0', // 연한 브라운
-  뷰티: '#f8c8dc', // 파스텔 로즈
-  식비: '#b8e0d2', // 연한 민트 그린
-  '보험과 금융': '#c3cde6', // 파스텔 블루-그레이
-  '건강과 의료': '#cde7f0', // 파스텔 아쿠아
-  교육: '#e6d7f5', // 파스텔 라벤더
-  여행: '#ffe5b4', // 파스텔 베이지 오렌지
-  주류: '#f2b6b6', // 파스텔 레드-핑크
-  '카테고리 미지정': '#d1d5db', // 연한 회색
+  '교통/자동차': getCssVar('--yellow-2'),
+  생활: getCssVar('--gray-1'),
+  '레저와 여가생활': getCssVar('--orange-1'),
+  마트: getCssVar('--yellow-1'),
+  편의점: getCssVar('--green-1'),
+  쇼핑: getCssVar('--red-2'),
+  '온라인 쇼핑': getCssVar('--gray-2'),
+  '커피와 디저트': getCssVar('--orange-2'),
+  뷰티: getCssVar('--purple-1'),
+  식비: getCssVar('--red-1'),
+  '보험과 금융': getCssVar('--purple-2'),
+  '건강과 의료': getCssVar('--green-2'),
+  교육: getCssVar('--blue-1'),
+  여행: getCssVar('--navy-1'),
+  주류: getCssVar('--red-2'),
+  '취미/여가': getCssVar('--orange-1'),
+  교통비: getCssVar('--yellow-2'),
+  '건강/의료': getCssVar('--green-2'),
+  '카테고리 미지정': getCssVar('--gray-2'),
+  기타: getCssVar('--gray-2'),
 };
 
 export function useSpendingData() {
-  // 현재 선택된 날짜 (월별 네비게이션용)
   const currentDate = ref(new Date());
 
-  // 현재 월 텍스트 포맷
   const currentMonthText = computed(() => {
     const year = currentDate.value.getFullYear();
     const month = currentDate.value.getMonth() + 1;
     return `${month}월 ${year}년`;
   });
 
-  // 카드 거래내역을 지출 데이터로 변환
+  // 🔄 유연한 데이터 처리 - 어떤 형태든 대응
   const getSpendingTransactions = computed(() => {
     const transactions = [];
 
-    cardsData.forEach((card) => {
-      card.cardTransactions.forEach((transaction) => {
-        transactions.push({
-          id: transaction.transactionId,
-          date: transaction.date,
-          time: transaction.time,
-          merchant: transaction.merchant,
-          category: transaction.category,
-          amount: transaction.amount,
-          cardName: card.cardName,
-          status: transaction.status,
-        });
+    try {
+      // 데이터가 배열인지 확인
+      const dataArray = Array.isArray(cardsData) ? cardsData : [cardsData];
+
+      dataArray.forEach((card) => {
+        // 데이터 정규화
+        const normalizedCard = normalizeCard(card);
+
+        // 정규화된 거래내역 추가
+        if (normalizedCard.transactions) {
+          transactions.push(...normalizedCard.transactions);
+        }
       });
-    });
+    } catch (error) {
+      console.warn('데이터 처리 중 오류:', error);
+      // 오류 발생 시 빈 배열 반환
+    }
 
     return transactions;
   });
@@ -61,11 +74,15 @@ export function useSpendingData() {
     const targetMonth = currentDate.value.getMonth() + 1;
 
     return getSpendingTransactions.value.filter((transaction) => {
-      const transactionDate = new Date(transaction.date);
-      return (
-        transactionDate.getFullYear() === targetYear &&
-        transactionDate.getMonth() + 1 === targetMonth
-      );
+      try {
+        const transactionDate = new Date(transaction.date);
+        return (
+          transactionDate.getFullYear() === targetYear &&
+          transactionDate.getMonth() + 1 === targetMonth
+        );
+      } catch {
+        return false; // 날짜 파싱 실패 시 제외
+      }
     });
   });
 
@@ -90,7 +107,6 @@ export function useSpendingData() {
       categoryMap[category].transactions.push(transaction);
     });
 
-    // 금액순으로 정렬
     return Object.values(categoryMap).sort((a, b) => b.amount - a.amount);
   });
 
@@ -101,7 +117,7 @@ export function useSpendingData() {
     }, 0);
   });
 
-  // 전월 지출액 (전월 대비 계산용)
+  // 전월 지출액
   const previousMonthSpending = computed(() => {
     const prevDate = new Date(currentDate.value);
     prevDate.setMonth(prevDate.getMonth() - 1);
@@ -111,11 +127,15 @@ export function useSpendingData() {
 
     const prevTransactions = getSpendingTransactions.value.filter(
       (transaction) => {
-        const transactionDate = new Date(transaction.date);
-        return (
-          transactionDate.getFullYear() === prevYear &&
-          transactionDate.getMonth() + 1 === prevMonth
-        );
+        try {
+          const transactionDate = new Date(transaction.date);
+          return (
+            transactionDate.getFullYear() === prevYear &&
+            transactionDate.getMonth() + 1 === prevMonth
+          );
+        } catch {
+          return false;
+        }
       }
     );
 
@@ -140,7 +160,7 @@ export function useSpendingData() {
     };
   });
 
-  // 카테고리별 비율 계산 (리스트용)
+  // 카테고리별 비율 계산
   const categoryList = computed(() => {
     const total = totalSpending.value;
 
@@ -178,14 +198,17 @@ export function useSpendingData() {
       const year = targetDate.getFullYear();
       const month = targetDate.getMonth() + 1;
 
-      // 해당 월의 거래내역 필터링
       const monthTransactions = getSpendingTransactions.value.filter(
         (transaction) => {
-          const transactionDate = new Date(transaction.date);
-          return (
-            transactionDate.getFullYear() === year &&
-            transactionDate.getMonth() + 1 === month
-          );
+          try {
+            const transactionDate = new Date(transaction.date);
+            return (
+              transactionDate.getFullYear() === year &&
+              transactionDate.getMonth() + 1 === month
+            );
+          } catch {
+            return false;
+          }
         }
       );
 
@@ -222,11 +245,8 @@ export function useSpendingData() {
   };
 
   return {
-    // 상태
     currentDate,
     currentMonthText,
-
-    // 계산된 데이터
     totalSpending,
     monthComparison,
     categoryList,
@@ -234,8 +254,6 @@ export function useSpendingData() {
     chartData,
     monthlyTrendData,
     currentMonthTransactions,
-
-    // 메서드
     previousMonth,
     nextMonth,
     getCategoryDetail,

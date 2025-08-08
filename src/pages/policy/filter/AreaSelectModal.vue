@@ -241,9 +241,8 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   background: rgba(255, 255, 255, 0.97);
   border-radius: 12px;
   width: 90%;
-  max-width: 400px;
+  max-width: 340px;
   max-height: 95vh;
-  /* height: 630px; */
   padding: 24px;
   display: flex;
   flex-direction: column;
@@ -254,13 +253,13 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   align-items: center;
 }
 .modalTitle {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: bold;
 }
 .closeBtn {
   background: none;
   border: none;
-  font-size: 22px;
+  font-size: 17px;
   cursor: pointer;
 }
 
@@ -282,23 +281,25 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   scrollbar-width: thin;
   scrollbar-color: var(--input-disabled-1) transparent;
 
-  /* scrollbar-width: none;
-  -ms-overflow-style: none; */
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .selectedRegions.horizontal::-webkit-scrollbar {
   display: none;
 }
 
 .regionTag {
+  margin-top: 3px;
+  /* margin-bottom: 6px; */
   height: 30px;
   background: var(--input-bg-1);
   color: var(--text-login);
   border-radius: 8px;
   padding: 6px 11px;
-  font-size: 14px;
+  font-size: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
   white-space: nowrap;
   writing-mode: horizontal-tb;
   word-break: normal;
@@ -308,42 +309,43 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   background: none;
   border: none;
   color: var(--text-lightgray);
-  font-size: 14px;
+  font-size: 12px;
   cursor: pointer;
-  margin-left: 2px;
+  margin-left: 3px;
+  margin-right: 0;
   padding: 0;
 }
 
 /* ---- 지역 선택 컬럼 ---- */
 .regionSelectBox {
-  margin: 16px 6px 26px 6px;
+  margin: 16px 6px;
   flex: none;
 }
 .columnsWrapper {
   display: flex;
-  max-height: 370px;
+  max-height: 280px;
   gap: 6px;
 }
 
 .sidoColumn {
-  flex: 0.7;
+  flex: 0.8;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 
 .gugunColumn {
-  flex: 1.2;
+  flex: 1.1;
   display: flex;
   flex-direction: column;
   height: 100%;
 }
 .sidoTitle,
 .gugunTitle {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: bold;
   color: var(--text-bluegray);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   text-align: center;
 }
 
@@ -352,6 +354,7 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   padding: 9px;
   border-radius: 6px;
   cursor: pointer;
+  font-size: 14px;
   text-align: center;
 }
 .sidoItem.selected,
@@ -365,36 +368,36 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 
 .emptyText {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-disabled);
   text-align: center;
   margin-top: 15px;
 }
 
 .modalFooter {
-  margin-top: 10px;
+  margin-top: 5px;
   display: flex;
   gap: 8px;
 }
 
 .resetBtn {
-  flex: 1;
+  flex: 0.8;
   border-radius: 8px;
   border: 1.5px solid var(--input-outline-2);
-  background: var(--reset-button);
-  color: var(--text-bluegray);
+  background: white;
+  color: var(--base-blue-dark);
   padding: 12px 0;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
 }
 .applyBtn {
-  flex: 2;
+  flex: 1.1;
   background-color: var(--base-blue-dark);
   color: white;
   border: none;
   padding: 12px 0;
-  font-size: 16px;
+  font-size: 15px;
   border-radius: 8px;
   cursor: pointer;
 }
@@ -406,7 +409,7 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 
 .scrollArea {
-  max-height: 360px;
+  max-height: 280px;
   overflow-y: auto;
   padding-right: 6px;
   /* 크롬, 사파리, 엣지용 스크롤바 숨기기 */

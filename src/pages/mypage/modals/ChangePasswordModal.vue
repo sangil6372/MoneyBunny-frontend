@@ -17,9 +17,18 @@
         <label class="font-14 font-bold">현재 비밀번호</label>
         <input
           type="password"
+          v-model="currentPassword"
+          @blur="checkCurrentPassword"
           placeholder="현재 비밀번호를 입력하세요"
           class="inputBox font-13"
         />
+        <p v-if="currentValid" class="font-11 successMessage">
+          현재 비밀번호가 일치합니다.
+        </p>
+        <p v-else-if="currentError" class="font-11 errorMessage">
+          현재 비밀번호가 일치하지 않습니다.
+        </p>
+
         <!-- 새 비밀번호 -->
         <label class="font-14 font-bold">새 비밀번호</label>
         <input
@@ -29,11 +38,20 @@
           @input="validatePassword"
           :class="['inputBox', 'font-13', { error: passwordError }]"
         />
-        <p v-if="passwordError" class="font-11 errorMessage">
-          8자 이상 입력해야 합니다.
+        <p v-if="!newPassword" class="hint font-11">
+          8자 이상, 영문·숫자·특수문자를 포함해야 합니다.
         </p>
-        <p v-else class="hint font-11">
-          8자 이상, 영문, 숫자, 특수문자를 포함해야 합니다.
+        <p v-else-if="passwordError" class="font-11 errorMessage">
+          비밀번호 형식이 올바르지 않습니다.
+        </p>
+        <p
+          v-else-if="newPassword && newPassword === currentPassword"
+          class="font-11 errorMessage"
+        >
+          현재 비밀번호와 동일할 수 없습니다.
+        </p>
+        <p v-else class="font-11 successMessage">
+          사용할 수 있는 비밀번호입니다!
         </p>
 
         <!-- 새 비밀번호 확인 -->
@@ -53,7 +71,12 @@
           비밀번호가 일치하지 않습니다.
         </p>
 
-        <button class="submitBtn font-14" @click="handleChangePassword">
+        <button
+          class="submitBtn font-14"
+          :disabled="!canChange"
+          :class="{ disabled: !canChange }"
+          @click="handleChangePassword"
+        >
           비밀번호 변경
         </button>
       </div>
@@ -73,54 +96,152 @@
 </template>
 
 <script setup>
-import { ref, watch, defineEmits } from 'vue';
-const emit = defineEmits(['close']);
+import { ref, watch, onMounted } from "vue";
+import { defineEmits } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { useAuthStore } from "@/stores/auth";
+import { computed } from "vue";
 
-const newPassword = ref('');
-const confirmPassword = ref('');
+const emit = defineEmits(["close"]);
+const router = useRouter();
+const authStore = useAuthStore(); // 로그아웃 시킬 때 사용
+
+// 로그인 정보 & 토큰
+const loginId = ref("");
+const tokenRef = ref("");
+
+// 현재 비밀번호 검증 상태
+const currentPassword = ref("");
+const checkingCurrent = ref(false);
+const currentValid = ref(false);
+const currentError = ref(false);
+
+// 새 비밀번호 상태
+const newPassword = ref("");
+const confirmPassword = ref("");
 const passwordError = ref(false);
 const confirmError = ref(false);
 const confirmTouched = ref(false);
 
+// 토스트 표시
 const showToast = ref(false);
 
-// 새 비밀번호 실시간 유효성 체크
-watch(newPassword, (val) => {
-  passwordError.value = val.length < 8;
-  if (confirmTouched.value) {
-    confirmError.value = confirmPassword.value !== val;
+// 비밀번호 패턴
+const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+// 로컬스토리지에서 auth 정보 로드
+onMounted(() => {
+  const saved = localStorage.getItem("auth");
+  if (saved) {
+    const { token, user } = JSON.parse(saved);
+    tokenRef.value = token;
+    loginId.value = user?.username || "";
   }
 });
 
-// 비밀번호 확인창 실시간 체크
+// 실시간 유효성 검사
+watch(newPassword, (val) => {
+  passwordError.value = !passwordPattern.test(val);
+  if (confirmTouched.value) {
+    confirmError.value = val !== confirmPassword.value;
+  }
+});
 watch(confirmPassword, (val) => {
   confirmTouched.value = true;
   confirmError.value = val !== newPassword.value;
 });
 
-// 닫기(X)버튼 기능
-const handleClose = () => emit('close');
+// 현재 비밀번호 검증 함수
+async function checkCurrentPassword() {
+  // 빈값일 땐 초기화
+  if (!currentPassword.value) {
+    currentValid.value = currentError.value = false;
+    return;
+  }
 
-// 유효성 검사 함수 (버튼에서도 사용)
+  // 401 등 상태를 예외로 던지지 않고 모두 then()으로 처리
+  const res = await axios
+    .post(
+      "/api/auth/login",
+      { username: loginId.value, password: currentPassword.value },
+      { validateStatus: () => true }
+    )
+    .catch(() => {
+      // 네트워크 에러(서버 미응답 등)도 여기서 처리
+      return { status: 0 };
+    });
+
+  if (res.status === 200) {
+    currentValid.value = true;
+    currentError.value = false;
+  } else {
+    currentValid.value = false;
+    currentError.value = true;
+  }
+}
+
+// 유효성 검사 헬퍼
 const validatePassword = () => {
-  passwordError.value = newPassword.value.length < 8;
+  passwordError.value = !passwordPattern.test(newPassword.value);
 };
 const validateConfirm = () => {
   confirmTouched.value = true;
   confirmError.value = confirmPassword.value !== newPassword.value;
 };
 
-const handleChangePassword = () => {
+// 비밀번호 변경 처리
+const handleChangePassword = async () => {
+  if (!currentValid.value) {
+    currentError.value = true;
+    return;
+  }
+
+  // 새 비밀번호가 현재 비밀번호와 같으면 중단
+  if (newPassword.value === currentPassword.value) {
+    return;
+  }
+
   validatePassword();
   validateConfirm();
-  if (!passwordError.value && !confirmError.value) {
+  if (passwordError.value || confirmError.value) return;
+
+  try {
+    await axios.post(
+      "/api/auth/reset-password",
+      { loginId: loginId.value, password: newPassword.value },
+      { headers: { Authorization: `Bearer ${tokenRef.value}` } }
+    );
+    console.log("password changed");
     showToast.value = true;
-    setTimeout(() => {
+    setTimeout(async () => {
       showToast.value = false;
-      emit('close');
-    }, 1300); // 1.3초 후 모달 닫기
+      // 전역 로그아웃 완료까지 기다림
+      await authStore.logout();
+      // 모달 닫기
+      emit("close");
+      // 홈으로 완전 리로드
+      window.location.href = "/";
+    }, 1300);
+  } catch {
+    currentError.value = true;
   }
 };
+
+// 비밀번호 변경 가능 여부
+const canChange = computed(() => {
+  return (
+    currentValid.value &&
+    !passwordError.value &&
+    !confirmError.value &&
+    newPassword.value !== currentPassword.value &&
+    newPassword.value.length > 0 &&
+    confirmPassword.value.length > 0
+  );
+});
+
+// 모달 닫기
+const handleClose = () => emit("close");
 </script>
 
 <style scoped>
@@ -256,5 +377,19 @@ const handleChangePassword = () => {
   text-align: center;
   box-sizing: border-box;
   white-space: nowrap;
+}
+
+.errorMessage {
+  color: var(--alert-red);
+}
+.successMessage {
+  color: #28a745;
+}
+
+.submitBtn.disabled,
+.submitBtn:disabled {
+  background-color: #c9ced6;
+  /* background-color: #b0b4bb; */
+  cursor: not-allowed;
 }
 </style>

@@ -14,6 +14,7 @@
           :description="item.description"
           :amount="item.amount"
           :highlighted="i === 1"
+          :policyId="item.policyId"
         />
       </div>
     </template>
@@ -47,6 +48,7 @@ onMounted(async () => {
   try {
     const res = await policyAPI.getUserPolicySearch();
     const top3 = (res.data || []).slice(0, 3).map((item) => ({
+      policyId: String(item.policyId), // policyId를 String으로 변환
       title: item.title,
       description: item.policyBenefitDescription,
       amount: item.policyBenefitAmount,

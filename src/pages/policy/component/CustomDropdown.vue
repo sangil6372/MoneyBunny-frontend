@@ -43,7 +43,7 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 <template>
   <div class="dropdown" ref="dropdownRef">
     <div class="dropdownButton" @click="toggleDropdown">
-      <span class="dropdownValue">{{ modelValue || placeholder }}</span>
+      <span class="dropdownValue font-14">{{ modelValue || placeholder }}</span>
       <img
         src="@/assets/images/icons/policy/select_down.png"
         class="arrowIcon"

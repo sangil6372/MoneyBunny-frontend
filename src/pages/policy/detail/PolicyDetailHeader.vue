@@ -8,8 +8,8 @@
       class="bunny"
     />
     <div>
-      <div class="headerTitle font-bold font-18">정책 상세</div>
-      <div class="headerSubtitle font-14">
+      <div class="headerTitle font-bold font-16">정책 상세</div>
+      <div class="headerSubtitle font-12">
         {{ title }}
       </div>
     </div>
@@ -34,7 +34,7 @@ defineProps({
   width: 100%;
   max-width: 390px;
   margin: 0 auto;
-  height: 65px;
+  height: 60px;
   border-bottom: 1px solid var(--base-lavender);
   background: white;
   display: flex;
@@ -42,9 +42,9 @@ defineProps({
   z-index: 1000;
 }
 .bunny {
-  width: 44px;
-  height: 44px;
-  margin-right: 13px;
+  width: 40px;
+  height: 40px;
+  margin-right: 10px;
 }
 .headerTitle {
   color: var(--text-login);
@@ -63,11 +63,11 @@ defineProps({
   background: none;
   border: none;
   cursor: pointer;
-  margin-left: 10px;
-  margin-right: 7px;
+  margin-left: 8px;
+  margin-right: 5px;
 }
 .backBtn img {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
 }
 </style>

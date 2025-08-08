@@ -1,15 +1,15 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import axios from "axios";
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import axios from 'axios';
 
 // 🎵(유정) 회원가입 - 이메일 인증코드 입력 페이지
 const route = useRoute();
-const email = ref(route.query.email || "");
+const email = ref(route.query.email || '');
 
 const router = useRouter();
-const code = ref("");
-const errorMsg = ref("");
+const code = ref('');
+const errorMsg = ref('');
 const showToast = ref(false);
 
 const time = 180; // 180초 == 3분
@@ -20,15 +20,15 @@ const isExpired = computed(() => timeLeft.value === 0);
 // 인증코드 검증 (회원가입용)
 const verify = async () => {
   if (isExpired.value) {
-    errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
+    errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
     return;
   }
   if (!email.value || !code.value) {
-    errorMsg.value = "이메일과 인증코드를 모두 입력해주세요.";
+    errorMsg.value = '이메일과 인증코드를 모두 입력해주세요.';
     return;
   }
   try {
-    await axios.post("/api/auth/verify", {
+    await axios.post('/api/auth/verify', {
       email: email.value,
       code: code.value,
     });
@@ -37,11 +37,11 @@ const verify = async () => {
     setTimeout(() => {
       showToast.value = false;
       // 회원가입 입력폼(예: SignUpProfilePage)으로 이동
-      router.push({ name: "signUpProfile", query: { email: email.value } });
+      router.push({ name: 'signUpProfile', query: { email: email.value } });
     }, 1000);
   } catch (err) {
     errorMsg.value =
-      "인증 실패: " + (err.response?.data?.message || "코드를 확인해주세요");
+      '인증 실패: ' + (err.response?.data?.message || '코드를 확인해주세요');
   }
 };
 
@@ -52,7 +52,7 @@ const startTimer = () => {
       timeLeft.value--;
     } else {
       clearInterval(timerInterval);
-      errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
+      errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
     }
   }, 1000);
 };
@@ -62,8 +62,8 @@ onBeforeUnmount(() => {
 });
 
 const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
-  const seconds = String(timeLeft.value % 60).padStart(2, "0");
+  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
+  const seconds = String(timeLeft.value % 60).padStart(2, '0');
   return `${minutes}:${seconds}`;
 });
 </script>
@@ -129,7 +129,7 @@ const formattedTime = computed(() => {
           :disabled="isExpired"
           :class="{ expired: isExpired }"
         >
-          {{ isExpired ? "인증 만료" : "인증하기" }}
+          {{ isExpired ? '인증 만료' : '인증하기' }}
         </button>
         <div class="signupLink font-11">
           이미 계정이 있으신가요? <a href="/login">로그인</a>
@@ -260,6 +260,7 @@ input:focus {
   text-align: center;
   border: 1px solid var(--alert-light-2);
 }
+
 .toastMsg {
   position: absolute;
   top: -54px;
@@ -271,8 +272,8 @@ input:focus {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   pointer-events: none;
   text-align: center;
   box-sizing: border-box;

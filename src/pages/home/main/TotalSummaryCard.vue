@@ -56,7 +56,7 @@ defineExpose({
 <style scoped>
 .homeCard {
   background-color: var(--base-blue-dark);
-  border-radius: 0.5rem;
+  border-radius: 1rem;
   padding: 1.5rem;
   color: white;
   margin-bottom: 1rem;

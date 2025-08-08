@@ -1,13 +1,17 @@
 <script setup>
-import { ref, computed, watchEffect } from 'vue';
+import { ref, computed, watchEffect, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { policyAPI } from '@/api/policy'; // 변경: policyAPI import
+// 💪(상일) 정책 신청 기능
+import { policyInteractionAPI } from '@/api/policyInteraction';
 
 import PolicyHeader from './PolicyHeader.vue';
 import PolicyTab from './PolicyTabs.vue';
 import PolicyTabContent from './PolicyTabContent.vue';
 import PolicyConditionTab from './PolicyConditionTab.vue';
 import PolicyApplyTab from './PolicyApplyTab.vue';
+// 💪(상일) 신청 상태 모달
+import PolicyApplyStatusModal from '../component/PolicyApplyStatusModal.vue';
 
 // 실제 데이터(예시)
 const ALL_POLICIES = [
@@ -58,6 +62,16 @@ const ALL_POLICIES = [
 ];
 
 const route = useRoute();
+const router = useRouter();
+
+function goPolicyTypeTest() {
+  // 예시: 정책 유형 검사 첫 화면으로 이동
+  router.push({ name: 'policyTypeIntro' }); // 라우터 이름에 맞게 수정!
+}
+function goAllPolicy() {
+  router.push({ name: 'policyList' }); // 라우터 이름에 맞게 수정!
+}
+
 const selectedTab = ref('정책 개요');
 
 // 라우터 param에서 policyId 추출 (문자일 수도 있으니 숫자 변환)
@@ -67,6 +81,10 @@ const policyId = computed(() =>
 
 // API에서 받아온 정책 데이터 저장
 const policyData = ref(null);
+
+// 💪(상일) 미완료 신청 체크용
+const currentApplication = ref(null);
+const showStatusModal = ref(false);
 
 // 정책 상세 API 호출
 async function fetchPolicyDetail(id) {
@@ -103,6 +121,63 @@ watchEffect(() => {
 });
 // 기간 문자열 추출 (endDate 필드)
 const period = computed(() => policy.value?.endDate || '');
+
+// 💪(상일) 미완료 신청 체크
+const checkIncompleteApplication = async () => {
+  try {
+    const response = await policyInteractionAPI.getIncompleteApplication();
+    if (response.data) {
+      currentApplication.value = response.data;
+      showStatusModal.value = true;
+    }
+  } catch (error) {
+    // 404는 미완료 신청이 없는 정상 상황
+    if (error.response?.status !== 404) {
+      console.error('미완료 신청 조회 실패:', error);
+    }
+  }
+};
+
+// 💪(상일) 모달 응답 처리
+const handleStatusSubmit = async (status) => {
+  if (!currentApplication.value) return;
+  
+  try {
+    switch(status) {
+      case 'applied':
+        // 신청 완료 처리
+        await policyInteractionAPI.completeApplication(currentApplication.value.policyId);
+        break;
+        
+      case 'notYet':
+        // 신청 기록 삭제
+        await policyInteractionAPI.removeApplication(currentApplication.value.policyId);
+        break;
+        
+      case 'notEligible':
+        // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제
+        await policyInteractionAPI.removeApplication(currentApplication.value.policyId);
+        break;
+    }
+  } catch (error) {
+    console.error('신청 상태 처리 실패:', error);
+  } finally {
+    currentApplication.value = null;
+    showStatusModal.value = false;
+  }
+};
+
+// 💪(상일) 신청 후 즉시 상태 모달 표시
+const handleShowStatusModal = (applicationData) => {
+  // 현재 신청 정보 설정
+  currentApplication.value = applicationData;
+  showStatusModal.value = true;
+};
+
+// 💪(상일) 컴포넌트 마운트 시 미완료 신청 체크
+onMounted(async () => {
+  await checkIncompleteApplication();
+});
 </script>
 
 <template>
@@ -111,6 +186,7 @@ const period = computed(() => policy.value?.endDate || '');
       :title="policy.title"
       :description="policy.policyBenefitDescription"
       :policy="policy"
+      @showStatusModal="handleShowStatusModal"
     />
 
     <div class="contentBox">
@@ -131,6 +207,14 @@ const period = computed(() => policy.value?.endDate || '');
     </div>
   </div>
   <div v-else class="noData">정책 정보를 찾을 수 없습니다.</div>
+  
+  <!-- 💪(상일) 정책신청현황 모달 -->
+  <PolicyApplyStatusModal
+    v-model="showStatusModal"
+    :policyTitle="currentApplication?.title || ''"
+    @submit="handleStatusSubmit"
+    @later="() => { showStatusModal = false; }"
+  />
 </template>
 
 <style scoped>

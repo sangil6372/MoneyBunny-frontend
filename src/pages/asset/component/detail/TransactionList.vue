@@ -73,7 +73,8 @@ function parseCardTransactions(rawList = []) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
     const d = String(dateObj.getDate()).padStart(2, '0');
-    const date = `${y}-${m}-${d}`;
+    const date = `${y}.${m}.${d}`;
+    const date2 = `${m}.${d}`;
     const time = dateObj.toTimeString().slice(0, 5);
 
     // 환불 여부 체크 수정! (실제 API 응답에 맞게)
@@ -86,8 +87,10 @@ function parseCardTransactions(rawList = []) {
       amount: tx.amount ?? 0,
       cancelAmount: tx.cancelAmount, // (UI에서 필요하면 표시)
       date,
+      date2,
       time,
       isCancel, // 필터링용
+      memo: tx.memo || '',
       category: tx.category || '', // 카테고리 추가
       //🥕
       paymentType: tx.paymentType,
@@ -104,7 +107,8 @@ function parseAccountTransactions(rawList = []) {
     const y = dateObj.getFullYear();
     const m = String(dateObj.getMonth() + 1).padStart(2, '0');
     const d = String(dateObj.getDate()).padStart(2, '0');
-    const date = `${y}-${m}-${d}`;
+    const date = `${y}.${m}.${d}`;
+    const date2 = `${m}.${d}`;
     const time = dateObj.toTimeString().slice(0, 5);
 
     let typeKor = '';
@@ -119,7 +123,9 @@ function parseAccountTransactions(rawList = []) {
       amount: tx.amount ?? 0,
       balanceAfter: tx.balanceAfter ?? 0,
       date,
+      date2,
       time,
+      memo: tx.memo || '',
     };
   });
 }
@@ -154,8 +160,21 @@ async function loadMore() {
       items = parseAccountTransactions(res.data.content || []);
       hasMore.value = !(res.data.last || items.length === 0);
     } else if (props.type === 'card') {
+      const typeParam =
+        props.filter === '전체'
+          ? null
+          : props.filter === '지출'
+          ? 'expense'
+          : props.filter === '환불'
+          ? 'refund'
+          : null;
       // 카드는 모든 데이터를 가져와서 클라이언트에서 필터링
-      const res = await fetchCardTransactions(props.cardId, page.value, 20);
+      const res = await fetchCardTransactions(
+        props.cardId,
+        page.value,
+        20,
+        typeParam
+      );
       items = parseCardTransactions(res.data.content || []);
       hasMore.value = !(res.data.last || items.length === 0);
     }
@@ -178,10 +197,10 @@ watch(
   () => [props.filter, props.accountId, props.cardId, props.type],
   async () => {
     // 카드의 경우 필터 변경시 데이터 다시 로딩하지 않고 클라이언트에서만 필터링
-    if (props.type === 'card' && page.value > 0) {
-      // 이미 데이터가 있으면 새로 로딩하지 않음 (클라이언트 필터링)
-      return;
-    }
+    // if (props.type === 'card' && page.value > 0) {
+    //   // 이미 데이터가 있으면 새로 로딩하지 않음 (클라이언트 필터링)
+    //   return;
+    // }
     // 계좌이거나 처음 로딩인 경우 데이터 다시 로딩
     page.value = 0;
     hasMore.value = true;

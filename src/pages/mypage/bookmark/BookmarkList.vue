@@ -5,19 +5,19 @@
       <div class="loading-spinner"></div>
       <p class="loading-text">북마크를 불러오는 중...</p>
     </div>
-    
+
     <!-- 💪(상일) 에러 상태 표시 -->
     <div v-else-if="bookmarkError" class="error-container">
       <p class="error-text">북마크를 불러오는데 실패했습니다.</p>
       <button @click="fetchBookmarks" class="retry-btn">다시 시도</button>
     </div>
-    
+
     <!-- 💪(상일) 북마크가 없는 경우 -->
     <NoBookmarkCard v-else-if="!filteredBookmarks.length" />
-    
+
     <!-- 💪(상일) 북마크 목록 표시 -->
     <div v-else>
-      <div class="header">
+      <div class="header font-15">
         <p>저장된 정책</p>
         <span>{{ filteredBookmarks.length }}개</span>
       </div>
@@ -41,25 +41,26 @@ import NoBookmarkCard from './NoBookmarkCard.vue';
 
 // 💪(상일) 북마크 스토어에서 데이터 가져오기
 const bookmarkStore = useBookmarkStore();
-const { 
-  bookmarks, 
-  loading: bookmarkLoading, 
+const {
+  bookmarks,
+  loading: bookmarkLoading,
   error: bookmarkError,
-  filteredBookmarks 
+  filteredBookmarks,
 } = storeToRefs(bookmarkStore);
 const { fetchBookmarks } = bookmarkStore;
 </script>
 
 <style scoped>
-.bookmark-list {
+/* .bookmark-list {
   padding: 16px;
-}
+} */
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
+  padding: 0 6px;
 }
 
 .card-container {
@@ -102,8 +103,12 @@ const { fetchBookmarks } = bookmarkStore;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 💪(상일) 에러 상태 스타일 */

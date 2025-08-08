@@ -20,23 +20,16 @@ export async function fetchAccountTransactions(
   return axios.get(`/api/asset/accounts/${accountId}/transactions`, { params });
 }
 
-// 카드 거래내역 조회
-export async function fetchCardTransactions(cardId, page = 0, size = 20) {
-  return axios.get(`/api/asset/cards/${cardId}/transactions`, {
-    params: { page, size },
-  });
+export async function fetchCardTransactions(
+  cardId,
+  page = 0,
+  size = 20,
+  txType = '' // 카드도 income/expense/cancel 등 확장 가능
+) {
+  const params = { page, size };
+  if (txType) params.txType = txType;
+  return axios.get(`/api/asset/cards/${cardId}/transactions`, { params });
 }
-
-// export async function fetchCardTransactions(
-//   cardId,
-//   page = 0,
-//   size = 20,
-//   txType = '' // 카드도 income/expense/cancel 등 확장 가능
-// ) {
-//   const params = { page, size };
-//   if (txType) params.txType = txType;
-//   return axios.get(`/api/asset/cards/${cardId}/transactions`, { params });
-// }
 
 // **CODEF 연동만 codefInstance로**
 export async function connectAccount({ organization, loginId, password }) {
@@ -68,4 +61,13 @@ export async function syncAccounts() {
 /** 카드 동기화 (비동기, 202 Accepted) */
 export async function syncCards() {
   return codefInstance.post('/api/codef/sync/cards');
+}
+
+// 계좌 거래 메모 업데이트
+export function updateAccountTransactionMemo(transactionId, memo) {
+  return axios.post(`/api/asset/accounts/${transactionId}/memo`, { memo });
+}
+// 카드 거래 메모 업데이트
+export function updateCardTransactionMemo(transactionId, memo) {
+  return axios.post(`/api/asset/cards/${transactionId}/memo`, { memo });
 }

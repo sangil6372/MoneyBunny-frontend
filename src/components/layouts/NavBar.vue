@@ -66,7 +66,7 @@ const isActive = (path) => route.path.startsWith(path);
   width: 100%;
   max-width: 390px;
   margin: 0 auto;
-  height: 65px;
+  height: 60px;
   background: white;
   border-top: 1px solid #ddd;
   display: flex;

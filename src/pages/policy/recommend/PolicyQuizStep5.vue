@@ -123,8 +123,8 @@ export default {
 
   <div class="quizContainer">
     <section class="quizContent">
-      <div class="question font-16 mb-4">
-        정책을 신청할 때 중요하게 여기는 순서대로 클릭해주세요
+      <div class="question font-15 mb-4">
+        정책을 신청할 때 중요하게 여기는 순서대로 <br></br>클릭해주세요
       </div>
 
       <ul class="priorityOptions">
@@ -147,9 +147,9 @@ export default {
     </section>
 
     <footer class="quizFooter">
-      <button class="prevButton font-18" @click="goToPrevStep">이전</button>
+      <button class="prevButton font-15" @click="goToPrevStep">이전</button>
       <button
-        class="nextButton font-18"
+        class="nextButton font-15"
         :disabled="selectedOptions.length !== 3"
         @click="goToNextStep"
       >
@@ -165,66 +165,68 @@ export default {
   justify-content: center;
   margin-bottom: 15px;
 }
-
 .quizHeader {
-  margin-top: 10px;
   text-align: center;
   background-color: var(--base-blue-dark);
-  border-radius: 12px;
-  padding: 19px;
+  border-radius: 8px;
+  padding: 20px;
   color: white;
-  max-width: 390px;
+  /* max-width: 390px; */
   width: 100%;
 }
-
 .quizContainer {
-  max-width: 390px;
+  /* max-width: 396px; */
   margin: 0 auto;
   padding: 24px;
   background-color: #fff;
-  border-radius: 16px;
+  border-radius: 12px;
 }
 
 .priorityOptions {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  list-style: none;
+ list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .optionItem {
   position: relative;
-  padding: 14px 16px;
+  padding: 11px 15px;
   border: 1px solid var(--input-outline);
   border-radius: 8px;
   background-color: white;
   cursor: pointer;
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .optionItem.selected {
-  background-color: var(--input-bg-2);
+  border-color: var(--input-bg-3);
+  background-color: #f0f6ff;
+  color: #1d3557;
 }
+
 .priorityBadge {
   position: absolute;
-  right: 16px;
+  right: 18px;
   top: 50%;
   transform: translateY(-50%);
-  background-color: var(--base-blue-dark);
+  background-color: var(--base-blue-dark); 
   color: white;
-  font-size: 13px;
-  padding: 6px 12px;
+  font-size: 12px;
+  padding: 7px 12px;
   border-radius: 999px;
   line-height: 1;
   white-space: nowrap;
+   /* background: #c2dbff;    
+  color: #243570; */
 }
 
 .quizFooter {
-  margin-top: 32px;
+  margin-top: 16px;
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
 }
 
@@ -232,24 +234,24 @@ export default {
 .nextButton {
   flex: 1;
   padding: 12px 0;
-  border-radius: 10px;
+  border-radius: 8px;
   border: none;
-  cursor: pointer;
 }
 
 .prevButton {
-  background-color: var(--input-bg-1);
+  background-color: var(--input-bg-2);
   color: var(--text-login);
 }
 
 .nextButton {
   background-color: var(--base-blue-dark);
   color: white;
+  cursor: pointer;
 }
 
 .nextButton:disabled {
   background-color: var(--input-disabled-1);
-  cursor: not-allowed;
+  cursor: default;
 }
 
 .mb-2 {
