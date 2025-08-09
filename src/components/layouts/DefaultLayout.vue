@@ -55,6 +55,7 @@ const activeHeader = computed(() => {
 .layout {
   width: 100%;
   padding-bottom: 60px; /* 하단 바 가려지지 않게 여백 확보 */
+
   min-height: 100vh;
   position: relative;
 }
@@ -62,8 +63,5 @@ const activeHeader = computed(() => {
   /* 💪(상일) 헤더 높이 + 상태바 영역 고려 */
   padding-top: calc(70px + env(safe-area-inset-top));
   position: relative;
-  /* 💪(상일) iOS 플로팅 방지를 위한 하드웨어 가속 */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
 }
 </style>

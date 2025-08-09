@@ -14,8 +14,6 @@ import router from './router';
 import { registerServiceWorker } from './firebase/registerServiceWorker';
 import { checkPermissionOnAppStart } from './firebase/notificationPermission';
 import { setupForegroundMessageListener } from './firebase/foregroundMessage';
-// 💪(상일) Pull-to-refresh 라이브러리
-import PullToRefresh from 'pulltorefreshjs';
 
 const app = createApp(App);
 
@@ -24,14 +22,6 @@ app.use(createPinia());
 app.use(router);
 
 app.mount('#app');
-
-// 💪(상일) Pull-to-refresh 초기화
-PullToRefresh.init({
-  mainElement: '#app',
-  onRefresh() {
-    window.location.reload();
-  }
-});
 
 // 💪(상일) 서비스 워커 등록
 registerServiceWorker();
