@@ -8,6 +8,8 @@ body {
   justify-content: center;
   margin: 0;
   padding: 0;
+  /* 💪(상일) Pull-to-refresh 활성화 */
+  overscroll-behavior-y: auto;
 }
 /* 모달이 열려 있을 때 body 스크롤 막기 */
 body.modal-open {

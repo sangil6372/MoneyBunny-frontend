@@ -12,6 +12,8 @@ import PolicyConditionTab from "./PolicyConditionTab.vue";
 import PolicyApplyTab from "./PolicyApplyTab.vue";
 // 💪(상일) 신청 상태 모달
 import PolicyApplyStatusModal from "../component/PolicyApplyStatusModal.vue";
+// 💪(상일) Safari 안내 모달
+import SafariGuideModal from "./SafariGuideModal.vue";
 
 // 실제 데이터(예시)
 const ALL_POLICIES = [
@@ -238,10 +240,8 @@ onMounted(async () => {
   </div>
   <div v-else class="noData">정책 정보를 찾을 수 없습니다.</div>
 
-  <!-- 💪(상일) iOS Safari 열기 안내 -->
-  <div v-if="showSafariGuide" class="safari-guide">
-    Safari 브라우저로 이용해주세요.
-  </div>
+  <!-- 💪(상일) iOS Safari 안내 모달 -->
+  <SafariGuideModal v-model="showSafariGuide" />
 
   <!-- 💪(상일) 정책신청현황 모달 -->
   <PolicyApplyStatusModal
@@ -274,17 +274,4 @@ onMounted(async () => {
   color: gray;
 }
 
-/* 💪(상일) iOS Safari 열기 안내 스타일 */
-.safari-guide {
-  position: fixed;
-  top: 70px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: #f0f0f0;
-  color: #666;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 12px;
-  z-index: 100;
-}
 </style>
