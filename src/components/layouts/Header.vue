@@ -38,9 +38,11 @@ const shouldShakeIcon = computed(() => notificationStore.shouldShakeIcon);
 
 // 💪(상일) 컴포넌트 마운트 시 미읽은 알림 개수 조회 - 특정 라우트에서만
 onMounted(async () => {
-  // 미읽은 알림 개수가 필요한 페이지만 체크
-  const targetRoutes = ['/home', '/asset', '/policy', '/mypage'];
-  if (targetRoutes.some((routePath) => route.path.startsWith(routePath))) {
+  // 💪(상일) 미읽은 알림 개수가 필요한 페이지만 체크 (policy 메인만 포함)
+  const targetRoutes = ['/home', '/asset', '/mypage'];
+  const exactRoutes = ['/policy', '/policy/main'];
+  if (targetRoutes.some((routePath) => route.path.startsWith(routePath)) || 
+      exactRoutes.includes(route.path)) {
     try {
       await notificationStore.fetchUnreadCount();
       console.log(

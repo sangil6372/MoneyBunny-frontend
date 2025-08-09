@@ -37,9 +37,12 @@ window.addEventListener('focus', async () => {
   try {
     // 현재 라우트 확인
     const currentPath = window.location.pathname;
-    const targetRoutes = ['/home', '/asset', '/policy', '/mypage'];
+    // 💪(상일) policy 메인 페이지만 포함, 하위 경로 제외
+    const targetRoutes = ['/home', '/asset', '/mypage'];
+    const exactRoutes = ['/policy', '/policy/main'];
     
-    if (targetRoutes.some(routePath => currentPath.startsWith(routePath))) {
+    if (targetRoutes.some(routePath => currentPath.startsWith(routePath)) ||
+        exactRoutes.includes(currentPath)) {
       const { useNotificationStore } = await import('@/stores/notification');
       const notificationStore = useNotificationStore();
       await notificationStore.fetchUnreadCount();
