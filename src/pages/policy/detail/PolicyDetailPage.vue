@@ -174,8 +174,20 @@ const handleShowStatusModal = (applicationData) => {
   showStatusModal.value = true;
 };
 
-// 💪(상일) 컴포넌트 마운트 시 미완료 신청 체크
+// 💪(상일) 컴포넌트 마운트 시 카카오톡 인앱 브라우저 감지 및 처리
 onMounted(async () => {
+  // 💪(상일) 공유 링크로 진입 + 카카오톡 인앱 브라우저인 경우 외부 브라우저로 리다이렉트
+  if (route.query.from === 'share' && /KAKAOTALK/i.test(navigator.userAgent)) {
+    // ?from=share 파라미터 제거한 URL
+    const currentUrl = window.location.href.replace(/[?&]from=share/, '');
+    
+    // 카카오톡 URL 스킴으로 외부 브라우저 열기
+    // Android는 Chrome/기본 브라우저로, iOS는 Safari로 자동 열림
+    window.location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(currentUrl);
+    return; // 리다이렉트 후 나머지 로직 실행 안 함
+  }
+  
+  // 기존 로직 - 미완료 신청 체크
   await checkIncompleteApplication();
 });
 </script>

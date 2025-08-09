@@ -35,24 +35,7 @@ const normalizeUrl = (raw) => {
   return null;
 };
 
-// intent:// URL 생성 함수
-function buildIntentUrl(targetUrl) {
-  try {
-    const urlObj = new URL(targetUrl);
-    const path = urlObj.host + urlObj.pathname + urlObj.search + urlObj.hash;
-    const scheme = urlObj.protocol.replace(":", "");
-    const fallback = encodeURIComponent(targetUrl);
-    return `intent://${path}#Intent;scheme=${scheme};package=com.android.chrome;S.browser_fallback_url=${fallback};end`;
-  } catch (e) {
-    return targetUrl;
-  }
-}
-
-// Android Chrome 환경 판별 함수
-function isAndroidChrome() {
-  const ua = navigator.userAgent || "";
-  return /Android/i.test(ua) && /Chrome/i.test(ua);
-}
+// 💪(상일) intent URL 및 Android Chrome 감지 제거 - 카카오톡 인앱에서 처리로 변경
 
 const fetchPolicy = async () => {
   try {
@@ -71,16 +54,8 @@ const fetchPolicy = async () => {
     console.log("API 응답 데이터:", response.data);
     const data = response.data;
 
-    // 공유 URL 생성 및 intent 적용
-    const targetUrl =
-      normalizeUrl(data.applyUrl) ||
-      normalizeUrl(data.refUrl1) ||
-      `https://money-bunny-frontend.vercel.app/policy/${policyId.value}`;
-
-    let finalUrl = targetUrl;
-    if (isAndroidChrome()) {
-      finalUrl = buildIntentUrl(targetUrl);
-    }
+    // 💪(상일) 공유 URL 생성 - 항상 HTTPS URL 사용, from=share 파라미터 추가
+    const targetUrl = `https://money-bunny-frontend.vercel.app/policy/${policyId.value}?from=share`;
 
     shareInfo.value = {
       title: data.title,
@@ -90,7 +65,7 @@ const fetchPolicy = async () => {
         (data.policyBenefitAmount
           ? `${data.policyBenefitAmount.toLocaleString()}원`
           : "지원 내용 없음"),
-      url: finalUrl,
+      url: targetUrl,
     };
 
     console.log("applyUrl from API:", data.applyUrl);
