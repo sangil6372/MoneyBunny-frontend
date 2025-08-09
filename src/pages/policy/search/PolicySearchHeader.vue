@@ -4,7 +4,7 @@ import { ref, onMounted, watch } from 'vue';
 import { policyAPI } from '@/api/policy';
 import PolicyFilterModal from '../filter/PolicyFilterModal.vue';
 
-const filterData = ref({});
+const filterData = ref({}); // 빈 값으로 초기화
 const showFilterModal = ref(false);
 const openFilter = () => (showFilterModal.value = true);
 
@@ -79,7 +79,7 @@ const fetchUserPolicyFilter = async () => {
   try {
     const res = await policyAPI.getUserPolicy();
     const d = res.data || {};
-    // 모달용 초기값
+    // 모달용 초기값만 세팅 (검색용 filterData는 빈 값 유지)
     Object.assign(filterInitial.value, {
       initialMarital: d.marriage ? [d.marriage] : [],
       initialRegion: d.regions || [],
@@ -90,7 +90,7 @@ const fetchUserPolicyFilter = async () => {
       initialJobStatus: d.employmentStatuses || [],
       initialSpecialty: d.specialConditions || [],
     });
-    // 검색용 필터 데이터
+    // userFilter는 필요시만 사용
     Object.assign(userFilter.value, {
       marital: d.marriage ? [d.marriage] : [],
       region: d.regions || [],
@@ -101,8 +101,7 @@ const fetchUserPolicyFilter = async () => {
       jobStatus: d.employmentStatuses || [],
       specialty: d.specialConditions || [],
     });
-    // 최초 진입 시 filterData도 검색용 구조로 세팅
-    Object.assign(filterData.value, userFilter.value);
+    // filterData.value = {}; // 빈 값 유지
   } catch (e) {
     // 에러 무시, 기본값 사용
   }
