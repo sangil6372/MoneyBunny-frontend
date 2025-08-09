@@ -57,7 +57,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* NavBar의 bottom-nav와 동일하게 상단 고정 + 너비 제한 */
+/* 💪(상일) 헤더 화면 고정 + 상태바 영역 처리 */
 .top-header {
   position: fixed;
   top: 0;
@@ -66,7 +66,8 @@ onMounted(async () => {
   width: 100%;
   max-width: 390px;
   margin: 0 auto;
-  height: 60px;
+  height: calc(60px + env(safe-area-inset-top));
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid var(--base-lavender);
   background: white;
   display: flex;

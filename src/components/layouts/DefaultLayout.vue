@@ -60,7 +60,8 @@ const activeHeader = computed(() => {
   position: relative;
 }
 .main {
-  padding-top: 70px;
+  /* 💪(상일) 헤더 높이 + 상태바 영역 고려 */
+  padding-top: calc(70px + env(safe-area-inset-top));
   position: relative;
 }
 </style>
