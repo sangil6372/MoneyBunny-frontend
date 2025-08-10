@@ -17,18 +17,19 @@
 
     <!-- 💪(상일) 북마크 목록 표시 -->
     <div v-else>
-      <div class="header font-15">
-        <p>저장된 정책</p>
-        <span>{{ filteredBookmarks.length }}개</span>
+      <div class="bookmarkHeader">
+        <span>북마크한 정책</span>
+        <span class="countBadge">{{ filteredBookmarks.length }}</span>
       </div>
-      <div class="card-container">
+
+      <div v-if="filteredBookmarks.length > 0">
         <BookmarkCard
-          v-for="(item, index) in filteredBookmarks"
-          :key="item.bookmarkId || index"
+          v-for="item in filteredBookmarks"
+          :key="item.policyId"
           :item="item"
-          :class="{ 'not-last': index < filteredBookmarks.length - 1 }"
         />
       </div>
+      <div v-else class="emptyMsg">북마크한 정책이 없습니다.</div>
     </div>
   </div>
 </template>
@@ -135,10 +136,38 @@ const { fetchBookmarks } = bookmarkStore;
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
 }
-
+/* 
 .retry-btn:hover {
   background-color: var(--base-blue);
+} */
+
+.bookmarkHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: bold;
+  color: var(--text-login);
+  margin-bottom: 15px;
+}
+/* .countBadge {
+  background: #e6eeff;
+  color: #3a4ea4;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2.5px 8px;
+  margin-left: 2px;
+} */
+.countBadge {
+  background: #e8f1ff; /* 더 깨끗하고 부드러운 연블루 */
+  color: #2347ad; /* 진한 블루 */
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 2.5px 8px;
+  margin-left: 2px;
+  letter-spacing: 0.1px;
 }
 </style>

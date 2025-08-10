@@ -3,14 +3,29 @@
     <DetailHeader title="카드 상세" @back="onClose" />
     <DetailInfoCard type="card" :data="cardData" />
 
-    <!-- TransactionFilter 추가 (카드용) -->
-    <TransactionFilter v-model="filter" type="card" />
+    <!-- 🥕 변경: TransactionFilter → SearchFilterHeader -->
+    <SearchFilterHeader
+      v-model="searchKeyword"
+      :filter-value="currentFilterText"
+      :type="'card'"
+      @search-input="onSearchInput"
+      @filter-modal-open="openFilterModal"
+    />
 
-    <!--🥕-->
+    <!-- 🥕 추가: CardFilterModal -->
+    <CardFilterModal
+      :show="showFilterModal"
+      @close="closeFilterModal"
+      @apply="onFilterApply"
+    />
+
+    <!--🥕 수정: 새로운 props 추가 -->
     <TransactionList
       type="card"
       :cardId="cardData.id"
       :filter="filter"
+      :search-keyword="searchKeyword"
+      :advanced-filters="advancedFilters"
       @transaction-click="openTransactionModal"
     />
 
@@ -31,7 +46,9 @@ import { ref } from 'vue';
 
 import DetailHeader from '../detail/DetailHeader.vue';
 import DetailInfoCard from '../detail/DetailInfoCard.vue';
-import TransactionFilter from '../detail/TransactionFilter.vue'; // TransactionFilter import 추가
+// 🥕 변경: TransactionFilter → SearchFilterHeader, CardFilterModal import 추가
+import SearchFilterHeader from '../common/SearchFilterHeader.vue';
+import CardFilterModal from '../card/CardFilterModal.vue';
 import TransactionList from '../detail/TransactionList.vue';
 import TransactionDetailModal from '../detail/TransactionDetailModal.vue';
 
@@ -39,27 +56,95 @@ const props = defineProps({ cardData: Object });
 const emit = defineEmits(['close']);
 const onClose = () => emit('close'); // 부모에게 close 이벤트 전달
 
-// 필터 상태 추가
+// 🥕 추가: 필터 모달 상태
+const showFilterModal = ref(false);
+
+// 🥕 추가: 검색어 상태
+const searchKeyword = ref('');
+
+// 🥕 수정: 현재 필터 텍스트 (드롭다운용)
+const currentFilterText = ref('3개월·전체·최신');
+
+// 🥕 기존 단순 필터 상태 유지 (기본 필터용) - 카드는 지출/환불
 const filter = ref('전체');
 
-// 🥕거래 상세 모달 관련 상태
+// 🥕 추가: 고급 필터 상태 (검색, 기간, 정렬 등)
+const advancedFilters = ref({
+  searchKeyword: '',
+  dateRange: {
+    type: '3개월',
+    startDate: null,
+    endDate: null,
+  },
+  transactionType: '전체', // 카드는 '전체', '지출', '환불'
+  sortBy: '최신순',
+});
+
+// 🥕거래 상세 모달 관련 상태 (기존 유지)
 const showTransactionModal = ref(false);
 const selectedTransaction = ref(null);
 
-// 거래 상세 모달 열기
+// 거래 상세 모달 열기 (기존 유지)
 const openTransactionModal = (transaction) => {
   console.log('카드 거래 클릭됨:', transaction);
   selectedTransaction.value = transaction;
   showTransactionModal.value = true;
 };
 
-// 거래 상세 모달 닫기
+// 거래 상세 모달 닫기 (기존 유지)
 const closeTransactionModal = () => {
   showTransactionModal.value = false;
   selectedTransaction.value = null;
 };
 
-// 👇 이걸 <script setup>에 추가!
+// 🥕 추가: 필터 모달 열기/닫기
+const openFilterModal = () => {
+  showFilterModal.value = true;
+};
+
+const closeFilterModal = () => {
+  showFilterModal.value = false;
+};
+
+// 🥕 추가: 검색어 입력 핸들러
+const onSearchInput = (keyword) => {
+  console.log('카드 검색어 입력됨:', keyword);
+  searchKeyword.value = keyword;
+  // 고급 필터에 검색어 반영
+  advancedFilters.value.searchKeyword = keyword;
+  // TransactionList가 자동으로 새로운 검색어로 필터링할 것임
+};
+
+// 🥕 추가: 필터 모달에서 필터 적용
+const onFilterApply = (appliedFilters) => {
+  console.log('카드 필터 적용됨:', appliedFilters);
+
+  // 고급 필터 상태 업데이트
+  advancedFilters.value = { ...appliedFilters };
+
+  // 기본 필터 업데이트 (카드는 지출/환불)
+  if (appliedFilters.transactionType === '지출') {
+    filter.value = '지출';
+  } else if (appliedFilters.transactionType === '환불') {
+    filter.value = '환불';
+  } else {
+    filter.value = '전체';
+  }
+
+  // 검색어 업데이트
+  searchKeyword.value = appliedFilters.searchKeyword || '';
+
+  // 필터 텍스트 업데이트 (드롭다운 표시용)
+  const period = appliedFilters.dateRange.type;
+  const type = appliedFilters.transactionType;
+  const sort = appliedFilters.sortBy === '최신순' ? '최신' : '과거순';
+  currentFilterText.value = `${period}·${type}·${sort}`;
+
+  // 모달 닫기
+  closeFilterModal();
+};
+
+// 👇 메모 업데이트 핸들러 (기존 유지)
 function onMemoUpdated({ id, memo }) {
   // 1. 현재 상세 모달에서만 memo 반영 (이미 하고 있을 수 있음)
   if (selectedTransaction.value && selectedTransaction.value.id === id) {

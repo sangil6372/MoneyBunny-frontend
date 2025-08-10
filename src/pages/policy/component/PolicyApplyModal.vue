@@ -4,21 +4,21 @@
       <button class="closeBtn" @click="handleClose">
         <img src="@/assets/images/icons/common/x.png" alt="닫기" />
       </button>
-      <div class="modalTitle font-bold font-22">정책 신청 안내</div>
+      <div class="modalTitle font-bold font-18">정책 신청 안내</div>
       <div class="policyBox">
-        <div class="policyTitle font-bold font-16">{{ policyTitle }}</div>
-        <div class="policyDesc font-14">
+        <div class="policyTitle font-bold font-14">{{ policyTitle }}</div>
+        <div class="policyDesc font-12">
           선택하신 정책의 신청 페이지로 이동합니다.
         </div>
       </div>
-      <ul class="tipList font-14">
+      <ul class="tipList font-12">
         <li>신청 전 자격 요건을 반드시 확인해주세요</li>
         <li>필요한 서류를 미리 준비하시면 신청이 더욱 원활합니다</li>
         <li>마감일을 확인하고 여유있게 신청하세요</li>
       </ul>
       <div class="modalBtns">
-        <button class="cancelBtn font-17" @click="handleClose">취소</button>
-        <button class="applyBtn font-17" @click="handleGoApply">
+        <button class="cancelBtn font-14" @click="handleClose">취소</button>
+        <button class="applyBtn font-14" @click="handleGoApply">
           신청 페이지로 이동
         </button>
       </div>
@@ -80,23 +80,23 @@ async function handleGoApply() {
 }
 .modalContent {
   background: #fff;
-  border-radius: 22px;
+  border-radius: 1cap;
   width: 90%;
-  max-width: 420px;
-  padding: 24px;
+  max-width: 330px;
+  padding: 20px;
   position: relative;
 }
 .closeBtn {
   position: absolute;
-  top: 24px;
-  right: 24px;
+  top: 20px;
+  right: 15px;
   background: none;
   border: none;
   cursor: pointer;
 }
 .closeBtn img {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 .modalTitle {
   margin-left: 5px;
@@ -107,7 +107,7 @@ async function handleGoApply() {
   background: var(--input-bg-2);
   border-radius: 8px;
   padding: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 .policyTitle {
   color: var(--text-login);
@@ -117,9 +117,9 @@ async function handleGoApply() {
   color: var(--text-bluegray);
 }
 .tipList {
-  margin-left: -8px;
+  margin-left: -12px;
   color: var(--text-bluegray);
-  margin-bottom: 25px;
+  margin-bottom: 15px;
 }
 .tipList li {
   list-style: disc;
@@ -134,8 +134,8 @@ async function handleGoApply() {
   background: var(--input-bg-1);
   color: var(--text-login);
   border: none;
-  border-radius: 8px;
-  height: 48px;
+  border-radius: 6px;
+  height: 44px;
   cursor: pointer;
 }
 
@@ -144,8 +144,8 @@ async function handleGoApply() {
   background: var(--base-blue-dark);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  height: 48px;
+  border-radius: 6px;
+  height: 44px;
   cursor: pointer;
 }
 </style>

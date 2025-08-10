@@ -132,15 +132,37 @@ const sendKakao = () => {
 
 // 클립보드 복사(링크 공유)
 
+const showToast = ref(false); // 토스트 상태
+const toastMsg = ref(''); // 토스트에 표시할 메시지
+
 const copyToClipboard = async (text) => {
   try {
     await navigator.clipboard.writeText(text);
-    alert("링크가 복사되었습니다!");
+    toastMsg.value = '링크가 복사되었습니다!';
+    showToast.value = true;
+    setTimeout(() => (showToast.value = false), 1300); // 1.3초 후 사라짐
   } catch (err) {
-    console.error("클립보드 복사 실패:", err);
-    alert("복사에 실패했습니다. 브라우저 권한을 확인해주세요.");
+    toastMsg.value = '복사에 실패했습니다.';
+    showToast.value = true;
+    setTimeout(() => (showToast.value = false), 1400);
   }
 };
+
+const shortUrl = computed(() => {
+  if (!shareInfo.value.url) return '';
+  try {
+    const u = new URL(shareInfo.value.url);
+    return u.hostname.replace(/^www\./, '');
+  } catch {
+    return shareInfo.value.url;
+  }
+});
+
+const shortDesc = computed(() => {
+  const desc = shareInfo.value.description || '';
+  if (desc.length > 35) return desc.slice(0, 35) + '...';
+  return desc;
+});
 </script>
 
 <template>
@@ -151,33 +173,46 @@ const copyToClipboard = async (text) => {
         class="closeIcon"
         @click="close"
       />
-      <div class="font-18 font-bold mb-3">공유하기</div>
+      <div class="font-17 font-bold mb-3">공유하기</div>
 
       <div class="shareItem" @click="sendKakao">
         <img src="@/assets/images/icons/policy/kakaotalk.png" />
         <div class="text">
-          <div class="font-14 font-bold">카카오톡</div>
-          <div class="font-12">카카오톡으로 공유하기</div>
+          <div class="font-13 font-bold">카카오톡</div>
+          <div class="font-11">카카오톡으로 공유하기</div>
         </div>
       </div>
 
       <div class="shareItem" @click="copyToClipboard(shareInfo.url)">
         <img src="@/assets/images/icons/policy/link.png" />
         <div class="text">
-          <div class="font-14 font-bold">링크 복사</div>
-          <div class="font-12">링크를 복사해서 공유하기</div>
+          <div class="font-13 font-bold">링크 복사</div>
+          <div class="font-11">링크를 복사해서 공유하기</div>
         </div>
       </div>
 
       <div class="shareBox">
-        <div class="font-13 font-bold mb-1">공유할 내용</div>
-        <div class="font-12">
-          {{ shareInfo.title }} - {{ shareInfo.description }}<br />
-          {{ shareInfo.amount }} 지원<br />
-          {{ shareInfo.url }}
+        <!-- <div class="font-12 font-bold mb-1">공유할 내용</div> -->
+        <div class="font-12 font-bold" style="margin-bottom: 5px">
+          {{ shareInfo.title }}
+        </div>
+        <div
+          class="font-11"
+          style="color: var(--text-bluegray); margin-bottom: 2px"
+        >
+          {{ shortDesc }}
+        </div>
+        <div class="font-11" v-if="shareInfo.amount">
+          {{ shareInfo.amount }}
+        </div>
+        <div class="font-11" style="color: #3452e0; margin-top: 5px">
+          {{ shortUrl }}
         </div>
       </div>
     </div>
+    <transition name="fade">
+      <div v-if="showToast" class="toastMsg">{{ toastMsg }}</div>
+    </transition>
   </div>
 </template>
 
@@ -197,7 +232,8 @@ const copyToClipboard = async (text) => {
 
 .modalContent {
   background-color: white;
-  width: 90%;
+  width: 330px;
+  max-width: 95vw;
   border-radius: 16px;
   padding: 24px;
   position: relative;
@@ -223,13 +259,26 @@ const copyToClipboard = async (text) => {
 }
 
 .shareItem img {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 
 .shareBox {
   background-color: var(--input-bg-2);
   border-radius: 12px;
   padding: 16px;
+}
+
+.toastMsg {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #222b4d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13px;
+  z-index: 10001;
+  pointer-events: none;
 }
 </style>

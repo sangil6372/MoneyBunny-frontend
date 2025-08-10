@@ -1,36 +1,44 @@
 <template>
   <div class="bookmarkCard">
-    <div class="cardHeader">
-      <div
-        class="badge"
-        :class="item.status === '신청가능' ? 'badgeActive' : 'badgeExpired'"
-      >
-        {{ item.status }}
-      </div>
-      <!-- 💪(상일) 북마크 제거 버튼 추가 -->
+    <div class="headerRow">
+      <span class="title">
+        {{ item.title }}
+        <span
+          v-if="item.status"
+          :class="[
+            'badge',
+            item.status === '신청가능' ? 'badgeActive' : 'badgeExpired',
+          ]"
+        >
+          {{ item.status }}
+        </span>
+      </span>
       <button
         class="removeBtn"
         @click="handleRemoveBookmark"
         title="북마크 제거"
       >
-        ✕
+        <img
+          src="@/assets/images/icons/common/x.png"
+          alt="북마크 제거"
+          class="removeIcon"
+        />
       </button>
     </div>
-
-    <div class="title">{{ item.title }}</div>
     <div class="desc">{{ item.description }}</div>
-
-    <div class="info">
-      <span
-        >지원금액: <strong>{{ item.supportAmount }}</strong></span
-      >
-      <span
-        >마감: <strong>{{ item.deadline }}</strong></span
-      >
+    <div class="infoRow">
+      <div>
+        <span
+          >지원금액 : <strong>{{ item.supportAmount }}</strong></span
+        >
+        <span class="divider"></span>
+        <span
+          >마감 : <strong>{{ item.deadline }}</strong></span
+        >
+      </div>
     </div>
-
-    <div class="meta">
-      <span>북마크 저장일: {{ item.savedDate }}</span>
+    <div class="metaRow">
+      <span>북마크일 : {{ item.savedDate }}</span>
       <button class="detailBtn" @click="handleDetailClick">자세히 보기</button>
     </div>
   </div>
@@ -72,109 +80,117 @@ const handleRemoveBookmark = async () => {
 
 <style scoped>
 .bookmarkCard {
-  padding: 12px;
-  background-color: var(--input-bg-2);
+  border: 1px solid var(--input-outline-2);
   border-radius: 12px;
-  box-shadow: var(--card-shadow);
+  padding: 16px;
+  margin-bottom: 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  width: 100%;
-}
-
-/* 💪(상일) 카드 헤더 스타일 */
-.cardHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.badge {
-  width: fit-content;
-  padding: 6px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-}
-
-.badgeActive {
-  background-color: #d2f7e8;
-  color: #009d6f;
-}
-
-.badgeExpired {
-  background-color: #ffe5e5;
-  color: #ff3b30;
-}
-
-/* 💪(상일) 북마크 제거 버튼 스타일 */
-.removeBtn {
+  gap: 9px;
   background: none;
-  border: none;
-  color: #999;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 4px;
-  border-radius: 50%;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
+  position: relative;
 }
-
-/* .removeBtn:hover {
-  background-color: #f5f5f5;
-  color: #ff3b30;
-} */
-
+.headerRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
 .title {
   font-size: 15px;
-  font-weight: bold; /* 💪(상일) 제목 진하게 */
-  color: var(--text-main);
-  /* 💪(상일) 제목 말줄임 처리 */
+  font-weight: bold;
+  color: var(--text-login);
+  display: flex;
+  align-items: center;
+  gap: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  -webkit-line-clamp: 1; /* 2줄까지만! */
+  -webkit-box-orient: vertical;
+  max-width: 80%;
+  min-width: 0;
+}
+.badge {
+  font-size: 11px;
+  border-radius: 10px;
+  padding: 5px 8px;
+  font-weight: bold;
+  margin-left: 2px;
+}
+.badgeActive {
+  background: #e6faf2;
+  color: #18b184;
+}
+.badgeExpired {
+  background: #fff0f4;
+  color: #e3456d;
 }
 
+.removeBtn {
+  background: none;
+  border: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.removeIcon {
+  width: 17px;
+  height: 17px;
+}
 .desc {
-  font-size: 12px;
-  color: var(--text-sub);
-  /* 💪(상일) 설명 2줄 말줄임 처리 */
+  font-size: 11px;
+  color: #5a5a5a;
+  margin-bottom: 2px;
+  /* 두줄 말줄임 */
   display: -webkit-box;
-  -webkit-line-clamp: 1;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  /* line-height: 1.2; */
+}
+.infoRow {
+  font-size: 11px;
+  color: #6a7686;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2px;
+  gap: 10px;
 }
 
-.info,
-.meta {
-  font-size: 11px;
-  color: var(--text-gray);
+.divider {
+  display: inline-block;
+  width: 1.5px;
+  height: 10px;
+  background: #e2e2e2;
+  margin: 0 8px;
+  vertical-align: middle;
+}
+.infoRow strong {
+  color: #23377a;
+  font-weight: bold;
+}
+.metaRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  font-size: 10px;
+  color: #9aadc5;
+  margin-top: 6px;
+  border-top: 1px solid #f0f3fa;
+  padding-top: 8px;
 }
-
-/* 💪(상일) 지원금액과 마감일 진하게 표시 */
-.info strong {
-  font-weight: bold;
-  color: var(--text-main);
-}
-
 .detailBtn {
   background: none;
-  color: #3452e0;
+  color: #2846d7;
   border: none;
   cursor: pointer;
   padding: 0;
-  font-weight: bold; /* 💪(상일) 자세히 보기 버튼 진하게 */
+  font-weight: bold;
+  font-size: 11px;
 }
-
-/* .detailBtn:hover {
-  color: #2840c0;
-  text-decoration: underline;
-} */
 </style>

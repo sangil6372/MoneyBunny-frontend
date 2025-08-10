@@ -21,7 +21,7 @@
         <span>
           <span class="growthTitle">자산 증가율</span><br />
           <span class="growthDesc"
-            >예상 증가금액: {{ increaseAmountDisplay }}</span
+            >예상 증가금액 : {{ increaseAmountDisplay }}</span
           >
         </span>
       </div>
@@ -163,15 +163,18 @@ const increaseRateDisplay = computed(() =>
 .growthDesc {
   font-size: 0.75rem;
   color: #222c42;
+  margin-left: -25px;
 }
 
 .growthRate {
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: bold;
   /* color: #3a57e8; */
-  color: #6a7de7;
+  /* color: #6a7de7; */
+  /* color: #34c759; */
+  color: #25b486;
   min-width: 4.6rem;
   text-align: right;
-  margin-right: 0.6rem;
+  margin-right: 0.45rem;
 }
 </style>
