@@ -1,6 +1,6 @@
 <template>
   <NotificationItem>
-    <h3 class="title">리마인더</h3>
+    <div class="title">리마인더</div>
     <p class="message">{{ item.message }}</p>
     <small class="date">{{ formatDate(item.created_at || item.date) }}</small>
   </NotificationItem>

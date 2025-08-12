@@ -46,14 +46,14 @@ async function handleGoApply() {
   try {
     // 1. 신청 등록 API 호출
     await policyInteractionAPI.addApplication(props.policyId);
-    
+
     // 2. 외부 URL 열기 (새 탭)
     window.open(props.applyUrl, '_blank');
-    
+
     // 3. 신청 모달 닫고 상태 모달 즉시 표시
     emit('showStatusModal', {
       policyId: props.policyId,
-      title: props.policyTitle
+      title: props.policyTitle,
     });
     handleClose();
   } catch (error) {

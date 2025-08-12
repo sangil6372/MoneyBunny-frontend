@@ -1,11 +1,15 @@
 <template>
-  <NotificationItem :is-read="item.read" :notification-type="item.type" @delete="handleDelete">
-    <h3 class="title">{{ item.title }}</h3>
+  <NotificationItem
+    :is-read="item.read"
+    :notification-type="item.type"
+    @delete="handleDelete"
+  >
+    <div class="title">{{ item.title }}</div>
     <p class="message">{{ item.description }}</p>
     <div class="bottom">
       <small class="date">{{ formatDate(item.created_at || item.date) }}</small>
-      <button 
-        v-if="item.targetUrl" 
+      <button
+        v-if="item.targetUrl"
         class="action-btn"
         @click="handleButtonClick"
       >
@@ -34,11 +38,16 @@ const formatDate = (iso) => {
 // 💪(상일) 타입별 버튼 텍스트 결정
 const getButtonText = (type) => {
   switch (type) {
-    case 'BOOKMARK': return '신청하기';
-    case 'NEW_POLICY': return '보러가기';
-    case 'TOP3': return '이동하기';
-    case 'FEEDBACK': return '확인하기';
-    default: return '보기';
+    case 'BOOKMARK':
+      return '신청하기';
+    case 'NEW_POLICY':
+      return '보러가기';
+    case 'TOP3':
+      return '이동하기';
+    case 'FEEDBACK':
+      return '확인하기';
+    default:
+      return '보기';
   }
 };
 
@@ -64,7 +73,7 @@ const handleButtonClick = async () => {
     if (!props.item.read) {
       await notificationStore.markAsRead(props.item.id);
     }
-    
+
     // 라우팅
     const path = getRoutePath(props.item.type, props.item.targetUrl);
     router.push(path);
@@ -89,8 +98,6 @@ const handleDelete = async () => {
 </script>
 
 <style scoped>
-
-
 .bottom {
   display: flex;
   justify-content: space-between;
@@ -101,10 +108,9 @@ const handleDelete = async () => {
   background-color: #2c3e50;
   color: white;
   border: none;
-  padding: 6px 12px;
+  padding: 4px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
 }
-
 </style>

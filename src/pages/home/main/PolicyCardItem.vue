@@ -41,13 +41,14 @@ function goDetail() {
 .policyTop3Card {
   background-color: var(--input-bg-2);
   border-radius: 0.5rem;
-  padding: 0.5rem;
+  padding: 0.8rem;
   /* border: 1px solid transparent; */
   display: flex;
   flex-direction: column;
 }
 
 .contentRow {
+  /* padding: 5px; */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -56,6 +57,7 @@ function goDetail() {
 }
 
 .left {
+  margin-left: -5px;
   display: flex;
   align-items: center;
   gap: 0.2rem;
@@ -63,48 +65,48 @@ function goDetail() {
 }
 
 .rankCircle {
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
   border-radius: 9999px;
   background-color: var(--base-blue-dark);
   color: white;
   text-align: center;
   line-height: 1rem;
-  font-size: 0.7rem;
-  margin-left: 0.05rem;
-  margin-right: 0.25rem;
+  font-size: 0.6rem;
+  margin-right: 0.1rem;
 }
 
 .title {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: bold;
   color: var(--text-login);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 8.8rem;
+  max-width: 10rem;
   display: block;
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
+  margin-right: -3px;
 }
 
 .amount {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: bold;
   color: var(--base-blue-dark);
   white-space: nowrap;
 }
 
 .nextIcon {
-  width: 16px;
-  height: 16px;
+  width: 13px;
+  height: 13px;
   object-fit: contain;
 
-  margin: 0 1.5px;
+  margin: 0 1px;
   cursor: pointer;
   display: inline-block;
 }

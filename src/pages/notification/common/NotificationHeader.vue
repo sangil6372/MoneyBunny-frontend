@@ -75,6 +75,6 @@ const router = useRouter();
 .text .subtitle {
   font-size: 12px;
   color: #888;
-  margin-top: 2px;
+  /* margin-top: 2px; */
 }
 </style>

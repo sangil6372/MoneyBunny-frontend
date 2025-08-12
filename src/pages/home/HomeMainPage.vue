@@ -1,13 +1,14 @@
 <template>
   <div class="homeContainer">
     <TotalSummaryCard ref="totalSummaryCardRef" />
-    <AssetCompareCard
-      :totalAsset="totalAsset"
-      :top3TotalAmount="top3TotalAmount"
-    />
+
     <PolicyRecommendationCard
       ref="policyRecommendationCardRef"
       class="withGapTop"
+    />
+    <AssetCompareCard
+      :totalAsset="totalAsset"
+      :top3TotalAmount="top3TotalAmount"
     />
     <DailyMessageCard class="tightTopMargin" />
   </div>
@@ -51,10 +52,6 @@ watch(
 <style scoped>
 /* 한마디 카드는 아래 간격만 살짝 줄여주기 */
 .tightTopMargin {
-  margin-top: 1rem;
-}
-
-.withGapTop {
   margin-top: 1rem;
 }
 </style>

@@ -8,15 +8,17 @@
       :rightValue="accounts.length"
       rightUnit="개"
     />
-    <div class="account-tab-header"></div>
+
+    <!-- 계좌 목록 (단순화된 리스트 사용) -->
     <div v-if="accounts.length > 0">
-      <!-- <AccountControllerBar @add-account="onAddAccount" /> -->
       <AccountList
         :accounts="accounts"
         @delete-account="deleteAccount"
         @update-accounts="onUpdateAccounts"
       />
     </div>
+
+    <!-- 데이터 없을 때 -->
     <div v-else>
       <NoDataCard type="account" @add="onAddAccount" />
     </div>
@@ -51,9 +53,13 @@ const onUpdateAccounts = (accounts) => {
 };
 
 const onAddAccount = () => {
-  // 실제로는 모달/폼 열기 등
-  alert('계좌 추가 기능(모달)!');
+  // 계좌 추가 로직
+  alert('계좌 추가 기능!');
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.account-tab {
+  padding: 1rem;
+}
+</style>

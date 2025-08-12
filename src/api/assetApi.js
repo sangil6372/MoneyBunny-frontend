@@ -31,6 +31,13 @@ export async function fetchCardTransactions(
   return axios.get(`/api/asset/cards/${cardId}/transactions`, { params });
 }
 
+/**
+ * 카드 교통비 내역 전체 조회 (파라미터 없음)
+ */
+export async function fetchCardTransportationFees() {
+  return axios.get('/api/asset/cards/transportation-fees');
+}
+
 // **CODEF 연동만 codefInstance로**
 export async function connectAccount({ organization, loginId, password }) {
   return codefInstance.post('/api/codef/connect-account', {
@@ -70,4 +77,25 @@ export function updateAccountTransactionMemo(transactionId, memo) {
 // 카드 거래 메모 업데이트
 export function updateCardTransactionMemo(transactionId, memo) {
   return axios.post(`/api/asset/cards/${transactionId}/memo`, { memo });
+}
+
+// 지출 개요
+export async function fetchSpendingOverview({ year, month, trendMonths = 6 }) {
+  return axios.get('/api/asset/spending/overview', {
+    params: { year, month, trendMonths },
+  });
+}
+
+// 카테고리별 거래 전체 조회
+export async function fetchCategoryTransactions({ categoryId, year, month }) {
+  return axios.get(`/api/asset/spending/category/${categoryId}`, {
+    params: { year, month },
+  });
+}
+
+// 카테고리 변경
+export function updateTransactionCategory(transactionId, categoryId) {
+  return axios.patch(`/api/asset/transactions/${transactionId}/category`, {
+    categoryId,
+  });
 }

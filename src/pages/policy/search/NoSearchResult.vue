@@ -6,16 +6,15 @@
         alt="검색결과 없음"
         class="noResultImage"
       />
-      <div class="noResultTitle font-18 font-bold">검색 결과가 없습니다</div>
-      <div class="noResultDesc font-13">
+      <div class="noResultTitle font-17 font-bold">검색 결과가 없습니다</div>
+      <div class="noResultDesc font-12">
         입력하신 <span class="font-bold">{{ searchKeyword }}</span> 에 대한
         정책을 찾을 수 없습니다.
       </div>
     </div>
 
-    <!-- 인기 검색어 영역(검색 결과 없음) -->
     <div class="popularBox">
-      <div class="popularTitle font-15 font-bold">인기 검색어</div>
+      <div class="popularTitle font-16 font-bold">인기 검색어</div>
       <div class="popularRankGrid">
         <div class="rankCol">
           <div
@@ -28,7 +27,7 @@
             @click="$emit('search', item)"
           >
             <span class="number">{{ i + 1 }}</span>
-            <span class="text font-14">{{ item }}</span>
+            <span class="text font-13">{{ item }}</span>
           </div>
         </div>
         <div class="rankCol">
@@ -44,14 +43,14 @@
             <span class="number">{{
               i + 1 + Math.ceil(popularKeywords.length / 2)
             }}</span>
-            <span class="text font-14">{{ item }}</span>
+            <span class="text font-13">{{ item }}</span>
           </div>
         </div>
       </div>
     </div>
 
     <div class="tipBox">
-      <div class="tipTitle font-15 font-bold">검색 팁</div>
+      <div class="tipTitle font-16 font-bold">검색 팁</div>
       <div class="tipList">
         <!-- 1번 항목만 설명을 줄바꿈 아래로 -->
         <div class="tipItem">
@@ -61,7 +60,7 @@
               >다른 키워드로 검색해보세요</span
             >
           </div>
-          <div class="tipDesc font-12 tipDescIndent">
+          <div class="tipDesc font-11 tipDescIndent">
             유사한 의미의 다른 단어를 사용해보세요
           </div>
         </div>
@@ -71,7 +70,7 @@
             <span class="tipNum">2</span>
             <span class="tipMain font-bold font-13">검색어를 줄여보세요</span>
           </div>
-          <div class="tipDesc font-12 tipDescIndent">
+          <div class="tipDesc font-11 tipDescIndent">
             너무 구체적인 검색어보다 간단한 키워드 사용
           </div>
         </div>
@@ -81,7 +80,7 @@
             <span class="tipNum">3</span>
             <span class="tipMain font-bold font-13">맞춤법을 확인해보세요</span>
           </div>
-          <div class="tipDesc font-12 tipDescIndent">
+          <div class="tipDesc font-11 tipDescIndent">
             오타나 띄어쓰기를 다시 한번 확인해주세요
           </div>
         </div>
@@ -111,7 +110,7 @@ const props = defineProps({
 .noResultBox {
   background: var(--white, #fff);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -121,13 +120,13 @@ const props = defineProps({
   margin-bottom: 12px;
 }
 .noResultImage {
-  width: 60px;
-  height: 75px;
-  margin-bottom: 9px;
+  width: 55px;
+  height: 70px;
+  margin-bottom: 7px;
 }
 .noResultTitle {
   color: var(--text-login);
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-align: center;
 }
 .noResultDesc {
@@ -138,7 +137,7 @@ const props = defineProps({
 .popularBox {
   background: var(--white, #fff);
   border-radius: 12px;
-  padding: 24px;
+  padding: 20px;
   width: 100%;
 }
 .tipBox {
@@ -181,10 +180,10 @@ const props = defineProps({
   margin-top: 2px;
 }
 
-.popularList {
+.popularGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px 10px;
+  gap: 10px;
 }
 .popularItem {
   background-color: var(--input-bg-1);
@@ -193,21 +192,18 @@ const props = defineProps({
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  max-width: 120px;
+  max-width: 110px;
   overflow: hidden;
-  transition: background 0.14s;
 }
 .number {
   font-weight: bold;
   color: var(--base-blue-dark);
-  min-width: 18px;
-  text-align: center;
 }
 .text {
   display: inline-block;
-  max-width: 70px;
+  max-width: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

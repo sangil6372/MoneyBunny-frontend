@@ -211,7 +211,7 @@ onMounted(() => {
 .title {
   font-weight: bold;
   margin-bottom: 20px;
-  font-size: 18px;
+  font-size: 17px;
 }
 
 .chipList {
@@ -232,7 +232,7 @@ onMounted(() => {
   background-color: var(--input-bg-1);
   padding: 4px 10px;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-bluegray);
   gap: 4px;
   min-width: 40px;
@@ -258,14 +258,14 @@ onMounted(() => {
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  max-width: 120px;
+  max-width: 110px;
   overflow: hidden;
 }
 .popularItem .text {
   display: inline-block;
-  max-width: 70px;
+  max-width: 60px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -284,23 +284,23 @@ onMounted(() => {
 }
 
 .tipIcon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 .filterIcon {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
 }
 
 .tipTitle {
   font-weight: bold;
   margin-bottom: 4px;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .tipText {
   margin: 0;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-bluegray);
 }
 
@@ -315,7 +315,7 @@ onMounted(() => {
   background: none;
   border: none;
   color: #b0b0b0;
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   padding: 0;
 }
@@ -327,8 +327,8 @@ onMounted(() => {
   cursor: pointer;
 }
 .deleteBtn img {
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   object-fit: contain;
   display: block;
 }

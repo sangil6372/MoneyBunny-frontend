@@ -31,18 +31,19 @@ const navItems = [
     icon: new URL('@/assets/navbar/Home.png', import.meta.url).href,
     iconActive: new URL('@/assets/navbar/Home_color.png', import.meta.url).href,
   },
-  {
-    name: '자산',
-    path: '/asset',
-    icon: new URL('@/assets/navbar/asset.png', import.meta.url).href,
-    iconActive: new URL('@/assets/navbar/asset_color.png', import.meta.url)
-      .href,
-  },
+
   {
     name: '정책',
     path: '/policy',
     icon: new URL('@/assets/navbar/policy.png', import.meta.url).href,
     iconActive: new URL('@/assets/navbar/policy_color.png', import.meta.url)
+      .href,
+  },
+  {
+    name: '자산',
+    path: '/asset',
+    icon: new URL('@/assets/navbar/asset.png', import.meta.url).href,
+    iconActive: new URL('@/assets/navbar/asset_color.png', import.meta.url)
       .href,
   },
   {

@@ -42,7 +42,7 @@ const mapNotificationType = (backendType) => {
 // 알림 타입에 따라 렌더링할 컴포넌트 결정
 const getComponent = (backendType) => {
   const mappedType = mapNotificationType(backendType);
-  
+
   switch (mappedType) {
     case 'policy':
       return PolicyAlertCard;
@@ -60,7 +60,7 @@ const getComponent = (backendType) => {
 .notification-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   align-items: center; /* 카드가 가운데 정렬됨 */
   padding: 0; /* 💪(상일) 패딩 제거 */
 }

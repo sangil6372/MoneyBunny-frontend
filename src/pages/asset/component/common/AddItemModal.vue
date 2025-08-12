@@ -19,6 +19,13 @@
         @back="goBackToLogin"
         @close="closeModal"
       />
+
+      <!-- 🎯 로딩 오버레이 추가 (모달 전체에 적용) -->
+      <AccountLoadingOverlay
+        :isLoading="isProcessing"
+        :bunnyImagePath="bunnyImage"
+        :coinImagePath="coinImage"
+      />
     </div>
   </div>
 </template>
@@ -27,6 +34,13 @@
 import { ref, watch } from 'vue';
 import LoginStep from './LoginStep.vue';
 import SelectItemsStep from './SelectItemsStep.vue';
+
+// 🎯 AccountLoadingOverlay 컴포넌트 import 추가
+import AccountLoadingOverlay from './AccountLoadingOverlay.vue';
+
+// 🎯 이미지들 import 추가 (Vite 방식)
+import bunnyImage from '@/assets/images/icons/bunny/coin_bunny.png';
+import coinImage from '@/assets/images/icons/bunny/coin.png';
 
 // Props
 const props = defineProps({
@@ -49,6 +63,9 @@ const currentStep = ref('login');
 const institutionInfo = ref(null);
 const availableItems = ref([]);
 
+// 🎯 전체 처리 로딩 상태 추가
+const isProcessing = ref(false);
+
 // 메서드
 const handleLoginSuccess = async (loginData) => {
   console.log('🚀 [AddItemModal] handleLoginSuccess loginData:', loginData);
@@ -67,21 +84,35 @@ const handleLoginSuccess = async (loginData) => {
   }
 };
 
-const handleItemsSelected = (selectedData) => {
+const handleItemsSelected = async (selectedData) => {
   console.log('선택된 항목:', selectedData);
 
-  // 부모 컴포넌트로 데이터 전달
-  emit('update-data', {
-    type: props.type,
-    institutionCode: selectedData.institutionInfo.institutionCode,
-    institutionName: selectedData.institutionInfo.institutionName,
-    loginId: selectedData.institutionInfo.loginId,
-    items: selectedData.selectedItems,
-    addedAt: new Date().toISOString(),
-  });
+  // 🎯 로딩 시작 (선택한 계좌/카드 등록 중) - 여기만 로딩!
+  isProcessing.value = true;
 
-  // 모달 닫기
-  closeModal();
+  try {
+    // 실제 등록 API 처리 (시간이 오래 걸리는 부분)
+    // await registerAccounts() 또는 await registerCards() 등의 실제 API 호출
+
+    // 부모 컴포넌트로 데이터 전달
+    emit('update-data', {
+      type: props.type,
+      institutionCode: selectedData.institutionInfo.institutionCode,
+      institutionName: selectedData.institutionInfo.institutionName,
+      loginId: selectedData.institutionInfo.loginId,
+      items: selectedData.selectedItems,
+      addedAt: new Date().toISOString(),
+    });
+
+    // 모달 닫기
+    closeModal();
+  } catch (error) {
+    console.error('등록 처리 실패:', error);
+    alert('등록 처리 중 오류가 발생했습니다. 다시 시도해주세요.');
+  } finally {
+    // 🎯 로딩 종료
+    isProcessing.value = false;
+  }
 };
 
 const goBackToLogin = () => {
@@ -105,6 +136,8 @@ const resetModalState = () => {
   currentStep.value = 'login';
   institutionInfo.value = null;
   availableItems.value = [];
+  // 🎯 로딩 상태도 초기화
+  isProcessing.value = false;
 };
 
 // 모달이 닫힐 때 상태 초기화
@@ -166,6 +199,7 @@ onUnmounted(() => {
   overflow-y: auto;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: modalAppear 0.3s ease-out;
+  position: relative; /* 🎯 오버레이를 위한 relative 포지션 추가 */
 }
 
 /* 애니메이션 */

@@ -9,20 +9,20 @@
         <div class="loading-spinner"></div>
         <p class="loading-text">알림을 불러오는 중...</p>
       </div>
-      
+
       <!-- 에러 상태 -->
       <div v-else-if="error" class="error-container">
         <p class="error-text">알림을 불러오는데 실패했습니다.</p>
         <button @click="fetchNotifications" class="retry-btn">다시 시도</button>
       </div>
-      
+
       <!-- 💪(상일) 날짜별 그룹 알림 목록 -->
       <div v-else-if="visibleGroups.length === 0">
         <NoNotification />
       </div>
       <div v-else class="grouped-notifications">
-        <div 
-          v-for="groupKey in visibleGroups" 
+        <div
+          v-for="groupKey in visibleGroups"
           :key="groupKey"
           class="notification-group"
         >
@@ -81,7 +81,11 @@ const getDateGroup = (date) => {
   const thirtyDaysAgo = new Date(today);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
-  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const targetDate = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate()
+  );
 
   if (targetDate.getTime() === today.getTime()) {
     return 'today';
@@ -98,21 +102,22 @@ const getDateGroup = (date) => {
 
 // 💪(상일) 날짜별로 그룹핑된 알림 목록
 const groupedNotifications = computed(() => {
-  const filtered = selectedTab.value === 'all' 
-    ? notifications.value 
-    : notifications.value.filter((notification) => {
-        const mappedType = mapNotificationType(notification.type);
-        return mappedType === selectedTab.value;
-      });
+  const filtered =
+    selectedTab.value === 'all'
+      ? notifications.value
+      : notifications.value.filter((notification) => {
+          const mappedType = mapNotificationType(notification.type);
+          return mappedType === selectedTab.value;
+        });
 
   const groups = {
     today: [],
     yesterday: [],
     recent7: [],
-    recent30: []
+    recent30: [],
   };
 
-  filtered.forEach(notification => {
+  filtered.forEach((notification) => {
     const date = notification.created_at;
     if (date) {
       const group = getDateGroup(date);
@@ -123,7 +128,7 @@ const groupedNotifications = computed(() => {
   });
 
   // 각 그룹 내에서 최신순 정렬
-  Object.keys(groups).forEach(key => {
+  Object.keys(groups).forEach((key) => {
     groups[key].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   });
 
@@ -136,7 +141,7 @@ const getGroupTitle = (groupKey) => {
     today: '오늘',
     yesterday: '어제',
     recent7: '최근 7일',
-    recent30: '최근 30일'
+    recent30: '최근 30일',
   };
   return titles[groupKey] || '';
 };
@@ -144,7 +149,7 @@ const getGroupTitle = (groupKey) => {
 // 💪(상일) 표시할 그룹들 (빈 그룹 제외)
 const visibleGroups = computed(() => {
   return Object.keys(groupedNotifications.value).filter(
-    key => groupedNotifications.value[key].length > 0
+    (key) => groupedNotifications.value[key].length > 0
   );
 });
 
@@ -187,8 +192,12 @@ onMounted(async () => {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* 에러 상태 */
@@ -215,7 +224,7 @@ onMounted(async () => {
   border-radius: 8px;
   font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  /* transition: background-color 0.2s; */
 }
 
 .retry-btn:hover {
@@ -249,7 +258,7 @@ onMounted(async () => {
 
 .group-title {
   font-size: 16px;
-  font-weight: 600;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
   white-space: nowrap;

@@ -79,7 +79,7 @@ onMounted(() => {
   <header class="introHeader">
     <div class="headerCard">
       <div class="title font-18">정책 추천을 위한 기본 정보</div>
-      <p class="subtitle font-1">개인 맞춤 분석</p>
+      <p class="subtitle font-14">개인 맞춤 분석</p>
     </div>
   </header>
 

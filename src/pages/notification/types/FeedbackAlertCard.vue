@@ -1,13 +1,14 @@
 <template>
-  <NotificationItem :is-read="item.read" :notification-type="item.type" @delete="handleDelete">
+  <NotificationItem
+    :is-read="item.read"
+    :notification-type="item.type"
+    @delete="handleDelete"
+  >
     <h3 class="title">{{ item.title }}</h3>
     <p class="message">{{ item.description || item.message }}</p>
     <div class="bottom">
       <small class="date">{{ formatDate(item.created_at || item.date) }}</small>
-      <button 
-        class="action-btn"
-        @click="handleButtonClick"
-      >
+      <button class="action-btn" @click="handleButtonClick">
         {{ getButtonText(item.type) }}
       </button>
     </div>
@@ -33,11 +34,16 @@ const formatDate = (iso) => {
 // 💪(상일) 타입별 버튼 텍스트 결정
 const getButtonText = (type) => {
   switch (type) {
-    case 'BOOKMARK': return '신청하기';
-    case 'NEW_POLICY': return '보러가기';
-    case 'TOP3': return '이동하기';
-    case 'FEEDBACK': return '확인하기';
-    default: return '보기';
+    case 'BOOKMARK':
+      return '신청하기';
+    case 'NEW_POLICY':
+      return '보러가기';
+    case 'TOP3':
+      return '이동하기';
+    case 'FEEDBACK':
+      return '확인하기';
+    default:
+      return '보기';
   }
 };
 
@@ -96,10 +102,9 @@ const handleDelete = async () => {
   border: none;
   padding: 6px 12px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
   flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
   min-width: 60px; /* 최소 너비 보장 */
 }
-
 </style>

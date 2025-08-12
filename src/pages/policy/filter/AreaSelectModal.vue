@@ -239,11 +239,12 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 .modalContainer {
   background: rgba(255, 255, 255, 0.97);
-  border-radius: 12px;
-  width: 90%;
-  max-width: 340px;
-  max-height: 95vh;
-  padding: 24px;
+  border-radius: 6px;
+  width: min(92vw, 320px);
+  max-width: 320px;
+  max-height: 86dvh;
+  backdrop-filter: blur(6px);
+  padding: 20px;
   display: flex;
   flex-direction: column;
 }
@@ -253,24 +254,33 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   align-items: center;
 }
 .modalTitle {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: bold;
 }
 .closeBtn {
   background: none;
   border: none;
-  font-size: 17px;
+  font-size: 16px;
   cursor: pointer;
 }
 
 /* ---- 선택된 지역 태그 ---- */
-.selectedRegions {
+/* .selectedRegions {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin: 20px 0 0 0;
-  min-height: 40px;
+  margin: 15px 0 0 0;
+  min-height: 38px;
+} */
+
+.selectedRegions {
+  position: sticky;
+  bottom: calc(env(safe-area-inset-bottom, 0) + 64px);
+  background: #fff;
+  padding: 8px 0;
+  z-index: 3;
 }
+
 .selectedRegions.horizontal {
   display: flex;
   flex-wrap: nowrap;
@@ -290,13 +300,13 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 
 .regionTag {
   margin-top: 3px;
-  /* margin-bottom: 6px; */
-  height: 30px;
+  /* margin-bottom: px; */
+  height: 28px;
   background: var(--input-bg-1);
   color: var(--text-login);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 6px 11px;
-  font-size: 12px;
+  font-size: 11px;
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -309,7 +319,7 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   background: none;
   border: none;
   color: var(--text-lightgray);
-  font-size: 12px;
+  font-size: 11px;
   cursor: pointer;
   margin-left: 3px;
   margin-right: 0;
@@ -318,17 +328,18 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 
 /* ---- 지역 선택 컬럼 ---- */
 .regionSelectBox {
-  margin: 16px 6px;
+  margin: 12px 10px;
   flex: none;
 }
 .columnsWrapper {
   display: flex;
-  max-height: 280px;
-  gap: 6px;
+  max-height: 290px;
+  gap: 5px;
+  /* margin-bottom: 10px; */
 }
 
 .sidoColumn {
-  flex: 0.8;
+  flex: 0.9;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -342,24 +353,35 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 .sidoTitle,
 .gugunTitle {
-  font-size: 15px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  font-size: 14px;
   font-weight: bold;
   color: var(--text-bluegray);
-  margin-bottom: 10px;
+  margin-bottom: 6px;
   text-align: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--input-outline-2);
 }
 
 .sidoItem,
 .gugunItem {
-  padding: 9px;
+  min-height: 40px;
+  font-size: 13px;
+  /* padding: 10px; */
   border-radius: 6px;
-  cursor: pointer;
-  font-size: 14px;
   text-align: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .sidoItem.selected,
 .gugunItem.selected {
   background-color: rgba(160, 160, 180, 0.14);
+  /* font-weight: bold; */
 }
 .gugunItem.already {
   cursor: default;
@@ -368,27 +390,30 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 
 .emptyText {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-disabled);
   text-align: center;
-  margin-top: 15px;
+  margin-top: 13px;
 }
 
 .modalFooter {
+  position: sticky;
+  bottom: 0;
   margin-top: 5px;
   display: flex;
-  gap: 8px;
+  gap: 6px;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom, 0));
+  /* border-top: 1px solid var(--input-outline-2); */
 }
 
 .resetBtn {
-  flex: 0.8;
-  border-radius: 8px;
+  flex: 0.9;
+  border-radius: 6px;
   border: 1.5px solid var(--input-outline-2);
   background: white;
   color: var(--base-blue-dark);
-  padding: 12px 0;
-  border-radius: 8px;
-  font-size: 15px;
+  padding: 10px 0;
+  font-size: 14px;
   cursor: pointer;
 }
 .applyBtn {
@@ -396,9 +421,9 @@ const canApply = computed(() => selectedRegions.value.length > 0);
   background-color: var(--base-blue-dark);
   color: white;
   border: none;
-  padding: 12px 0;
-  font-size: 15px;
-  border-radius: 8px;
+  padding: 10px 0;
+  font-size: 14px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -409,16 +434,17 @@ const canApply = computed(() => selectedRegions.value.length > 0);
 }
 
 .scrollArea {
-  max-height: 280px;
+  position: relative;
+  max-height: 270px;
   overflow-y: auto;
-  padding-right: 6px;
+  /* padding-right: 6px; */
   /* 크롬, 사파리, 엣지용 스크롤바 숨기기 */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE and Edge */
 }
 
 .scrollArea::-webkit-scrollbar {
-  width: 3.5px;
+  /* width: 3.5px; */
   display: none;
 }
 .scrollArea::-webkit-scrollbar-thumb {

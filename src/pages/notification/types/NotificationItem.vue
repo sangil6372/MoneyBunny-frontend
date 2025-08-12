@@ -30,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref } from 'vue';
 
 // 💪(상일) props 추가
 const props = defineProps({
@@ -40,12 +40,12 @@ const props = defineProps({
   },
   notificationType: {
     type: String,
-    default: "",
+    default: '',
   },
 });
 
 // 💪(상일) 삭제 이벤트 정의
-const emit = defineEmits(["delete"]);
+const emit = defineEmits(['delete']);
 
 // 💪(상일) 스와이프 관련 상태
 const startX = ref(0);
@@ -93,7 +93,7 @@ const handleTouchEnd = () => {
 
     // 애니메이션 후 삭제
     setTimeout(() => {
-      emit("delete");
+      emit('delete');
     }, 300);
   } else {
     // 원위치로 복귀
@@ -136,7 +136,7 @@ const handleMouseUp = () => {
     opacity.value = 0;
 
     setTimeout(() => {
-      emit("delete");
+      emit('delete');
     }, 300);
   } else {
     translateX.value = 0;
@@ -151,16 +151,16 @@ const handleMouseUp = () => {
 <style scoped>
 .notification-card {
   width: 100%;
-  max-width: 420px;
+  max-width: 390px;
   margin: 0 auto;
   background-color: #ffffff;
   border: 1px solid #e0e0e0;
-  border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+  border-radius: 6px;
+  /* box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03); */
   display: flex;
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  /* transition: transform 0.3s ease-out, opacity 0.3s ease-out; */
   cursor: grab;
 }
 
@@ -172,7 +172,7 @@ const handleMouseUp = () => {
 
 /* 💪(상일) 미읽음 표시 */
 .unread-indicator {
-  width: 4px;
+  width: 3px;
   background-color: var(--base-blue-dark);
   flex-shrink: 0;
 }
@@ -199,7 +199,7 @@ const handleMouseUp = () => {
   padding: 16px 20px 16px 20px; /* 오른쪽 패딩 증가로 삭제 버튼 공간 확보 */
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 /* 💪(상일) 읽은 알림 전체 흐림 효과 */
@@ -209,14 +209,14 @@ const handleMouseUp = () => {
 
 /* ✅ slot 내부 스타일도 적용되게 ::v-deep 사용 */
 ::v-deep(.title) {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }
 
 ::v-deep(.message) {
-  font-size: 13.5px;
+  font-size: 12px;
   color: var(--text-bluegray);
   margin: 0;
   /* 💪(상일) 메시지 2줄 말줄임 처리 (북마크와 동일) */
@@ -224,7 +224,7 @@ const handleMouseUp = () => {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.4;
+  /* line-height: 1.4; */
 }
 
 /* 💪(상일) 피드백 알림은 글자 제한 없음 + 줄바꿈 표기 */
@@ -237,17 +237,17 @@ const handleMouseUp = () => {
 }
 
 ::v-deep(.date) {
-  font-size: 12px;
+  font-size: 11px;
   color: #9ca3af;
 }
 
 /* 💪(상일) 삭제 버튼 스타일 */
 .delete-btn {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  width: 24px;
-  height: 24px;
+  top: 10px;
+  right: 10px;
+  width: 16px;
+  height: 16px;
   padding: 0;
   background: none;
   border: none;
@@ -255,8 +255,8 @@ const handleMouseUp = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.5;
-  transition: opacity 0.2s;
+  /* opacity: 0.5; */
+  /* transition: opacity 0.2s; */
 }
 
 .delete-btn:hover {
@@ -264,8 +264,8 @@ const handleMouseUp = () => {
 }
 
 .delete-btn img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 116px;
   object-fit: contain;
 }
 </style>

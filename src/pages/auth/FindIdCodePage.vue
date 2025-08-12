@@ -327,8 +327,8 @@ input:focus {
   padding: 10px 20px;
   border-radius: 8px;
   font-size: 14px;
-  min-width: 300px;
-  max-width: 400px;
+  min-width: 250px;
+  max-width: 350px;
   pointer-events: none;
   text-align: center;
   box-sizing: border-box;

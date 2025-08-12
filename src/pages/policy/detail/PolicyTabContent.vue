@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import PolicyOverviewTab from './PolicyOverviewTab.vue';
 
 const props = defineProps({
@@ -7,10 +8,15 @@ const props = defineProps({
   policy: Object,
 });
 
-// 정책 개요 탭에 필요한 값 추출 (computed로 변경)
+const route = useRoute();
 const description = computed(() => props.policy?.description || '');
 const supportContent = computed(() => props.policy?.supportContent || '');
 const applyPeriod = computed(() => props.policy?.applyPeriod || '');
+
+// URL에서 policyId 추출 (숫자 변환)
+const policyId = computed(() =>
+  Number(route.params.policyId || route.params.id)
+);
 
 // supportContent 값 로그 출력
 console.log(
@@ -25,6 +31,7 @@ console.log(
     :description="description"
     :supportContent="supportContent"
     :applyPeriod="applyPeriod"
+    :policyId="policyId"
   />
 
   <div v-else-if="tab === '신청 조건'">

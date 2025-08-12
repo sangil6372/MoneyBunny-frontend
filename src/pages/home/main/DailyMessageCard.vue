@@ -45,8 +45,8 @@ defineProps({
   margin-right: 0.7rem;
 }
 .bunny-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 2.5rem;
+  height: 2.5rem;
   object-fit: contain;
 }
 
@@ -58,18 +58,18 @@ defineProps({
 }
 
 .main-message {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   margin: 0;
   color: var(--text-login);
 }
 
 .sub-message {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-darkgray);
 }
 
 .cta {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-darkgray);
   margin-bottom: 0;
 }

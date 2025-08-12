@@ -75,28 +75,29 @@ defineExpose({
 <style scoped>
 .recommendation-section {
   background-color: white;
-  border-radius: 1rem;
-  padding: 1.25rem;
+  border-radius: 0.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  margin-bottom: 1rem;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
   color: var(--text-login);
   margin: 0;
-  padding-left: 0.25rem;
+  /* padding-left: 0.25rem; */
 }
 
 .more {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   font-weight: bold;
-  margin-right: 0.25rem;
+  margin-right: 0.35rem;
   color: var(--text-lightgray);
   cursor: pointer;
 }
@@ -104,6 +105,6 @@ defineExpose({
 .card-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 </style>

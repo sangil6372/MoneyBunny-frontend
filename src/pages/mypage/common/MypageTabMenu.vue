@@ -1,12 +1,12 @@
 <template>
   <div class="tabHeader">
-    <span
+    <!-- <span
       class="tabItem font-13"
       :class="{ active: currentTab === 'profile' }"
       @click="$emit('changeTab', 'profile')"
     >
       프로필
-    </span>
+    </span> -->
     <span
       class="tabItem font-13"
       :class="{ active: currentTab === 'bookmark' }"

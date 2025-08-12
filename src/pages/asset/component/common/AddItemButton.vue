@@ -1,43 +1,56 @@
 <template>
   <button class="add-item-button" @click="$emit('click')">
-    <span class="plus-icon">+</span>
-    <span class="label">{{ computedLabel }}</span>
+    <img
+      src="@/assets/images/icons/common/plus.png"
+      alt="추가"
+      class="plus-icon"
+    />
   </button>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-
-const props = defineProps({
-  type: { type: String, required: true }, // 'account' 또는 'card'
+defineProps({
+  type: { type: String, required: true },
 });
 
-// type에 따라 label 자동 결정
-const computedLabel = computed(() =>
-  props.type === 'account' ? '계좌 추가' : '카드 추가'
-);
+defineEmits(['click']);
 </script>
 
 <style scoped>
 .add-item-button {
+  width: 100%;
+  height: 3rem;
+  background: var(--base-blue-light);
+  border: none;
+  border-radius: 0.75rem;
+  color: var(--base-blue-light);
+  cursor: pointer;
+  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--base-blue-dark);
-  color: white;
-  border: none;
-  border-radius: 0.5rem;
-  padding: 0.4rem 0.75rem;
-  font-size: 0.85rem;
-  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.add-item-button:hover {
+  background: var(--input-bg-1);
+  border-color: var(--base-blue-dark);
+  color: var(--base-blue-dark);
+}
+
+.add-item-button:active {
+  transform: scale(0.98);
 }
 
 .plus-icon {
-  margin-right: 0.25rem;
-  font-size: 1rem;
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
 }
 
-.label {
-  font-weight: 500;
+.add-item-button:hover .plus-icon {
+  opacity: 1;
 }
 </style>

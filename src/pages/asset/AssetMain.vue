@@ -31,7 +31,7 @@
       title="이번 달 총 지출액"
       :mainAmount="totalSpending"
       rightLabel="지난달 대비"
-      :rightValue="comparisonText"
+      :rightValue="comparisonView.text"
       rightUnit=""
       variant="spending"
     />
@@ -126,6 +126,7 @@ import { useAssetStore } from '@/stores/asset';
 import { useSync } from '@/composables/useSync';
 import { useRoute, useRouter } from 'vue-router';
 import { useSpendingData } from '@/assets/utils/useSpendingData';
+import { categoryMap } from '@/constants/categoryMap';
 
 // 컴포넌트 import
 import AssetTabSwitcher from './component/common/AssetTabSwitcher.vue';
@@ -151,6 +152,7 @@ const assetStore = useAssetStore();
 const route = useRoute();
 const router = useRouter();
 const currentTab = ref(route.query.tab || '메인');
+const getCategoryName = (id) => categoryMap?.[id] || '기타';
 
 // 뒤로/앞으로가기 등 쿼리 변화 대응
 watch(
@@ -176,6 +178,64 @@ const {
   monthlyTrendData,
   getCategoryDetail,
 } = useSpendingData();
+
+// AssetMain.vue 안의 adaptTx 교체
+const adaptTx = (vo, categoryName) => {
+  // vo.transactionDate: epoch(ms) 또는 ISO 라고 가정
+  const dt = vo.transactionDate ? new Date(vo.transactionDate) : null;
+
+  // YYYY-MM-DD / HH:mm 포맷
+  const yyyy = dt ? dt.getFullYear() : '';
+  const mm = dt ? String(dt.getMonth() + 1).padStart(2, '0') : '';
+  const dd = dt ? String(dt.getDate()).padStart(2, '0') : '';
+  const hh = dt ? String(dt.getHours()).padStart(2, '0') : '';
+  const mi = dt ? String(dt.getMinutes()).padStart(2, '0') : '';
+
+  return {
+    id: vo.id,
+    amount: Number(vo.amount ?? 0),
+    // 제목/상호
+    merchant: vo.storeName || vo.storeName1 || '',
+    storeName: vo.storeName || vo.storeName1 || '',
+    // 카테고리 태그용
+    category: categoryName || '',
+    // 날짜/시간
+    date: dt ? `${yyyy}-${mm}-${dd}` : '',
+    time: dt ? `${hh}:${mi}` : '',
+    // 옵션(있으면 상세에 노출됨)
+    storeType: vo.storeType || '',
+    paymentMethod: vo.payment_type || vo.paymentType || '', // 백엔드 키 케이스 커버
+    memo: vo.memo || '',
+    // 참고 필드
+    approvedAt: dt,
+    approvalNo: vo.approval_no || vo.approvalNo,
+  };
+};
+
+const openCategoryDetail = async (category) => {
+  try {
+    const raw = await getCategoryDetail(category.id);
+    const catName = getCategoryName(category.id);
+
+    const transactions = Array.isArray(raw)
+      ? raw.map((vo) => adaptTx(vo, catName))
+      : [];
+
+    selectedCategoryData.value = {
+      id: category.id,
+      name: catName,
+      color: category.color,
+      totalAmount: category.amount,
+      total: category.amount,
+      percentage: category.percentage,
+      transactions,
+    };
+
+    showCategoryDetail.value = true;
+  } catch (e) {
+    console.error('[openCategoryDetail] error', e);
+  }
+};
 
 // 새로고침, 진입시 항상 동기화 + summary 최신화
 onMounted(async () => {
@@ -215,11 +275,21 @@ const totalCardUsage = computed(() =>
 );
 
 // 전월 대비 텍스트 계산
-const comparisonText = computed(() => {
-  const { difference, rate, isIncrease } = monthComparison.value;
-  const sign = isIncrease ? '+' : '';
-  const percentage = Math.abs(rate);
-  return `${sign}${difference.toLocaleString()}원(${sign}${percentage}%)`;
+const comparisonView = computed(() => {
+  const mc = monthComparison.value || {};
+  const isDecrease = !!mc.isDecrease; // 지출 감소 = 좋은 상태
+  const isIncrease = !!mc.isIncrease;
+
+  const arrow = isDecrease ? '▼' : isIncrease ? '▲' : '–';
+  const sign = isIncrease ? '+' : isDecrease ? '-' : '';
+
+  const absDiff = Number(mc.absDiff ?? 0);
+  const absPercent = Number(mc.absPercent ?? 0);
+
+  // 예) ▼ 252,720원 (-47.5%)
+  const text = `${arrow} ${absDiff.toLocaleString()}원 (${sign}${absPercent}%)`;
+
+  return { text, isDecrease, isIncrease };
 });
 
 // 월별 추이 차트용 데이터 변환
@@ -240,6 +310,12 @@ const selectedCategoryData = ref(null);
 
 // 지출 탭 이벤트 핸들러들
 const updateSelectedDate = (newDate) => {
+  if (!newDate) return;
+  const cur = currentDate.value;
+  const sameYM =
+    cur.getFullYear() === newDate.getFullYear() &&
+    cur.getMonth() === newDate.getMonth();
+  if (sameYM) return;
   currentDate.value = newDate;
 };
 
@@ -258,10 +334,10 @@ const handleCategoryDetailClick = (category) => {
   openCategoryDetail(category);
 };
 
-const openCategoryDetail = (category) => {
-  selectedCategoryData.value = category;
-  showCategoryDetail.value = true;
-};
+// const openCategoryDetail = (category) => {
+//   selectedCategoryData.value = category;
+//   showCategoryDetail.value = true;
+// };
 
 const closeCategoryDetail = () => {
   showCategoryDetail.value = false;

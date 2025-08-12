@@ -158,12 +158,12 @@ const eligibility = [
 
 <template>
   <div class="conditionTab">
-    <div class="font-16 font-bold mb-4">신청 자격</div>
-    <div v-for="(item, index) in eligibility" :key="index" class="label mb-4">
-      <div class="font-14 font-bold mb-2">
+    <div class="font-15 font-bold mb-3">신청 자격</div>
+    <div v-for="(item, index) in eligibility" :key="index" class="label mb-3">
+      <div class="font-13 font-bold mb-2">
         {{ item.title }}
       </div>
-      <p class="font-13 text-bluegray">{{ item.desc }}</p>
+      <p class="font-12 text-bluegray">{{ item.desc }}</p>
     </div>
   </div>
 </template>
@@ -172,24 +172,12 @@ const eligibility = [
 .conditionTab {
   background-color: white;
   border-radius: 16px;
-  padding: 20px;
+  padding: 16px;
 }
 
 .label {
-  border-left: 3.5px solid var(--base-blue-dark);
-  padding-left: 10px;
-}
-
-.excludeList {
-  background-color: var(--alert-light-3);
-  border-radius: 8px;
-  padding: 16px 32px;
-  color: var(--alert-red);
-  list-style-type: disc;
-  width: 370px;
-}
-.excludeList li {
-  margin-bottom: 6px;
+  border-left: 3px solid var(--base-blue-dark);
+  padding-left: 11px;
 }
 
 .mb-1 {

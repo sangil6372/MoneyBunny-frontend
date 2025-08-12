@@ -29,9 +29,9 @@ const selected = defineModel('selectedTab', { type: String });
 .tab {
   flex: 1;
   text-align: center;
-  padding: 15px;
+  padding: 10px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-bluegray);
   border-bottom: 2px solid transparent;
 }

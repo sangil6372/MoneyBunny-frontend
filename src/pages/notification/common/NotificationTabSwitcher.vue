@@ -31,25 +31,25 @@ const tabs = [
   display: flex;
   justify-content: space-around;
   background-color: #ffffff;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 6px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); */
 }
 
 .tab-button {
   flex: 1;
   background: none;
   border: none;
-  border-radius: 10px;
-  padding: 8px 12px;
+  border-radius: 6px;
+  padding: 6px 10px;
 
   color: #777;
   cursor: pointer;
   position: relative;
-  font-size: 15px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: bold;
 
-  transition: all 0.2s ease-in-out;
+  /* transition: all 0.2s ease-in-out; */
 }
 
 .tab-button.active {

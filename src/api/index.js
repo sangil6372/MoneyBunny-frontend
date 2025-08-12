@@ -7,9 +7,9 @@ const instance = axios.create({
   timeout: 5000,
 });
 
-// CODEF 전용 인스턴스 (2분)
+// CODEF 전용 인스턴스 (5분)
 const codefInstance = axios.create({
-  timeout: 120000,
+  timeout: 300000,
 });
 
 // 공통 인터셉터 함수

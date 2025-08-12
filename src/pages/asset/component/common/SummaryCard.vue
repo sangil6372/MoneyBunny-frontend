@@ -30,10 +30,11 @@
       <!-- 우측 값 타입에 따라 다른 스타일 적용 -->
       <p
         class="summary-right-value"
-        :class="{
-          'comparison-text': isComparisonText,
-          'count-text': !isComparisonText,
-        }"
+        :class="[
+          isComparisonText ? 'comparison-text' : 'count-text',
+          isComparisonText && rightValueSign === 'plus' ? 'positive' : '',
+          isComparisonText && rightValueSign === 'minus' ? 'negative' : '',
+        ]"
       >
         {{ rightValue }}{{ rightUnit }}
       </p>
@@ -70,6 +71,14 @@ const isComparisonText = computed(() => {
     typeof props.rightValue === 'string' &&
     (props.rightValue.includes('+') || props.rightValue.includes('-'))
   );
+});
+
+const rightValueSign = computed(() => {
+  if (!isComparisonText.value) return 'none';
+  const s = String(props.rightValue);
+  if (s.includes('+')) return 'plus';
+  if (s.includes('-')) return 'minus';
+  return 'none';
 });
 
 const formatAmount = (amount) => {
@@ -110,7 +119,7 @@ const formatSubValue = (subInfo) => {
 }
 
 .summary-main .home-card-value {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   font-weight: 700;
   margin: 0;
 }
@@ -146,6 +155,19 @@ const formatSubValue = (subInfo) => {
 /* 비교 텍스트용 (+417,500원(+20%) 등) */
 .summary-right-value.comparison-text {
   font-size: 0.875rem;
-  color: var(--text-green); /* 기본값, variant별로 override 가능 */
+}
+
+.summary-right-value.positive,
+.sub-value.positive {
+  color: var(--alert-red); /* 커스텀 변수 없으면 기본 빨강 */
+}
+.summary-right-value.negative,
+.sub-value.negative {
+  color: var(--success-text); /* 커스텀 변수 없으면 기본 파랑 */
+}
+
+/* 서브 값에도 같은 규칙 적용 (이미 클래스는 붙고 있었음) */
+.sub-value {
+  font-weight: 700;
 }
 </style>

@@ -8,9 +8,9 @@
       class="bunny"
     />
     <div>
-      <div class="headerTitle font-bold font-16">정책 상세</div>
+      <div class="headerTitle font-bold font-15">정책 상세</div>
       <div class="headerSubtitle font-12">
-        {{ title }}
+        {{ policyTitle }}
       </div>
     </div>
   </header>
