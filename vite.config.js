@@ -19,7 +19,7 @@ export default defineConfig({
       registerType: 'autoUpdate', // 🔄 새 서비스워커 감지 시 자동 업데이트
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
       },
     }),
   ],
