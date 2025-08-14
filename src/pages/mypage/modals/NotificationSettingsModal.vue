@@ -295,32 +295,41 @@ const toggleNotification = async (type) => {
   }
 };
 
-// 💪(상일) 권한 변경 감지 및 자동 새로고침
+// 💪(상일) 권한 변경 감지 및 상태 동기화
 const setupPermissionWatcher = () => {
   let lastPermission = Notification.permission;
   
-  const checkPermissionChange = () => {
+  const handlePermissionChange = async () => {
     if (Notification.permission !== lastPermission) {
       console.log(`🔄 알림 권한 변경 감지: ${lastPermission} → ${Notification.permission}`);
       
-      // 권한 변경 시 즉시 새로고침
-      // granted → denied: 권한 해제
-      // denied → granted: 권한 허용
-      // default → granted/denied: 최초 권한 설정
-      window.location.reload();
+      // 새로고침 대신 상태 동기화로 부드러운 전환
+      lastPermission = Notification.permission;
+      
+      // 권한 상태 재확인
+      await checkNotificationPermission();
+      
+      // 권한이 있을 때만 구독 상태 재조회
+      if (hasNotificationPermission.value) {
+        try {
+          await fetchSubscriptionStatus();
+        } catch (error) {
+          console.warn('구독 상태 재조회 실패:', error);
+        }
+      }
     }
   };
   
   // 페이지 포커스 시 권한 상태 체크
   document.addEventListener('visibilitychange', () => {
     if (!document.hidden) {
-      setTimeout(checkPermissionChange, 100); // 잠시 대기 후 체크
+      setTimeout(handlePermissionChange, 100); // 잠시 대기 후 체크
     }
   });
   
   // 윈도우 포커스 시에도 체크
   window.addEventListener('focus', () => {
-    setTimeout(checkPermissionChange, 100);
+    setTimeout(handlePermissionChange, 100);
   });
 };
 

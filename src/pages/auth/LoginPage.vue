@@ -3,12 +3,17 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import AttendanceCheckModal from "./AttendanceCheckModal.vue";
+// 💪(상일) FCM 토큰 관리 및 알림 설정용 import 추가
+import { fcmTokenManager, TOKEN_STATES } from "@/firebase/FCMTokenManager";
+import { useNotificationStore } from "@/stores/notification";
 
 const showToast = ref(false);
 
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
+// 💪(상일) 알림 스토어 추가
+const notificationStore = useNotificationStore();
 
 // 돌아갈 목적지: 쿼리의 redirect가 있으면 그걸, 없으면 /home
 const redirectTarget = computed(
@@ -32,6 +37,45 @@ const eyeHide = new URL(
   import.meta.url
 ).href;
 
+// 💪(상일) 로그인 성공 후 알림 권한 자동 요청
+const requestNotificationAfterLogin = async () => {
+  try {
+    // 브라우저 알림 지원 확인
+    if (!('Notification' in window)) {
+      console.log('이 브라우저는 알림을 지원하지 않습니다.');
+      return;
+    }
+
+    const tokenState = fcmTokenManager.getTokenState();
+    
+    // default 상태에서만 자동 권한 요청 (granted/denied는 사용자 의도 존중)
+    if (tokenState === TOKEN_STATES.NEED_PERMISSION && 
+        Notification.permission === "default") {
+      console.log('🔔 로그인 후 알림 권한 자동 요청 시작');
+      
+      // FCM 토큰 발급 (권한 요청 포함)
+      const token = await fcmTokenManager.getValidToken();
+      
+      // 초기 구독 설정 (모든 알림 false로 시작)
+      const initialSubscription = {
+        token,
+        isActiveBookmark: false,
+        isActiveTop3: false,
+        isActiveNewPolicy: false,
+        isActiveFeedback: false,
+      };
+      
+      await notificationStore.updateSubscription(initialSubscription);
+      console.log('✅ 로그인 후 알림 권한 요청 및 초기 구독 완료');
+    } else {
+      console.log('알림 권한 자동 요청 건너뜀 - 상태:', tokenState);
+    }
+  } catch (error) {
+    // 권한 거부 또는 기타 오류 시에도 로그인 진행에는 영향 없음
+    console.log('로그인 후 알림 권한 요청 실패:', error.message);
+  }
+};
+
 // 🔐 실제 서버 로그인 로직 구현
 const handleLogin = async () => {
   // 입력값 검증
@@ -54,6 +98,9 @@ const handleLogin = async () => {
       username: id.value.trim(),
       password: password.value,
     });
+
+    // 💪(상일) 로그인 성공 후 알림 권한 자동 요청
+    await requestNotificationAfterLogin();
 
     // 로그인 성공 시 출석체크 모달 표시
     // showModal.value = true;
