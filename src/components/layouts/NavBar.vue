@@ -58,6 +58,7 @@ const isActive = (path) => route.path.startsWith(path);
 </script>
 
 <style scoped>
+/* 💪(상일) 네비바 고정 + iOS 안정성 강화 */
 .bottom-nav {
   position: fixed;
   bottom: 0;
@@ -73,6 +74,8 @@ const isActive = (path) => route.path.startsWith(path);
   justify-content: space-around;
   align-items: center;
   z-index: 1000;
+  /* 💪(상일) iOS fixed 요소 안정성 강화 */
+  transform: translateZ(0); /* GPU 레이어 강제 생성 */
 }
 
 .nav-item {

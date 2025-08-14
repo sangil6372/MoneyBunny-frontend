@@ -59,7 +59,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 💪(상일) 헤더 화면 고정 + 상태바 영역 처리 */
+/* 💪(상일) 헤더 화면 고정 + iOS 안정성 강화 */
 .top-header {
   position: fixed;
   top: 0;
@@ -76,6 +76,8 @@ onMounted(async () => {
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  /* 💪(상일) iOS fixed 요소 안정성 강화 */
+  transform: translateZ(0); /* GPU 레이어 강제 생성 */
 }
 
 /* 내부 정렬 구조*/
