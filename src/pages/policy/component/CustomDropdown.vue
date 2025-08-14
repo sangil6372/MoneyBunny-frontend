@@ -43,7 +43,7 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 <template>
   <div class="dropdown" ref="dropdownRef">
     <div class="dropdownButton" @click="toggleDropdown">
-      <span class="dropdownValue font-14">{{ modelValue || placeholder }}</span>
+      <span class="dropdownValue font-13">{{ modelValue || placeholder }}</span>
       <img
         src="@/assets/images/icons/policy/select_down.png"
         class="arrowIcon"
@@ -72,10 +72,10 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 }
 
 .dropdownButton {
-  width: 100%;
-  padding: 10px 15px;
+  width: 90%;
+  padding: 8px 13px;
   border: 1.5px solid var(--input-outline);
-  border-radius: 8px;
+  border-radius: 6px;
   cursor: pointer;
   background-color: white;
   display: flex;
@@ -84,15 +84,15 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 }
 
 .arrowIcon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .dropdownList {
   position: absolute;
   top: 100%;
   left: 0;
-  width: 100%;
+  width: 90%;
   max-height: 200px;
   overflow-y: auto;
   border: 1px solid var(--input-outline);
@@ -104,8 +104,8 @@ defineExpose({ isOpen }); // 부모가 제어할 수 있게 노출
 }
 
 .dropdownItem {
-  padding: 12px 15px;
-  font-size: 14px;
+  padding: 10px 13px;
+  font-size: 13px;
   cursor: pointer;
   list-style: none;
   user-select: none;

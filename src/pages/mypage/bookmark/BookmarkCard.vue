@@ -1,21 +1,12 @@
 <template>
-  <div class="bookmarkCard">
+  <div class="bookmarkCard" @click="handleDetailClick">
     <div class="headerRow">
       <span class="title">
         {{ item.title }}
-        <span
-          v-if="item.status"
-          :class="[
-            'badge',
-            item.status === '신청가능' ? 'badgeActive' : 'badgeExpired',
-          ]"
-        >
-          {{ item.status }}
-        </span>
       </span>
       <button
         class="removeBtn"
-        @click="handleRemoveBookmark"
+        @click.stop="handleRemoveBookmark"
         title="북마크 제거"
       >
         <img
@@ -33,13 +24,21 @@
         >
         <span class="divider"></span>
         <span
-          >마감 : <strong>{{ item.deadline }}</strong></span
+          v-if="item.status"
+          :class="[
+            'badge',
+            item.status === '신청가능' ? 'badgeActive' : 'badgeExpired',
+          ]"
         >
+          {{ item.status }}
+        </span>
       </div>
     </div>
     <div class="metaRow">
       <span>북마크일 : {{ item.savedDate }}</span>
-      <button class="detailBtn" @click="handleDetailClick">자세히 보기</button>
+      <button class="detailBtn" @click.stop="handleDetailClick">
+        자세히 보기
+      </button>
     </div>
   </div>
 </template>
@@ -89,6 +88,12 @@ const handleRemoveBookmark = async () => {
   gap: 9px;
   background: none;
   position: relative;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.bookmarkCard:hover {
+  background-color: #f8f9fa;
 }
 .headerRow {
   display: flex;
@@ -99,22 +104,17 @@ const handleRemoveBookmark = async () => {
   font-size: 15px;
   font-weight: bold;
   color: var(--text-login);
-  display: flex;
-  align-items: center;
-  gap: 5px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  -webkit-line-clamp: 1; /* 2줄까지만! */
-  -webkit-box-orient: vertical;
   max-width: 80%;
   min-width: 0;
 }
 .badge {
-  font-size: 11px;
-  border-radius: 10px;
-  padding: 5px 8px;
-  font-weight: bold;
+  font-size: 10px;
+  border-radius: 6px;
+  padding: 4px 7px;
+  /* font-weight: bold; */
   margin-left: 2px;
 }
 .badgeActive {

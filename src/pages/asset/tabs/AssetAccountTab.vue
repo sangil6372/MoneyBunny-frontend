@@ -1,33 +1,25 @@
 <template>
-  <div class="account-tab">
-    <!-- 상단 요약 카드 -->
-    <SummaryCard
-      title="총 계좌 잔액"
-      :mainAmount="totalBalance"
-      rightLabel="계좌 수"
-      :rightValue="accounts.length"
-      rightUnit="개"
-    />
+  <div class="asset-account-tab">
+    <!-- 계좌 탭 컨텐츠 -->
+    <div class="tab-content">
+      <!-- 계좌 목록 -->
+      <div v-if="accounts.length > 0">
+        <AccountList
+          :accounts="accounts"
+          @delete-account="deleteAccount"
+          @update-accounts="onUpdateAccounts"
+        />
+      </div>
 
-    <!-- 계좌 목록 (단순화된 리스트 사용) -->
-    <div v-if="accounts.length > 0">
-      <AccountList
-        :accounts="accounts"
-        @delete-account="deleteAccount"
-        @update-accounts="onUpdateAccounts"
-      />
-    </div>
-
-    <!-- 데이터 없을 때 -->
-    <div v-else>
-      <NoDataCard type="account" @add="onAddAccount" />
+      <!-- 데이터 없을 때 -->
+      <div v-else>
+        <NoDataCard type="account" @add="onAddAccount" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import SummaryCard from '../component/common/SummaryCard.vue';
 import AccountList from '../component/account/AccountList.vue';
 import NoDataCard from '../component/common/NoDataCard.vue';
 
@@ -36,11 +28,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['delete-account', 'update-accounts']);
-
-// 총 계좌 잔액 계산
-const totalBalance = computed(() =>
-  props.accounts.reduce((sum, acc) => sum + (acc.balance || 0), 0)
-);
 
 // 계좌 삭제: 부모로 이벤트 전달
 const deleteAccount = (account) => {
@@ -59,7 +46,20 @@ const onAddAccount = () => {
 </script>
 
 <style scoped>
-.account-tab {
-  padding: 1rem;
+.asset-account-tab {
+  padding: 0;
+  margin: 0;
+}
+
+.tab-content {
+  margin-top: 0;
+}
+
+.tab-content > * {
+  margin-bottom: 1rem;
+}
+
+.tab-content > *:last-child {
+  margin-bottom: 0;
 }
 </style>

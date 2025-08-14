@@ -23,6 +23,9 @@ app.use(router);
 
 app.mount('#app');
 
+const splash = document.getElementById('splash');
+if (splash) splash.style.display = 'none';
+
 // 💪(상일) 서비스 워커 등록
 registerServiceWorker();
 
@@ -40,9 +43,11 @@ window.addEventListener('focus', async () => {
     // 💪(상일) policy 메인 페이지만 포함, 하위 경로 제외
     const targetRoutes = ['/home', '/asset', '/mypage'];
     const exactRoutes = ['/policy', '/policy/main'];
-    
-    if (targetRoutes.some(routePath => currentPath.startsWith(routePath)) ||
-        exactRoutes.includes(currentPath)) {
+
+    if (
+      targetRoutes.some((routePath) => currentPath.startsWith(routePath)) ||
+      exactRoutes.includes(currentPath)
+    ) {
       const { useNotificationStore } = await import('@/stores/notification');
       const notificationStore = useNotificationStore();
       await notificationStore.fetchUnreadCount();

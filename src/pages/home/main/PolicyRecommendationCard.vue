@@ -75,12 +75,12 @@ defineExpose({
 <style scoped>
 .recommendation-section {
   background-color: white;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .header {

@@ -85,7 +85,7 @@ onMounted(() => {
 
   <div class="introContainer">
     <section class="formSection">
-      <label class="label font-16">생년월일을 입력해주세요</label>
+      <label class="label font-15">생년월일을 입력해주세요</label>
       <div class="birthSelects">
         <Dropdown
           v-model="birth.year"
@@ -110,7 +110,7 @@ onMounted(() => {
         />
       </div>
 
-      <label class="label font-16 regionLabel">
+      <label class="label font-15 regionLabel">
         지역을 선택해주세요
         <img
           :src="rightArrow"
@@ -121,7 +121,7 @@ onMounted(() => {
       </label>
 
       <!-- 선택된 주소 미리보기 -->
-      <p v-if="address" class="selectedAddress font-14">
+      <p v-if="address" class="selectedAddress font-13">
         {{ address }}
       </p>
 
@@ -136,7 +136,7 @@ onMounted(() => {
 
   <div class="footer">
     <button
-      class="nextButton font-15"
+      class="nextButton font-14"
       :disabled="!isFormValid"
       :class="{ disabled: !isFormValid }"
       @click="goToPolicyQuiz1"
@@ -148,10 +148,10 @@ onMounted(() => {
 
 <style scoped>
 .introContainer {
-  padding: 20px;
+  padding: 16px;
   background-color: #fff;
-  border-radius: 12px;
-  max-width: 360px;
+  border-radius: 6px;
+  /* max-width: 360px; */
   margin-bottom: 20px;
 }
 
@@ -164,10 +164,10 @@ onMounted(() => {
 .headerCard {
   text-align: center;
   background-color: var(--base-blue-dark);
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 16px;
   color: white;
-  max-width: 360px;
+  /* max-width: 360px; */
   height: 100px;
   width: 100%;
 }
@@ -214,11 +214,11 @@ onMounted(() => {
 
 .nextButton {
   width: 100%;
-  height: 50px;
+  height: 45px;
   background-color: var(--base-blue-dark);
   color: white;
-  padding: 8px 20px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
   border: none;
   cursor: pointer;
 }

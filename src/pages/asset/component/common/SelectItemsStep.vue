@@ -2,9 +2,10 @@
   <div class="select-step">
     <!-- 헤더 -->
     <div class="header">
-      <button @click="$emit('back')">←</button>
+      <div></div>
+      <!-- 빈 공간 -->
       <h2>{{ type === 'account' ? '계좌 선택' : '카드 선택' }}</h2>
-      <button @click="$emit('close')">✕</button>
+      <button @click="$emit('close')" :disabled="isRegistering">✕</button>
     </div>
 
     <!-- 기관 정보 -->
@@ -32,6 +33,7 @@
           v-if="items.length > 1"
           @click="toggleSelectAll"
           class="select-all-btn"
+          :disabled="isRegistering"
         >
           {{ isAllSelected ? '전체 해제' : '전체 선택' }}
         </button>
@@ -41,8 +43,11 @@
         v-for="item in items"
         :key="item.id"
         class="item"
-        :class="{ selected: selectedItems.includes(item.id) }"
-        @click="toggleSelection(item.id)"
+        :class="{
+          selected: selectedItems.includes(item.id),
+          disabled: isRegistering,
+        }"
+        @click="!isRegistering && toggleSelection(item.id)"
       >
         <div class="info">
           <div class="item-name">{{ item.name }}</div>
@@ -66,20 +71,49 @@
 
     <!-- 버튼 -->
     <div class="actions">
-      <button @click="$emit('back')" class="cancel">이전</button>
       <button
         @click="submit"
-        :disabled="selectedItems.length === 0"
-        class="submit"
+        :disabled="selectedItems.length === 0 || isRegistering"
+        class="submit full-width"
       >
-        추가 ({{ selectedItems.length }})
+        <template v-if="isRegistering">
+          <div class="btn-spinner"></div>
+          등록 중...
+        </template>
+        <template v-else> 추가 ({{ selectedItems.length }}) </template>
       </button>
+    </div>
+
+    <!-- 🎯 등록 중 로딩 오버레이 -->
+    <div v-if="isRegistering" class="overlay">
+      <div class="overlay-content">
+        <img
+          src="@/assets/images/icons/bunny/moneybunny2.png"
+          alt="토끼"
+          class="bunny"
+        />
+        <div class="text">
+          <div class="title">
+            {{
+              type === 'account'
+                ? '계좌를 등록하고 있어요'
+                : '카드를 등록하고 있어요'
+            }}
+            <span class="dots"><span>.</span><span>.</span><span>.</span></span>
+          </div>
+          <div class="subtitle">잠시만 기다려주세요...</div>
+        </div>
+        <div class="progress">
+          <div class="bar"></div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
+import { useAssetStore } from '@/stores/asset';
 import {
   connectAccount,
   registerAccounts,
@@ -88,6 +122,8 @@ import {
 } from '@/api/assetApi';
 import { getBankLogo } from '@/assets/utils/bankLogoMap.js';
 import { getCardLogo } from '@/assets/utils/cardLogoMap.js';
+
+const assetStore = useAssetStore();
 
 const props = defineProps({
   type: String,
@@ -99,6 +135,7 @@ const emit = defineEmits(['back', 'close', 'items-selected']);
 const items = ref([]);
 const selectedItems = ref([]);
 const isLoading = ref(true);
+const isRegistering = ref(false); // 🎯 등록 중 상태 추가
 
 const isAllSelected = computed(
   () =>
@@ -114,12 +151,16 @@ const formatMoney = (amount) =>
   new Intl.NumberFormat('ko-KR').format(amount) + '원';
 
 const toggleSelection = (itemId) => {
+  if (isRegistering.value) return; // 등록 중에는 선택 변경 불가
+
   const idx = selectedItems.value.indexOf(itemId);
   if (idx > -1) selectedItems.value.splice(idx, 1);
   else selectedItems.value.push(itemId);
 };
 
 const toggleSelectAll = () => {
+  if (isRegistering.value) return; // 등록 중에는 전체선택 불가
+
   if (isAllSelected.value) selectedItems.value = [];
   else selectedItems.value = items.value.map((item) => item.id);
 };
@@ -187,25 +228,43 @@ async function loadItems() {
   }
 }
 
-// 3. 선택 후 등록/추가 (등록 API 호출)
+// 3. 선택 후 등록/추가 (등록 API 호출) - 🎯 로딩 처리 추가
 const submit = async () => {
-  if (selectedItems.value.length === 0) return;
+  if (selectedItems.value.length === 0 || isRegistering.value) return;
+
   const selectedData = items.value.filter((item) =>
     selectedItems.value.includes(item.id)
   );
+
+  // 🎯 등록 로딩 시작
+  isRegistering.value = true;
+  let res = null;
+
   try {
     if (props.type === 'account') {
-      await registerAccounts(selectedData.map((item) => item.raw));
+      res = await registerAccounts(selectedData.map((item) => item.raw));
     } else {
-      await registerCards(selectedData.map((item) => item.raw));
+      res = await registerCards(selectedData.map((item) => item.raw));
     }
+
+    // 등록 성공 응답의 최신 요약을 Pinia에 즉시 반영
+    if (res?.data) {
+      assetStore.$patch({ summary: res.data });
+    } else {
+      await assetStore.loadSummary(true);
+    }
+
     emit('items-selected', {
       institutionInfo: props.institutionInfo,
       selectedItems: selectedData,
       type: props.type,
     });
   } catch (e) {
+    console.error('등록 실패:', e);
     alert('등록 중 오류! 다시 시도해 주세요.');
+  } finally {
+    // 🎯 등록 로딩 종료
+    isRegistering.value = false;
   }
 };
 </script>
@@ -213,6 +272,7 @@ const submit = async () => {
 <style scoped>
 .select-step {
   width: 100%;
+  position: relative; /* 오버레이를 위한 relative */
 }
 
 .header {
@@ -227,6 +287,11 @@ const submit = async () => {
   border: none;
   font-size: 1.2rem;
   cursor: pointer;
+}
+
+.header button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .header h2 {
@@ -310,9 +375,14 @@ const submit = async () => {
   transition: all 0.2s;
 }
 
-.select-all-btn:hover {
+.select-all-btn:hover:not(:disabled) {
   background: var(--base-blue-dark);
   color: white;
+}
+
+.select-all-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .item {
@@ -330,6 +400,11 @@ const submit = async () => {
 .item.selected {
   background: var(--base-blue-light);
   border-color: var(--base-blue-dark);
+}
+
+.item.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .item-name {
@@ -384,6 +459,11 @@ const submit = async () => {
   margin-top: 1rem;
 }
 
+/* 전체 너비 버튼 */
+.full-width {
+  width: 100%;
+}
+
 .cancel,
 .submit {
   flex: 1;
@@ -392,11 +472,20 @@ const submit = async () => {
   border-radius: 0.4rem;
   cursor: pointer;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .cancel {
   background: var(--input-disabled-1);
   color: var(--text-darkgray);
+}
+
+.cancel:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .submit {
@@ -408,5 +497,124 @@ const submit = async () => {
   background: var(--input-disabled-1);
   color: var(--text-lightgray);
   cursor: not-allowed;
+}
+
+/* 🎯 버튼 스피너 */
+.btn-spinner {
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid transparent;
+  border-top: 2px solid currentColor;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+/* 🎯 등록 중 오버레이 */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.overlay-content {
+  text-align: center;
+  color: var(--base-blue-dark);
+}
+
+.bunny {
+  width: auto;
+  height: 5rem;
+  max-width: 6rem;
+  object-fit: contain;
+  animation: float 2s ease-in-out infinite;
+}
+
+.text {
+  margin-bottom: 1rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--text-darkgray);
+}
+
+.dots span {
+  animation: blink 1.4s infinite ease-in-out;
+}
+
+.dots span:nth-child(1) {
+  animation-delay: 0s;
+}
+.dots span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dots span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+.progress {
+  width: 10rem;
+  height: 0.25rem;
+  background: var(--input-bg-3);
+  border-radius: 0.125rem;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--text-green), var(--sub-mint));
+  animation: move 1.5s ease-in-out infinite;
+}
+
+/* 애니메이션 */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-0.25rem);
+  }
+}
+
+@keyframes blink {
+  0%,
+  80%,
+  100% {
+    opacity: 0.3;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+@keyframes move {
+  0% {
+    width: 30%;
+    margin-left: 0;
+  }
+  50% {
+    width: 70%;
+    margin-left: 15%;
+  }
+  100% {
+    width: 30%;
+    margin-left: 70%;
+  }
 }
 </style>

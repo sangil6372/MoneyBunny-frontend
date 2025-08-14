@@ -1,8 +1,8 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import AttendanceCheckModal from './AttendanceCheckModal.vue';
+import { ref, onMounted, watch, computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth";
+import AttendanceCheckModal from "./AttendanceCheckModal.vue";
 
 const showToast = ref(false);
 
@@ -10,20 +10,25 @@ const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
 
+// 돌아갈 목적지: 쿼리의 redirect가 있으면 그걸, 없으면 /home
+const redirectTarget = computed(
+  () => route.query.redirect?.toString() || "/home"
+);
+
 const showModal = ref(false);
-const id = ref('');
-const password = ref('');
+const id = ref("");
+const password = ref("");
 const isLoading = ref(false);
-const errorMessage = ref('');
+const errorMessage = ref("");
 const showPassword = ref(false);
 
 // 👁️ 비밀번호 보기/숨기기 아이콘
 const eyeView = new URL(
-  '@/assets/images/icons/signup/eye_view.png',
+  "@/assets/images/icons/signup/eye_view.png",
   import.meta.url
 ).href;
 const eyeHide = new URL(
-  '@/assets/images/icons/signup/eye_hide.png',
+  "@/assets/images/icons/signup/eye_hide.png",
   import.meta.url
 ).href;
 
@@ -31,20 +36,20 @@ const eyeHide = new URL(
 const handleLogin = async () => {
   // 입력값 검증
   if (!id.value.trim()) {
-    errorMessage.value = '아이디를 입력해주세요.';
+    errorMessage.value = "아이디를 입력해주세요.";
     return;
   }
   if (!password.value.trim()) {
-    errorMessage.value = '비밀번호를 입력해주세요.';
+    errorMessage.value = "비밀번호를 입력해주세요.";
     return;
   }
 
   try {
     isLoading.value = true;
-    errorMessage.value = '';
+    errorMessage.value = "";
 
     // auth store의 login 메서드 호출
-    console.log('로그인 시도:', id.value.trim());
+    console.log("로그인 시도:", id.value.trim());
     await authStore.login({
       username: id.value.trim(),
       password: password.value,
@@ -57,43 +62,44 @@ const handleLogin = async () => {
     showToast.value = true;
     setTimeout(() => {
       showToast.value = false;
-      router.push('/home');
+      // router.push('/home');
+      router.replace(redirectTarget.value);
     }, 1200); // 1.2초 보여주고 홈으로
   } catch (error) {
-    console.error('로그인 에러:', error);
+    console.error("로그인 에러:", error);
 
     // 에러 상태별 메시지 처리
     if (error.response?.status === 401) {
-      errorMessage.value = '아이디 또는 비밀번호가 잘못되었습니다.';
+      errorMessage.value = "아이디 또는 비밀번호가 잘못되었습니다.";
     } else if (error.response?.status >= 500) {
       errorMessage.value =
-        '서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.';
-    } else if (error.code === 'ECONNABORTED') {
+        "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+    } else if (error.code === "ECONNABORTED") {
       errorMessage.value =
-        '요청 시간이 초과되었습니다. 네트워크를 확인해주세요.';
+        "요청 시간이 초과되었습니다. 네트워크를 확인해주세요.";
     } else {
-      errorMessage.value = '로그인에 실패했습니다. 다시 시도해주세요.';
+      errorMessage.value = "로그인에 실패했습니다. 다시 시도해주세요.";
     }
   } finally {
     isLoading.value = false;
   }
   // 🔐 서버 로그인 로직 생략
-  showModal.value = true;
+  // showModal.value = true;
 
-  setTimeout(() => {
-    router.push('/home'); // ✅ HomeTotalTab 으로 이동
-  }, 1000); // 1초 후 이동 (원하는 시간으로 조절 가능)
+  // setTimeout(() => {
+  //   router.push('/home'); // ✅ HomeTotalTab 으로 이동
+  // }, 1000); // 1초 후 이동 (원하는 시간으로 조절 가능)
 };
 
 const closeModal = () => {
   showModal.value = false;
   // 출석체크 모달 닫힌 후 홈으로 이동
-  router.push('/home');
+  router.push("/home");
 };
 
 // 엔터키 입력 처리
 const handleKeyPress = (event) => {
-  if (event.key === 'Enter' && !isLoading.value) {
+  if (event.key === "Enter" && !isLoading.value) {
     handleLogin();
   }
 };
@@ -102,19 +108,25 @@ const handleKeyPress = (event) => {
 const clearErrorMessage = () => {
   if (errorMessage.value) {
     setTimeout(() => {
-      errorMessage.value = '';
+      errorMessage.value = "";
     }, 3000);
   }
 };
 
 // 💪(상일) URL 파라미터로 전달된 에러 메시지 처리
 onMounted(() => {
-  if (route.query.error === 'auth_required') {
-    errorMessage.value = '로그인이 필요한 페이지입니다.';
-  } else if (route.query.error === 'login_required') {
-    errorMessage.value = '세션이 만료되었습니다. 다시 로그인해주세요.';
-  } else if (route.query.error === 'token_expired') {
-    errorMessage.value = 'JWT 토큰이 만료되었습니다. 다시 로그인해주세요.';
+  // ✅ 이미 로그인 상태로 /login 접근한 경우: redirect 목적지로
+  if (authStore.isLogin) {
+    router.replace(redirectTarget.value);
+    return;
+  }
+
+  if (route.query.error === "auth_required") {
+    errorMessage.value = "로그인이 필요한 페이지입니다.";
+  } else if (route.query.error === "login_required") {
+    errorMessage.value = "세션이 만료되었습니다. 다시 로그인해주세요.";
+  } else if (route.query.error === "token_expired") {
+    errorMessage.value = "JWT 토큰이 만료되었습니다. 다시 로그인해주세요.";
   }
 });
 
@@ -189,14 +201,32 @@ watch(errorMessage, () => {
         </button>
 
         <div class="loginLink font-11">
-          <router-link to="/findId">아이디 찾기</router-link>
+          <!-- <router-link to="/findId">아이디 찾기</router-link> -->
+          <router-link
+            :to="{ name: 'findId', query: { redirect: route.query.redirect } }"
+            >아이디 찾기</router-link
+          >
           <span>|</span>
-          <router-link to="/findPassword">비밀번호 찾기</router-link>
+          <!-- <router-link to="/findPassword">비밀번호 찾기</router-link> -->
+          <router-link
+            :to="{
+              name: 'findPassword',
+              query: { redirect: route.query.redirect },
+            }"
+            >비밀번호 찾기</router-link
+          >
         </div>
 
         <div class="signupLink font-11">
           계정이 없으신가요?
-          <router-link to="/signUpEmailRequest">회원가입</router-link>
+          <!-- <router-link to="/signUpEmailRequest">회원가입</router-link> -->
+          <router-link
+            :to="{
+              name: 'signUpEmailRequest',
+              query: { redirect: route.query.redirect },
+            }"
+            >회원가입</router-link
+          >
         </div>
       </div>
     </div>

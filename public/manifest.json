@@ -1,12 +1,12 @@
 {
-  "name": "머니버니",
-  "short_name": "머니버니",
+  "name": "MoneyBunny",
+  "short_name": "MoneyBunny",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f8fafc",
   "theme_color": "#f8fafc",
-  "description": "머니버니 앱입니다.",
+  "description": "MoneyBunny.",
   "icons": [
     {
       "src": "icons/icon-192x192.png",

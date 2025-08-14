@@ -1,17 +1,17 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
 const router = useRouter();
 const route = useRoute();
 
-const loginId = ref(route.query.loginId || '');
-const email = ref(route.query.email || '');
+const loginId = ref(route.query.loginId || "");
+const email = ref(route.query.email || "");
 
-const code = ref('');
-const errorMessage = ref('');
-const successMessage = ref('');
+const code = ref("");
+const errorMessage = ref("");
+const successMessage = ref("");
 
 const showToast = ref(false);
 
@@ -22,32 +22,32 @@ const isExpired = computed(() => timeLeft.value === 0);
 
 const handleVerify = async () => {
   if (isExpired.value) {
-    errorMessage.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+    errorMessage.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     return;
   }
   if (!code.value) {
-    errorMessage.value = '인증코드를 입력해주세요.';
+    errorMessage.value = "인증코드를 입력해주세요.";
     return;
   }
   try {
-    const response = await axios.post('/api/auth/verify', {
+    const response = await axios.post("/api/auth/verify", {
       email: email.value,
       code: code.value,
     });
-    if (response.data === 'verified') {
+    if (response.data === "verified") {
       // successMessage.value = "인증에 성공했습니다!";
       // 토스트 or 성공메시지 보여주고 이동
       showToast.value = true;
       setTimeout(() => {
         showToast.value = false;
         router.push({
-          path: '/resetPassword',
+          path: "/resetPassword",
           query: { loginId: loginId.value },
         });
       }, 1200);
     }
   } catch (err) {
-    errorMessage.value = '인증코드가 올바르지 않습니다.';
+    errorMessage.value = "인증코드가 올바르지 않습니다.";
   }
 };
 
@@ -57,7 +57,7 @@ const startTimer = () => {
       timeLeft.value--;
     } else {
       clearInterval(timerInterval);
-      errorMessage.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+      errorMessage.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     }
   }, 1000);
 };
@@ -70,8 +70,8 @@ onBeforeUnmount(() => {
 });
 
 const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
-  const seconds = String(timeLeft.value % 60).padStart(2, '0');
+  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
+  const seconds = String(timeLeft.value % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
 });
 </script>
@@ -152,7 +152,7 @@ const formattedTime = computed(() => {
           @click="handleVerify"
           :disabled="isExpired"
         >
-          {{ isExpired ? '인증 만료' : '인증하기' }}
+          {{ isExpired ? "인증 만료" : "인증하기" }}
         </button>
 
         <div class="loginLink font-11">
@@ -161,7 +161,7 @@ const formattedTime = computed(() => {
           <a href="/">로그인</a>
         </div>
         <div class="signupLink font-11">
-          계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
+          계정이 없으신가요? <a href="/signUpEmailRequest">회원가입</a>
         </div>
       </div>
     </div>

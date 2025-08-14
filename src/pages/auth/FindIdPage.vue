@@ -1,54 +1,54 @@
 <script setup>
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import axios from 'axios';
+import { ref } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
 
 // 🎵(유정) 이메일 인증(이메일 입력) for 아이디 찾기 페이지
 const router = useRouter();
-const email = ref('');
+const email = ref("");
 const isCodeSent = ref(false);
-const errorMsg = ref('');
+const errorMsg = ref("");
 const showToast = ref(false);
 
 // 인증코드 전송
 const sendIdCode = async () => {
-  errorMsg.value = '';
+  errorMsg.value = "";
 
   // 이메일 입력 확인
   if (!email.value.trim()) {
-    errorMsg.value = '이메일을 입력해주세요.';
+    errorMsg.value = "이메일을 입력해주세요.";
     return;
   }
 
   // 이메일 형식 확인
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   if (!emailRegex.test(email.value)) {
-    errorMsg.value = '올바른 이메일 형식을 입력해주세요.';
+    errorMsg.value = "올바른 이메일 형식을 입력해주세요.";
     return;
   }
 
   try {
     // 인증 코드 요청
-    await axios.post('/api/auth/send-find-id-code', { email: email.value });
+    await axios.post("/api/auth/send-find-id-code", { email: email.value });
     isCodeSent.value = true;
     // 토스트 보여주기
     showToast.value = true;
 
     setTimeout(() => {
       showToast.value = false;
-      router.push({ name: 'findIdCode', query: { email: email.value } });
+      router.push({ name: "findIdCode", query: { email: email.value } });
     }, 1200);
   } catch (err) {
     // 가입되지 않은 이메일 등 에러 처리
     errorMsg.value =
-      err.response?.data?.message || '가입되지 않은 이메일입니다.';
+      err.response?.data?.message || "가입되지 않은 이메일입니다.";
   }
 };
 
 // 버튼 핸들러는 단순 호출만
 const handleClick = () => {
   if (!email.value) {
-    alert('이메일을 입력해주세요.');
+    alert("이메일을 입력해주세요.");
     return;
   }
   sendIdCode();
@@ -102,7 +102,7 @@ const handleClick = () => {
         </div>
         <div class="signupLink font-11">
           계정이 없으신가요?
-          <router-link to="/signUpEmailVerify">회원가입</router-link>
+          <router-link to="/signUpEmailRequest">회원가입</router-link>
         </div>
       </div>
     </div>

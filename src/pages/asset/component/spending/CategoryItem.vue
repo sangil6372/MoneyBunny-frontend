@@ -53,7 +53,7 @@ const handleClick = () => {
   padding: 16px 0;
   border-bottom: 1px solid var(--input-outline);
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  /* transition: background-color 0.2s ease; */
 }
 
 .category-item:last-child {

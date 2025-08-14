@@ -4,18 +4,10 @@
     <!-- 헤더 -->
     <DetailHeader :title="headerTitle" @back="$emit('back')" />
 
-    <!-- 필터 + 월 선택 -->
-    <TransactionFilter
-      v-model="currentFilter"
-      :current-month="selectedMonth"
-      type="category"
-      @month-change="handleMonthChange"
-    />
-
-    <!-- 카테고리 정보 + 거래내역 카드 -->
-    <DetailInfoCard>
-      <!-- 카테고리 아이콘 -->
-      <template #custom-icon>
+    <!-- 카테고리 정보 카드 (고정) -->
+    <div class="category-info-card">
+      <div class="category-header">
+        <!-- 카테고리 아이콘 -->
         <div
           class="category-icon"
           :style="{ backgroundColor: (categoryData.color || '#999') + '20' }"
@@ -25,72 +17,80 @@
             :style="{ backgroundColor: categoryData.color || '#999' }"
           ></div>
         </div>
-      </template>
 
-      <!-- 카테고리 정보 -->
-      <template #custom-content>
-        <p class="category-name">
-          {{ categoryData.name || '알 수 없는 카테고리' }}
-        </p>
-        <p class="category-period">{{ getSelectedMonthText() }} 총 지출</p>
-        <p class="category-amount">{{ formatAmount(totalAmount) }}</p>
-      </template>
+        <!-- 카테고리 정보 -->
+        <div class="category-info">
+          <p class="category-name">
+            {{ categoryData.name || '알 수 없는 카테고리' }}
+          </p>
+          <p class="category-period">{{ getSelectedMonthText() }} 총 지출</p>
+          <p class="category-amount">{{ formatAmount(totalAmount) }}</p>
+        </div>
+      </div>
+    </div>
 
-      <!-- 거래내역 리스트 -->
-      <template #additional>
-        <div class="transaction-section">
-          <div class="section-header">
+    <!-- 거래내역 카드 (스크롤 가능) -->
+    <div class="transaction-card">
+      <div class="transaction-section">
+        <!-- 섹션 헤더: 제목 + 건수 + 월 선택 -->
+        <div class="section-header">
+          <div class="header-left">
             <h4 class="section-title">거래 내역</h4>
             <span class="transaction-count"> {{ transactions.length }}건 </span>
           </div>
 
-          <!-- 로딩 -->
-          <div v-if="loading" class="no-transactions">
-            <p class="no-transactions-text">불러오는 중...</p>
-          </div>
+          <!-- 월 선택 드롭다운 -->
+          <CategoryMonthSelector
+            :current-month="selectedMonth"
+            @month-change="handleMonthChange"
+          />
+        </div>
 
-          <!-- 거래내역 리스트 -->
+        <!-- 로딩 -->
+        <div v-if="loading" class="no-transactions">
+          <p class="no-transactions-text">불러오는 중...</p>
+        </div>
+
+        <!-- 거래내역 리스트 -->
+        <div
+          v-else-if="transactions.length > 0"
+          class="transaction-list-container"
+        >
           <div
-            v-else-if="transactions.length > 0"
-            class="transaction-list-container"
+            v-for="t in sortedTransactions"
+            :key="t.id || t.transactionId || Math.random()"
+            class="transaction-item"
+            @click="openTransactionDetail(t)"
           >
-            <div
-              v-for="t in sortedTransactions"
-              :key="t.id || t.transactionId || Math.random()"
-              class="transaction-item"
-              @click="openTransactionDetail(t)"
-            >
-              <div class="transaction-info">
-                <p class="transaction-meta">
-                  {{ formatTransactionDate(t.date) }}
-                </p>
-                <p class="transaction-title">
-                  {{ getTransactionTitle(t) }}
-                </p>
-                <!-- ✅ 메모는 텍스트로 노출 (이전 코드의 날짜포맷 버그 수정) -->
-                <p v-if="t.memo" class="transaction-meta">
-                  {{ t.memo }}
-                </p>
-              </div>
+            <div class="transaction-info">
+              <p class="transaction-date">
+                {{ formatTransactionDate(t.date) }}
+              </p>
+              <p class="transaction-title">
+                {{ getTransactionTitle(t) }}
+              </p>
+              <!-- 메모가 있으면 표시 -->
+              <p v-if="t.memo" class="transaction-memo">
+                {{ t.memo }}
+              </p>
+            </div>
 
-              <div class="transaction-amount">
-                <p class="amount-text">
-                  -{{ formatAmount(t.amount || t.price || 0) }}
-                </p>
-              </div>
+            <div class="transaction-amount">
+              <p class="amount-text">
+                -{{ formatAmount(t.amount || t.price || 0) }}
+              </p>
             </div>
           </div>
-
-          <!-- 거래내역 없음 -->
-          <div v-else class="no-transactions">
-            <p class="no-transactions-text">
-              {{ getSelectedMonthText() }}에는 이 카테고리의 거래 내역이
-              없습니다
-            </p>
-          </div>
         </div>
-      </template>
-    </DetailInfoCard>
+
+        <!-- 거래내역 없음 -->
+        <div v-else class="no-transactions">
+          <p class="no-transactions-text">
+            {{ getSelectedMonthText() }}에는 이 카테고리의 거래 내역이 없습니다
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- 거래 상세 모달 -->
     <CategoryTransactionDetailModal
@@ -106,8 +106,7 @@
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue';
 import DetailHeader from '../detail/DetailHeader.vue';
-import DetailInfoCard from '../detail/DetailInfoCard.vue';
-import TransactionFilter from '../detail/TransactionFilter.vue';
+import CategoryMonthSelector from '../detail/CategoryMonthSelector.vue';
 import CategoryTransactionDetailModal from '../detail/CategoryTransactionDetailModal.vue';
 import {
   fetchCategoryTransactions,
@@ -115,9 +114,10 @@ import {
   updateTransactionCategory,
 } from '@/api/assetApi';
 import { categoryMap } from '@/constants/categoryMap';
+import { useUiFlagsStore } from '@/stores/uiFlags';
 
 const props = defineProps({
-  // AssetMain에서 { id, name, color, transactions? } 형태로 전달해줘야 합니다.
+  // AssetMain에서 { id, name, color, transactions? } 형태로 전달
   categoryData: {
     type: Object,
     required: true,
@@ -132,9 +132,10 @@ const props = defineProps({
 
 const emit = defineEmits(['back']);
 
+const ui = useUiFlagsStore();
+
 const currentDate = ref(new Date(props.selectedDate));
 const selectedMonth = ref(currentDate.value.toISOString().slice(0, 7)); // YYYY-MM
-const currentFilter = ref('전체');
 
 const loading = ref(false);
 const transactions = ref([]); // 내부 운용 목록
@@ -152,10 +153,10 @@ const nameToId = Object.fromEntries(
   Object.entries(categoryMap || {}).map(([id, name]) => [name, Number(id)])
 );
 
-// ✅ 유틸: 트랜잭션 ID 추출
+// 유틸: 트랜잭션 ID 추출
 const getTxId = (tx) => tx?.transactionId ?? tx?.id;
 
-// ✅ 유틸: 리스트에서 특정 거래 패치
+// 유틸: 리스트에서 특정 거래 패치
 const patchTxInList = (transactionId, patch) => {
   const idx = transactions.value.findIndex((t) => getTxId(t) === transactionId);
   if (idx !== -1) {
@@ -170,7 +171,7 @@ const patchTxInList = (transactionId, patch) => {
   }
 };
 
-// ✅ 유틸: 리스트에서 특정 거래 제거
+// 유틸: 리스트에서 특정 거래 제거
 const removeTxFromList = (transactionId) => {
   const idx = transactions.value.findIndex((t) => getTxId(t) === transactionId);
   if (idx !== -1) {
@@ -279,9 +280,7 @@ const closeTransactionDetail = () => {
   selectedTransaction.value = {};
 };
 
-// =============================
-// ✅ 메모 업데이트 (자식 emit → API → 목록/모달 반영)
-// =============================
+// 메모 업데이트 (자식 emit → API → 목록/모달 반영)
 const onMemoUpdated = async ({ transactionId, memo }) => {
   try {
     await updateCardTransactionMemo(transactionId, memo);
@@ -292,9 +291,7 @@ const onMemoUpdated = async ({ transactionId, memo }) => {
   }
 };
 
-// =============================
-// ✅ 카테고리 변경 (자식 emit → API → 목록/합계 반영)
-// =============================
+// 카테고리 변경 (자식 emit → API → 목록/합계 반영)
 const onCategoryUpdated = async ({ transactionId, category }) => {
   try {
     const newCategoryId = nameToId[category];
@@ -306,6 +303,8 @@ const onCategoryUpdated = async ({ transactionId, category }) => {
     }
 
     await updateTransactionCategory(transactionId, newCategoryId);
+
+    ui.markSpendingDirty();
 
     // 현재 상세 카테고리와 다른 카테고리로 바꿨다면 목록에서 제거
     const currentCategoryName = props.categoryData.name || '';
@@ -337,8 +336,26 @@ const formatTransactionDate = (d) => {
 
 <style scoped>
 .category-detail-view {
-  background-color: transparent;
-  padding-bottom: 1rem;
+  background-color: var(--input-bg-2);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 카테고리 정보 카드 (고정) */
+.category-info-card {
+  background: white;
+  border-radius: 0.75rem;
+  margin: 0.75rem 1rem 0 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1rem;
 }
 
 /* 카테고리 아이콘 */
@@ -349,6 +366,7 @@ const formatTransactionDate = (d) => {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .category-dot {
@@ -358,6 +376,10 @@ const formatTransactionDate = (d) => {
 }
 
 /* 카테고리 정보 */
+.category-info {
+  flex: 1;
+}
+
 .category-name {
   font-size: 1.125rem;
   font-weight: 700;
@@ -378,7 +400,27 @@ const formatTransactionDate = (d) => {
   margin: 0;
 }
 
-/* 거래내역 섹션 */
+/* 거래내역 카드 (스크롤 가능) */
+.transaction-card {
+  background: white;
+  border-radius: 0.75rem;
+  margin: 0.75rem 1rem 1rem 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-section {
+  padding: 1.5rem;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 거래내역 섹션 헤더 */
 .section-header {
   display: flex;
   justify-content: space-between;
@@ -386,6 +428,13 @@ const formatTransactionDate = (d) => {
   margin-bottom: 0.75rem;
   padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--input-bg-3);
+  flex-shrink: 0;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .section-title {
@@ -400,39 +449,86 @@ const formatTransactionDate = (d) => {
   color: var(--text-bluegray);
 }
 
-/* 목록 */
+/* 거래내역 리스트 컨테이너 (스크롤 영역) */
+.transaction-list-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* 스크롤바 숨기기 */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE, Edge */
+  /* 하단 여백 추가로 마지막 아이템까지 스크롤 가능하게 */
+  padding-bottom: 1rem;
+}
+
+/* 웹킷 스크롤바 숨기기 */
+.transaction-list-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* 거래내역 아이템 */
 .transaction-item {
   display: flex;
+  justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
   border-bottom: 1px solid var(--input-bg-3);
+  user-select: none;
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
+
 .transaction-item:active {
   background-color: var(--input-bg-1);
 }
+
 .transaction-item:last-child {
   border-bottom: none;
+  /* 마지막 아이템 하단 여백 추가 */
+  margin-bottom: 0.5rem;
 }
 
 .transaction-info {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
 }
-.transaction-title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--text-login);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin: 0 0 0.25rem 0;
-}
-.transaction-meta {
+
+/* 거래 날짜 (상단) */
+.transaction-date {
   font-size: 0.75rem;
   color: var(--text-bluegray);
   margin: 0;
 }
+
+/* 거래 제목 (중간) */
+.transaction-title {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--base-blue-dark);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* 거래 메모 (하단) */
+.transaction-memo {
+  font-size: 0.75rem;
+  color: var(--text-bluegray);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 거래 금액 */
+.transaction-amount {
+  text-align: right;
+}
+
 .transaction-amount .amount-text {
   font-size: 0.875rem;
   font-weight: 600;
@@ -440,14 +536,19 @@ const formatTransactionDate = (d) => {
   margin: 0;
 }
 
-/* 상태 */
+/* 상태 메시지 */
 .no-transactions {
-  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 2rem 0;
 }
+
 .no-transactions-text {
   font-size: 0.875rem;
   color: var(--text-lightgray);
   margin: 0;
+  text-align: center;
 }
 </style>

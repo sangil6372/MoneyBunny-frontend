@@ -61,8 +61,8 @@ defineEmits(['write']);
   margin-bottom: 5px;
 }
 .bunnyIcon {
-  width: 85px; /* 필요하면 56/64로 조절 */
-  height: 85px;
+  width: 90px; /* 필요하면 56/64로 조절 */
+  height: 90px;
   object-fit: contain;
   image-rendering: -webkit-optimize-contrast;
 }

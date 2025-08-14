@@ -339,7 +339,12 @@ function autoFillUserInfo() {
     userInfo.region && userInfo.region.length > 0
       ? userInfo.region.map((code) => codeToRegionName(code)).filter(Boolean)
       : [];
+  // AreaSelectModal에 지역 코드 전달 (자동입력 시에만)
+  areaSelectModalProps.value.initialRegionCodes =
+    userInfo.region && userInfo.region.length > 0 ? userInfo.region : [];
+  // 나이
   age.value = userInfo.age || '';
+  // 연소득
   income.value = userInfo.income || '';
   // 학력 코드 → 라벨
   selectedEducation.value =
@@ -369,24 +374,9 @@ function autoFillUserInfo() {
       : [];
 }
 
-// // onMounted에서 초기값 세팅 부분 제거 (모두 선택 안된 상태로)
-// onMounted(() => {
-//   selectedMarital.value = [];
-//   selectedRegion.value = [];
-//   age.value = '';
-//   income.value = '';
-//   selectedEducation.value = [];
-//   selectedMajor.value = [];
-//   selectedJobStatus.value = [];
-//   selectedSpecialty.value = [];
-// });
-
 // AreaSelectModal에 지역 코드값을 넘겨서, 사용자가 이전에 선택한 지역이 선택된 상태로 보이게 함
 const areaSelectModalProps = computed(() => ({
-  initialRegionCodes:
-    props.initialRegion && props.initialRegion.length > 0
-      ? props.initialRegion
-      : [],
+  initialRegionCodes: [],
 }));
 </script>
 <template>

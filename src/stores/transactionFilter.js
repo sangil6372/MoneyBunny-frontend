@@ -4,21 +4,19 @@ import { defineStore } from 'pinia';
 export const useTransactionFilterStore = defineStore('transactionFilter', {
   state: () => ({
     // 계좌 필터 상태
-    account: {
+    accountFilters: {
       searchKeyword: '',
       dateRange: {
-        type: '3개월', // '1개월', '3개월', '6개월', '직접설정'
+        type: '3개월',
         startDate: null,
         endDate: null,
       },
       transactionType: '전체', // '전체', '입금', '출금'
       sortBy: '최신순', // '최신순', '과거순'
-      currentMonth: new Date().toISOString().slice(0, 7), // YYYY-MM
-      showFilterModal: false,
     },
 
     // 카드 필터 상태
-    card: {
+    cardFilters: {
       searchKeyword: '',
       dateRange: {
         type: '3개월',
@@ -26,136 +24,125 @@ export const useTransactionFilterStore = defineStore('transactionFilter', {
         endDate: null,
       },
       transactionType: '전체', // '전체', '지출', '환불'
-      sortBy: '최신순',
-      currentMonth: new Date().toISOString().slice(0, 7),
-      showFilterModal: false,
-    },
-
-    // 지출/카테고리 필터 상태
-    category: {
-      searchKeyword: '',
-      dateRange: {
-        type: '3개월',
-        startDate: null,
-        endDate: null,
-      },
-      sortBy: '최신순',
-      currentMonth: new Date().toISOString().slice(0, 7),
-      showFilterModal: false,
+      sortBy: '최신순', // '최신순', '과거순'
     },
   }),
 
   getters: {
-    // 특정 타입의 필터 상태 반환
+    /**
+     * 특정 타입의 필터 상태 반환
+     * @param {string} type - 'account' 또는 'card'
+     */
     getFilterState: (state) => (type) => {
-      return state[type] || {};
+      return type === 'account' ? state.accountFilters : state.cardFilters;
     },
 
-    // 활성화된 필터 개수 (기본값 제외)
-    getActiveFilterCount: (state) => (type) => {
-      const filterState = state[type];
-      if (!filterState) return 0;
+    /**
+     * 계좌 필터 상태 반환
+     */
+    accountFilterState: (state) => state.accountFilters,
 
-      let count = 0;
-      if (filterState.searchKeyword?.trim()) count++;
-      if (filterState.dateRange?.type !== '3개월') count++;
-      if (filterState.transactionType && filterState.transactionType !== '전체')
-        count++;
-      if (filterState.sortBy !== '최신순') count++;
-
-      return count;
-    },
-
-    // 기간 필터 표시 텍스트
-    getPeriodText: (state) => (type) => {
-      const filterState = state[type];
-      if (!filterState) return '3개월';
-
-      if (
-        filterState.dateRange.type === '직접설정' &&
-        filterState.dateRange.startDate &&
-        filterState.dateRange.endDate
-      ) {
-        const start = new Date(filterState.dateRange.startDate);
-        const end = new Date(filterState.dateRange.endDate);
-        return `${start.getMonth() + 1}.${start.getDate()} ~ ${
-          end.getMonth() + 1
-        }.${end.getDate()}`;
-      }
-      return filterState.dateRange.type;
-    },
+    /**
+     * 카드 필터 상태 반환
+     */
+    cardFilterState: (state) => state.cardFilters,
   },
 
   actions: {
-    // 검색어 설정
+    /**
+     * 검색 키워드 설정
+     * @param {string} type - 'account' 또는 'card'
+     * @param {string} keyword - 검색할 키워드
+     */
     setSearchKeyword(type, keyword) {
-      if (this[type]) {
-        this[type].searchKeyword = keyword;
+      if (type === 'account') {
+        this.accountFilters.searchKeyword = keyword;
+      } else if (type === 'card') {
+        this.cardFilters.searchKeyword = keyword;
       }
     },
 
-    // 기간 설정
+    /**
+     * 날짜 범위 설정
+     * @param {string} type - 'account' 또는 'card'
+     * @param {object} dateRange - 날짜 범위 객체
+     */
     setDateRange(type, dateRange) {
-      if (this[type]) {
-        this[type].dateRange = { ...dateRange };
+      if (type === 'account') {
+        this.accountFilters.dateRange = { ...dateRange };
+      } else if (type === 'card') {
+        this.cardFilters.dateRange = { ...dateRange };
       }
     },
 
-    // 거래 유형 설정
+    /**
+     * 거래 유형 설정
+     * @param {string} type - 'account' 또는 'card'
+     * @param {string} transactionType - 거래 유형
+     */
     setTransactionType(type, transactionType) {
-      if (this[type]) {
-        this[type].transactionType = transactionType;
+      if (type === 'account') {
+        this.accountFilters.transactionType = transactionType;
+      } else if (type === 'card') {
+        this.cardFilters.transactionType = transactionType;
       }
     },
 
-    // 정렬 방식 설정
+    /**
+     * 정렬 방식 설정
+     * @param {string} type - 'account' 또는 'card'
+     * @param {string} sortBy - 정렬 방식
+     */
     setSortBy(type, sortBy) {
-      if (this[type]) {
-        this[type].sortBy = sortBy;
+      if (type === 'account') {
+        this.accountFilters.sortBy = sortBy;
+      } else if (type === 'card') {
+        this.cardFilters.sortBy = sortBy;
       }
     },
 
-    // 현재 월 설정
-    setCurrentMonth(type, month) {
-      if (this[type]) {
-        this[type].currentMonth = month;
-      }
-    },
-
-    // 필터 모달 표시/숨김
-    setShowFilterModal(type, show) {
-      if (this[type]) {
-        this[type].showFilterModal = show;
-      }
-    },
-
-    // 필터 초기화 (기본값으로 리셋)
+    /**
+     * 특정 타입의 필터 초기화
+     * @param {string} type - 'account' 또는 'card'
+     */
     resetFilters(type) {
-      if (this[type]) {
-        this[type].searchKeyword = '';
-        this[type].dateRange = {
+      const defaultFilters = {
+        searchKeyword: '',
+        dateRange: {
           type: '3개월',
           startDate: null,
           endDate: null,
-        };
-        this[type].transactionType = '전체';
-        this[type].sortBy = '최신순';
-        this[type].currentMonth = new Date().toISOString().slice(0, 7);
+        },
+        transactionType: '전체',
+        sortBy: '최신순',
+      };
+
+      if (type === 'account') {
+        this.accountFilters = { ...defaultFilters };
+      } else if (type === 'card') {
+        this.cardFilters = { ...defaultFilters };
       }
     },
 
-    // 모든 필터 상태를 반환 (API 호출용)
-    getFilterParams(type) {
-      const filterState = this[type];
-      if (!filterState) return {};
+    /**
+     * 모든 필터 초기화
+     */
+    resetAllFilters() {
+      this.resetFilters('account');
+      this.resetFilters('card');
+    },
 
-      return {
-        searchKeyword: filterState.searchKeyword,
-        dateRange: filterState.dateRange,
-        transactionType: filterState.transactionType,
-        sortBy: filterState.sortBy,
-        currentMonth: filterState.currentMonth,
-      };
+    /**
+     * 필터 상태 전체 설정
+     * @param {string} type - 'account' 또는 'card'
+     * @param {object} filters - 필터 객체
+     */
+    setFilters(type, filters) {
+      if (type === 'account') {
+        this.accountFilters = { ...this.accountFilters, ...filters };
+      } else if (type === 'card') {
+        this.cardFilters = { ...this.cardFilters, ...filters };
+      }
     },
   },
 });

@@ -1,8 +1,9 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref, onMounted, watch } from 'vue';
-import { policyAPI } from '@/api/policy';
-import PolicyFilterModal from '../filter/PolicyFilterModal.vue';
+import { useRouter } from "vue-router";
+import { ref, onMounted, watch } from "vue";
+import { policyAPI } from "@/api/policy";
+import PolicyFilterModal from "../filter/PolicyFilterModal.vue";
+import { useAuthStore } from "@/stores/auth"; // 추가
 
 const filterData = ref({}); // 빈 값으로 초기화
 const showFilterModal = ref(false);
@@ -12,21 +13,23 @@ const router = useRouter();
 const props = defineProps({
   searchQuery: {
     type: String,
-    default: '',
+    default: "",
   },
 });
 const searchQuery = ref(props.searchQuery);
 const goBack = () => router.back();
-const emit = defineEmits(['confirm']);
+const emit = defineEmits(["confirm"]);
+
+const authStore = useAuthStore(); // 추가
 
 function handleConfirm(selected) {
   filterData.value = selected;
   showFilterModal.value = false;
-  emit('confirm', selected); // 부모로 필터 데이터 전달
+  emit("confirm", selected); // 부모로 필터 데이터 전달
 
   // 저장(적용) 시 검색 결과 페이지로 이동
   router.push({
-    name: 'policySearchResult',
+    name: "policySearchResult",
     query: {
       q: searchQuery.value,
       filter: encodeURIComponent(JSON.stringify(selected)),
@@ -36,7 +39,7 @@ function handleConfirm(selected) {
 
 function onSearch() {
   router.push({
-    name: 'policySearchResult',
+    name: "policySearchResult",
     query: {
       q: searchQuery.value,
       filter: encodeURIComponent(JSON.stringify(filterData.value)),
@@ -51,24 +54,24 @@ watch(
   }
 );
 
-// 🟦 모달에 넘길 초기값 (PolicyFilterModal이 기대하는 구조)
+// 모달에 넘길 초기값 (PolicyFilterModal이 기대하는 구조)
 const filterInitial = ref({
   initialMarital: [],
   initialRegion: [],
-  initialAge: '',
-  initialIncome: '',
+  initialAge: "",
+  initialIncome: "",
   initialEducation: [],
   initialMajor: [],
   initialJobStatus: [],
   initialSpecialty: [],
 });
 
-// 🟦 검색용 필터 데이터 (검색 API에 맞는 구조)
+// 검색용 필터 데이터 (검색 API에 맞는 구조)
 const userFilter = ref({
   marital: [],
   region: [],
-  age: '',
-  income: '',
+  age: "",
+  income: "",
   education: [],
   major: [],
   jobStatus: [],
@@ -77,14 +80,15 @@ const userFilter = ref({
 
 const fetchUserPolicyFilter = async () => {
   try {
+    if (!authStore.isLogin) return; // 추가: 비로그인 시 호출 안 함
     const res = await policyAPI.getUserPolicy();
     const d = res.data || {};
     // 모달용 초기값만 세팅 (검색용 filterData는 빈 값 유지)
     Object.assign(filterInitial.value, {
       initialMarital: d.marriage ? [d.marriage] : [],
       initialRegion: d.regions || [],
-      initialAge: d.age || '',
-      initialIncome: d.income || '',
+      initialAge: d.age || "",
+      initialIncome: d.income || "",
       initialEducation: d.educationLevels || [],
       initialMajor: d.majors || [],
       initialJobStatus: d.employmentStatuses || [],
@@ -94,8 +98,8 @@ const fetchUserPolicyFilter = async () => {
     Object.assign(userFilter.value, {
       marital: d.marriage ? [d.marriage] : [],
       region: d.regions || [],
-      age: d.age || '',
-      income: d.income || '',
+      age: d.age || "",
+      income: d.income || "",
       education: d.educationLevels || [],
       major: d.majors || [],
       jobStatus: d.employmentStatuses || [],
@@ -108,9 +112,18 @@ const fetchUserPolicyFilter = async () => {
 };
 
 onMounted(() => {
-  fetchUserPolicyFilter();
+  if (authStore.isLogin) fetchUserPolicyFilter(); // 수정: 로그인 때만 호출
 });
+
+// 추가: 로그인 후 상태가 바뀌면 한 번만 로드
+watch(
+  () => authStore.isLogin,
+  (v) => {
+    if (v) fetchUserPolicyFilter();
+  }
+);
 </script>
+
 <template>
   <div class="policySearchHeader">
     <img

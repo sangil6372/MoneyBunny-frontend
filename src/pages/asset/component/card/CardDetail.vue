@@ -1,7 +1,7 @@
 <template>
   <div class="card-detail">
     <DetailHeader title="카드 상세" @back="onClose" />
-    <DetailInfoCard type="card" :data="cardData" />
+    <DetailSummaryCard type="card" :data="cardData" />
 
     <!-- 🥕 변경: TransactionFilter → SearchFilterHeader -->
     <SearchFilterHeader
@@ -12,9 +12,10 @@
       @filter-modal-open="openFilterModal"
     />
 
-    <!-- 🥕 추가: CardFilterModal -->
-    <CardFilterModal
+    <!-- 🥕 수정: 통합된 TransactionFilterModal 사용 -->
+    <TransactionFilterModal
       :show="showFilterModal"
+      type="card"
       @close="closeFilterModal"
       @apply="onFilterApply"
     />
@@ -45,10 +46,10 @@
 import { ref } from 'vue';
 
 import DetailHeader from '../detail/DetailHeader.vue';
-import DetailInfoCard from '../detail/DetailInfoCard.vue';
-// 🥕 변경: TransactionFilter → SearchFilterHeader, CardFilterModal import 추가
-import SearchFilterHeader from '../common/SearchFilterHeader.vue';
-import CardFilterModal from '../card/CardFilterModal.vue';
+import DetailSummaryCard from '../detail/DetailSummaryCard.vue';
+// 🥕 변경: 통합된 TransactionFilterModal import
+import SearchFilterHeader from '../detail/SearchFilterHeader.vue';
+import TransactionFilterModal from '../detail/TransactionFilterModal.vue';
 import TransactionList from '../detail/TransactionList.vue';
 import TransactionDetailModal from '../detail/TransactionDetailModal.vue';
 
@@ -69,16 +70,22 @@ const currentFilterText = ref('3개월·전체·최신');
 const filter = ref('전체');
 
 // 🥕 추가: 고급 필터 상태 (검색, 기간, 정렬 등)
-const advancedFilters = ref({
-  searchKeyword: '',
-  dateRange: {
-    type: '3개월',
-    startDate: null,
-    endDate: null,
-  },
-  transactionType: '전체', // 카드는 '전체', '지출', '환불'
-  sortBy: '최신순',
-});
+function makeDefaultAdvancedFilters() {
+  const today = new Date();
+  const endDate = today.toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식
+
+  const start = new Date();
+  start.setMonth(start.getMonth() - 3);
+  const startDate = start.toISOString().slice(0, 10);
+
+  return {
+    searchKeyword: '',
+    dateRange: { type: '3개월', startDate, endDate },
+    transactionType: '전체', // 카드: 전체/지출/환불
+    sortBy: '최신순',
+  };
+}
+const advancedFilters = ref(makeDefaultAdvancedFilters());
 
 // 🥕거래 상세 모달 관련 상태 (기존 유지)
 const showTransactionModal = ref(false);
@@ -115,7 +122,7 @@ const onSearchInput = (keyword) => {
   // TransactionList가 자동으로 새로운 검색어로 필터링할 것임
 };
 
-// 🥕 추가: 필터 모달에서 필터 적용
+// 🥕 수정: 필터 모달에서 필터 적용 (통합 모달 대응)
 const onFilterApply = (appliedFilters) => {
   console.log('카드 필터 적용됨:', appliedFilters);
 
@@ -140,8 +147,7 @@ const onFilterApply = (appliedFilters) => {
   const sort = appliedFilters.sortBy === '최신순' ? '최신' : '과거순';
   currentFilterText.value = `${period}·${type}·${sort}`;
 
-  // 모달 닫기
-  closeFilterModal();
+  // 모달은 통합 컴포넌트에서 자동으로 닫힘
 };
 
 // 👇 메모 업데이트 핸들러 (기존 유지)

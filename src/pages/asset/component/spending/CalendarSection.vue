@@ -77,6 +77,7 @@ onMounted(() => {
   background: white;
   border-radius: 0.75rem;
   padding: 0.75rem 1rem;
+  margin-bottom: 1rem;
 }
 
 .calendar-header {

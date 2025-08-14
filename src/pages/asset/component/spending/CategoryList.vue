@@ -1,10 +1,7 @@
 <template>
   <div class="category-list-container">
     <!-- 데이터가 없을 때 -->
-    <div v-if="categories.length === 0" class="no-categories">
-      <p class="no-categories-text">지출 내역이 없습니다</p>
-    </div>
-
+    <SpendingNodata v-if="categories.length === 0" />
     <!-- 카테고리 아이템들 -->
     <div v-else class="category-items">
       <CategoryItem
@@ -25,6 +22,7 @@
 <script setup>
 import { computed } from 'vue';
 import CategoryItem from './CategoryItem.vue';
+import SpendingNodata from './SpendingNodata.vue';
 
 // Props 정의
 const props = defineProps({
@@ -83,7 +81,7 @@ const handleCategoryClick = (category) => {
   color: var(--text-bluegray);
   cursor: pointer;
   border-radius: 8px;
-  transition: background-color 0.2s ease;
+  /* transition: background-color 0.2s ease; */
 
   /* 모바일 터치 최적화 */
   -webkit-tap-highlight-color: transparent;

@@ -238,7 +238,7 @@ const redoQuiz = async () => {
   align-items: center;
   justify-content: center;
   background-color: var(--base-blue-dark);
-  border-radius: 10px;
+  border-radius: 6px;
   padding: 20px 14px;
   color: white;
   max-width: 360px;
@@ -257,7 +257,7 @@ const redoQuiz = async () => {
 
 .summarySection {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 24px 18px;
 }
 
@@ -267,7 +267,7 @@ const redoQuiz = async () => {
   align-items: center;
   padding: 10px 12px;
   background-color: var(--input-bg-2);
-  border-radius: 8px;
+  border-radius: 6px;
   margin: 15px 0 10px 0;
 }
 .summaryLabel {
@@ -296,7 +296,7 @@ const redoQuiz = async () => {
 
 .prioritySection {
   background: #fff;
-  border-radius: 12px;
+  border-radius: 6px;
   margin: 20px 0;
   padding: 20px 18px;
 }
@@ -319,13 +319,13 @@ const redoQuiz = async () => {
   display: flex;
   align-items: center;
   padding: 8px 14px;
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: var(--input-bg-2);
 }
 .priorityRank {
   background: var(--priority-bg);
   color: var(--base-blue-dark);
-  border-radius: 8px;
+  border-radius: 6px;
   padding: 5px 10px;
   margin-right: 10px;
 }
@@ -345,7 +345,7 @@ const redoQuiz = async () => {
 .btn-blue {
   flex: 1 1 0;
   padding: 10px 0;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: center;
 }
 .btn-grey {
@@ -369,7 +369,7 @@ const redoQuiz = async () => {
   background: var(--base-blue-dark);
   color: #fff;
   padding: 10px 20px;
-  border-radius: 8px;
+  border-radius: 6px;
   font-size: 14px;
   min-width: 235px;
   max-width: 340px;

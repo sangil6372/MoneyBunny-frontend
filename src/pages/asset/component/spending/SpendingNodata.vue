@@ -1,7 +1,7 @@
 <template>
   <div class="spending-no-data">
     <img
-      src="@/assets/images/icons/bunny/nodata_bunny.png"
+      src="@/assets/images/icons/bunny/nospending_bunny.png"
       alt="지출 내역 없음"
       class="no-data-icon"
     />
@@ -21,20 +21,22 @@
   justify-content: center;
   background: white;
   border-radius: 1rem;
-  padding: 4rem 1.5rem;
+  padding: 0.5rem 1rem;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  margin-top: 0rem;
+  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); */
   margin-top: 1rem;
 }
 
 .no-data-icon {
-  width: 100px;
-  height: 100px;
-  margin-bottom: 2rem;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 1.7rem;
 }
 
 .no-data-text {
-  font-size: 1.125rem;
+  font-size: 0.9rem; /* 1.125rem → 0.875rem으로 축소 */
   font-weight: 500;
   color: var(--text-darkgray);
   line-height: 1.4;

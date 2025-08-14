@@ -24,14 +24,14 @@
           class="arrowIcon"
         />
       </div>
-      <div class="settingItem">
+      <div class="settingItem" @click="showPrivacyModal = true">
         <span class="text">개인정보 처리 방침</span>
         <img
           src="@/assets/images/icons/mypage/right_arrow.png"
           class="arrowIcon"
         />
       </div>
-      <div class="settingItem">
+      <div class="settingItem" @click="showTermsModal = true">
         <span class="text">서비스 이용약관</span>
         <img
           src="@/assets/images/icons/mypage/right_arrow.png"
@@ -64,6 +64,11 @@
       v-if="showChangePasswordModal"
       @close="showChangePasswordModal = false"
     />
+    <PrivacyPolicyModal
+      v-if="showPrivacyModal"
+      @close="showPrivacyModal = false"
+    />
+    <TermsModal v-if="showTermsModal" @close="showTermsModal = false" />
   </div>
 </template>
 
@@ -71,15 +76,24 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import { useAssetStore } from '@/stores/asset';
 import LogoutConfirmModal from './LogoutConfirmModal.vue';
 // 👸🏻(은진) 알림 설정 모달창
 import NotificationSettingsModal from '../modals/NotificationSettingsModal.vue';
 import ChangePasswordModal from '../modals/ChangePasswordModal.vue';
 // 정책 정보 조회 API import 추가
 import { policyAPI } from '@/api/policy';
+
+import TermsModal from '../modals/TermsModal.vue';
+import PrivacyPolicyModal from '../modals/PrivacyPolicyModal.vue';
+
 const router = useRouter();
 const authStore = useAuthStore();
+const assetStore = useAssetStore();
+
 const showLogoutModal = ref(false);
+const showPrivacyModal = ref(false);
+const showTermsModal = ref(false);
 
 // 💪(상일) 알림 설정 페이지로 이동
 const goToNotificationSettings = () => {
@@ -100,6 +114,8 @@ const handleLogout = () => {
 const confirmLogout = async () => {
   showLogoutModal.value = false;
   await authStore.logout();
+
+  assetStore.clearSummary?.();
 
   // Vue next tick 사용하여 상태 반영 이후 이동
   await new Promise((resolve) => setTimeout(resolve)); // 상태 반영 기다림

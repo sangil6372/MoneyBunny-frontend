@@ -51,6 +51,12 @@ import PolicySearchPage from '@/pages/policy/search/PolicySearchPage.vue';
 import PolicySearchResult from '@/pages/policy/search/PolicySearchResult.vue';
 import PolicyReviewPage from '@/pages/policy/review/PolicyReviewPage.vue';
 
+// 비로그인 정책 조회 페이지
+import PolicySearchGuestPage from '@/pages/policy/search/PolicySearchGuestPage.vue';
+
+// 게스트 접근
+import HomeGuestPanel from '@/pages/home/HomeGuestPanel.vue';
+// import GuestGatePage from "@/pages/home/GuestGatePage.vue";
 const routes = [
   //
   // ─── 인증 관련 ──────────────────────────────────────
@@ -107,6 +113,16 @@ const routes = [
     component: ChangePassword,
   },
 
+  // 게스트 패널
+  {
+    path: '/guest',
+    name: 'guest',
+    component: HomeGuestPanel, // 단독 페이지로 사용
+    props: {
+      loginRouteName: 'login',
+      signupRouteName: 'signUpEmailRequest',
+    },
+  },
   // ─── 기본 레이아웃 하위 라우트 ─────────
   {
     path: '/',
@@ -207,6 +223,12 @@ const routes = [
         name: 'policySearchResult',
         component: PolicySearchResult,
       },
+      // 비로그인 정책 조회 페이지
+      {
+        path: 'policy/search/guest',
+        name: 'policySearchGuest',
+        component: PolicySearchGuestPage,
+      },
     ],
   },
 ];
@@ -243,7 +265,21 @@ const router = createRouter({
 
 // 인증 가드
 router.beforeEach(async (to, from, next) => {
+  // 리뷰 페이지는 비로그인 허용
+  if (to.name === 'policyReviewPage') {
+    return next();
+  }
+
+  // 정책 상세는 비로그인 허용
   if (/^\/policy\/\d+$/.test(to.path)) {
+    return next();
+  }
+  // 정책 검색 페이지/결과도 비로그인 허용
+  if (
+    to.name === 'policySearch' ||
+    to.name === 'policySearchResult' ||
+    to.name === 'policySearchGuest'
+  ) {
     return next();
   }
 
@@ -290,11 +326,15 @@ router.beforeEach(async (to, from, next) => {
     // 회원 가입
     '/signUpEmailRequest',
     '/signUpEmailCode',
-    '/signUpEmailVerify',
     '/signUpProfile',
 
-    // 정책 상세 페이지 (공유)
-    // '/policyDetail',
+    // 정책 상세 페이지, 검색페이지 (공유)
+    '/policy/search',
+    '/policy/search/result',
+    '/policy/search/guest',
+
+    // 게스트페이지
+    '/guest',
   ];
 
   const authRequired = !publicPages.includes(to.path);
@@ -304,10 +344,17 @@ router.beforeEach(async (to, from, next) => {
   );
 
   // 👸🏻 은진
+  // if (authRequired && !authStore.isLogin) {
+  //   // 로그인이 필요한 페이지인데 로그인하지 않은 경우
+  //   console.log("인증되지 않은 접근 - 로그인 페이지로 리다이렉트");
+  //   return next({ path: "/", query: { error: "auth_required" } });
+  // }
+  // 🎵 유정
   if (authRequired && !authStore.isLogin) {
-    // 로그인이 필요한 페이지인데 로그인하지 않은 경우
-    console.log('인증되지 않은 접근 - 로그인 페이지로 리다이렉트');
-    return next({ path: '/', query: { error: 'auth_required' } });
+    // return next({ name: 'guest', query: { redirect: to.fullPath } });
+    // 게스트 페이지로 보낼 때, 게스트 자체는 통과
+    if (to.name === 'guest') return next();
+    return next({ name: 'guest', query: { redirect: to.fullPath } });
   }
 
   if (to.path === '/' && authStore.isLogin) {

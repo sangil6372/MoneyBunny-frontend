@@ -1,40 +1,34 @@
 <!-- CategoryTransactionDetailModal.vue -->
+<!-- 거래 상세 정보 모달 -->
 <template>
-  <!-- 카테고리 거래 상세 모달 오버레이 -->
   <div v-if="show" class="modal-overlay" @click.self="closeModal">
     <div class="modal-container">
-      <!-- 헤더 영역 - 전체 가로폭 사용 -->
+      <!-- 헤더 -->
       <div class="modal-header">
         <DetailHeader :title="'거래 상세'" @back="closeModal" />
       </div>
 
-      <!-- 컨텐츠 영역 - 패딩 적용, 스크롤 가능 -->
       <div class="modal-content">
         <!-- 거래 정보 카드 -->
         <div class="info-card">
-          <!-- 카테고리 태그 -->
           <div v-if="localTx.category" class="category-tag">
             #{{ localTx.category }}
           </div>
 
-          <!-- 거래 제목 -->
           <h2 class="transaction-title">{{ getTransactionTitle() }}</h2>
 
           <!-- 상세 정보 리스트 -->
           <div class="detail-grid">
-            <!-- 거래 시각 -->
             <div class="detail-item">
               <span class="detail-label">거래시각</span>
               <span class="detail-value">{{ formatTransactionDate() }}</span>
             </div>
 
-            <!-- 거래 구분 -->
             <div class="detail-item">
               <span class="detail-label">거래구분</span>
               <span class="detail-value transaction-type negative">지출</span>
             </div>
 
-            <!-- 거래 금액 -->
             <div class="detail-item amount-item">
               <span class="detail-label">거래금액</span>
               <span class="detail-value transaction-amount-detail negative">
@@ -42,11 +36,11 @@
               </span>
             </div>
 
-            <!-- 카테고리 (수정 가능) -->
+            <!-- 카테고리 편집 -->
             <div class="detail-item" v-if="localTx.category">
               <span class="detail-label">카테고리</span>
               <div class="category-edit-section">
-                <span class="category-tag">{{ localTx.category }}</span>
+                <span class="category-tag-inline">{{ localTx.category }}</span>
                 <button
                   class="edit-category-btn"
                   @click="openCategoryEditModal"
@@ -60,27 +54,22 @@
               </div>
             </div>
 
-            <!-- 상점 유형 (있는 경우) -->
             <div class="detail-item" v-if="localTx.storeType">
               <span class="detail-label">상점유형</span>
               <span class="detail-value">{{ localTx.storeType }}</span>
             </div>
 
-            <!-- 결제 수단 (있는 경우) -->
+            <!-- 결제 수단 - single이면 일시불, 그 외는 할부 -->
             <div class="detail-item" v-if="localTx.paymentMethod">
               <span class="detail-label">결제수단</span>
-              <span class="detail-value">{{ localTx.paymentMethod }}</span>
+              <span class="detail-value">{{
+                formatPaymentMethod(localTx.paymentMethod)
+              }}</span>
             </div>
-
-            <!-- 추가 정보 (메모 등이 있는 경우) -->
-            <!-- <div class="detail-item" v-if="localTx.memo">
-              <span class="detail-label">메모</span>
-              <span class="detail-value">{{ localTx.memo }}</span>
-            </div> -->
           </div>
         </div>
 
-        <!-- 거래 메모 카드 -->
+        <!-- 메모 카드 -->
         <div class="memo-card">
           <h3>메모</h3>
           <input
@@ -103,7 +92,6 @@
           </div>
         </div>
 
-        <!-- 확인 버튼 -->
         <button class="confirm-btn" @click="closeModal">확인</button>
       </div>
     </div>
@@ -124,25 +112,20 @@ import DetailHeader from './DetailHeader.vue';
 import CategoryEditModal from './CategoryEditModal.vue';
 
 const props = defineProps({
-  show: Boolean, // 모달 표시 여부
-  transaction: { type: Object, required: true }, // 카테고리 거래 데이터
+  show: Boolean,
+  transaction: { type: Object, required: true },
 });
 const emit = defineEmits(['close', 'category-updated', 'memo-updated']);
 
-/** ✅ 로컬 표시/편집용 스냅샷 */
+// 상태 관리
 const localTx = ref({});
-
-/** ✅ 메모 프리필 상태 */
 const memoText = ref('');
-
-/** 카테고리 수정 모달 상태 */
 const showCategoryEditModal = ref(false);
 const categoryEditData = ref({});
 
-/** 저장 버튼 활성화 */
 const isSaveActive = computed(() => memoText.value.trim().length > 0);
 
-/** 🔁 모달 열릴 때/거래 변경 시 로컬 동기화 + 메모 프리필 */
+// 모달 열릴 때 데이터 동기화
 watch(
   () => [props.show, props.transaction],
   () => {
@@ -154,7 +137,7 @@ watch(
   { immediate: true, deep: true }
 );
 
-/** 유틸 */
+// 유틸리티 함수들
 const formatAmount = (v) => (Number.isFinite(v) ? v.toLocaleString() : '0');
 
 const getTransactionTitle = () =>
@@ -167,6 +150,12 @@ const getTransactionTitle = () =>
 
 const getTransactionAmount = () =>
   localTx.value.amount || localTx.value.price || 0;
+
+// 결제 수단 포맷팅 - single이면 일시불, 그 외는 할부
+const formatPaymentMethod = (method) => {
+  if (!method) return '';
+  return method.toLowerCase() === 'single' ? '일시불' : '할부';
+};
 
 const formatTransactionDate = () => {
   try {
@@ -185,40 +174,39 @@ const formatTransactionDate = () => {
   }
 };
 
-/** 닫기 */
+// 이벤트 핸들러들
 const closeModal = () => {
-  memoText.value = ''; // 닫을 때 메모 초기화
+  memoText.value = '';
   emit('close');
 };
 
-/** 메모 저장: 로컬 즉시 반영 + 부모에 알림 (API는 부모가 처리) */
 const saveMemo = () => {
   const memo = memoText.value.trim();
   if (!memo) return;
   const id = localTx.value.transactionId || localTx.value.id;
-  localTx.value.memo = memo; // ✅ UI 즉시 반영
-  emit('memo-updated', { transactionId: id, memo }); // ✅ 부모 통지
+  localTx.value.memo = memo;
+  emit('memo-updated', { transactionId: id, memo });
 };
 
-/** 카테고리 수정 모달 열기 */
+// 카테고리 편집 모달 관리
 const openCategoryEditModal = () => {
   categoryEditData.value = {
     name: localTx.value.category || '',
-    color: '#6366f1', // 필요 시 실제 색상 매핑
+    color: '#6366f1',
     id: localTx.value.category,
   };
   showCategoryEditModal.value = true;
 };
+
 const closeCategoryEditModal = () => {
   showCategoryEditModal.value = false;
   categoryEditData.value = {};
 };
 
-/** 카테고리 저장: 로컬 즉시 반영 + 부모에 알림 (API는 부모가 처리) */
 const handleCategorySave = (updatedCategory) => {
   const id = localTx.value.transactionId || localTx.value.id;
   const old = localTx.value.category || '';
-  localTx.value.category = updatedCategory.name; // ✅ UI 즉시 반영
+  localTx.value.category = updatedCategory.name;
   emit('category-updated', {
     transactionId: id,
     category: updatedCategory.name,
@@ -229,7 +217,7 @@ const handleCategorySave = (updatedCategory) => {
 </script>
 
 <style scoped>
-/* 그대로 유지 */
+/* 모달 기본 구조 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -242,20 +230,24 @@ const handleCategorySave = (updatedCategory) => {
   align-items: flex-start;
   z-index: 2000;
 }
+
 .modal-container {
   width: 100%;
   max-width: 474px;
   background: var(--input-bg-2);
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  overflow: hidden;
 }
+
 .modal-header {
   width: 100%;
   background: var(--input-bg-2);
   flex-shrink: 0;
 }
+
 .modal-header :deep(.detail-header),
 .modal-header :deep(.header-container),
 .modal-header :deep(.fixed-header) {
@@ -266,19 +258,33 @@ const handleCategorySave = (updatedCategory) => {
   padding-right: 1rem !important;
   box-sizing: border-box !important;
 }
+
 .modal-content {
   flex: 1;
-  padding: 0 1rem 2rem;
-  overflow-y: auto;
+  padding: 0 1rem 1rem;
+  overflow: hidden;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
 }
+
+/* 카드 스타일 */
 .info-card {
   background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
+
+.memo-card {
+  background: white;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-top: 0.75rem;
+}
+
+/* 카테고리 태그 */
 .category-tag {
   display: inline-block;
   background: var(--base-blue-light);
@@ -286,67 +292,112 @@ const handleCategorySave = (updatedCategory) => {
   font-size: 0.75rem;
   font-weight: 600;
   padding: 0.25rem 0.75rem;
-  border-radius: 1rem;
-  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 0.75rem;
 }
+
+/* 거래 제목 */
 .transaction-title {
-  font-size: 1.7rem;
+  font-size: 1.5rem;
   font-weight: 500;
   color: var(--text-login);
-  margin: 0.75rem 0 1.5rem 0;
+  margin: 0.5rem 0 1rem 0;
   line-height: 1.3;
   word-break: break-all;
-  padding-bottom: 1rem;
+  padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--input-bg-1);
 }
+
+/* 상세 정보 */
 .detail-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.9rem;
 }
+
 .detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--input-bg-1);
 }
+
 .detail-item:last-child {
   border-bottom: none;
 }
+
 .detail-label {
   font-size: 0.9rem;
   color: var(--text-darkgray);
   font-weight: 500;
 }
+
 .detail-value {
   font-size: 0.9rem;
   color: var(--text-login);
   font-weight: 600;
   text-align: right;
 }
+
 .amount-item .detail-value {
   font-size: 1.125rem;
   font-weight: 700;
 }
+
 .transaction-amount-detail.negative {
   color: var(--alert-red);
 }
+
 .transaction-type.negative {
   color: var(--alert-red);
 }
-.memo-card {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
+
+/* 카테고리 편집 */
+.category-edit-section {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
+
+.category-tag-inline {
+  background: var(--base-blue-light);
+  color: var(--base-blue-dark);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.5rem;
+}
+
+.edit-category-btn {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.edit-category-btn:active {
+  background: var(--input-bg-1);
+  transform: scale(0.95);
+}
+
+.edit-icon {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* 메모 입력 */
 .memo-card h3 {
   font-size: 1rem;
   margin-bottom: 0.75rem;
   color: var(--base-blue-dark);
   font-weight: 600;
 }
+
 .memo-input {
   width: 100%;
   padding: 0.75rem;
@@ -356,20 +407,24 @@ const handleCategorySave = (updatedCategory) => {
   font-size: 0.9rem;
   box-sizing: border-box;
 }
+
 .memo-input:focus {
   outline: none;
   border-color: var(--base-blue-dark);
 }
+
 .memo-footer {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-top: 0.75rem;
 }
+
 .memo-count {
   font-size: 0.8rem;
   color: var(--text-lightgray);
 }
+
 .memo-save {
   background: var(--input-disabled-1);
   color: white;
@@ -379,36 +434,16 @@ const handleCategorySave = (updatedCategory) => {
   font-size: 0.85rem;
   font-weight: 500;
 }
+
 .memo-save.active {
   background: var(--base-blue-dark);
 }
+
 .memo-save:active {
   transform: scale(0.98);
 }
-.category-edit-section {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
-}
-.edit-category-btn {
-  background: none;
-  border: none;
-  padding: 0.25rem;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.edit-category-btn:active {
-  background: var(--input-bg-1);
-  transform: scale(0.95);
-}
-.edit-icon {
-  width: 1rem;
-  height: 1rem;
-}
+
+/* 확인 버튼 */
 .confirm-btn {
   background: var(--base-blue-dark);
   color: white;
@@ -417,9 +452,11 @@ const handleCategorySave = (updatedCategory) => {
   padding: 1rem;
   font-size: 1.05rem;
   font-weight: 600;
-  margin-top: 1.5rem;
+  margin-top: 0.75rem;
   width: 100%;
+  flex-shrink: 0;
 }
+
 .confirm-btn:active {
   background: #263952;
   transform: scale(0.98);

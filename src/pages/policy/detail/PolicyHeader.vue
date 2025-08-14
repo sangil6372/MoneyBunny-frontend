@@ -11,7 +11,7 @@
         @click="toggleBookmark"
       />
     </div>
-    <p class="desc font-12">
+    <p class="desc font-13">
       {{ description || policy.description }}
     </p>
 
@@ -22,11 +22,11 @@
         리뷰<span v-if="reviewCount"> {{ reviewCount }}개</span> 보기
       </button>
     </div>
-    <!-- <div class="tags">
+    <div class="tags">
       <span v-for="(tag, i) in policy.tags" :key="i" class="tag">{{
         tag
       }}</span>
-    </div> -->
+    </div>
 
     <p class="supportAmount font-bold font-16">
       {{ policy.supportAmount }}

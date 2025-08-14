@@ -124,15 +124,18 @@ const toggleAmountVisibility = () => {
   position: relative;
   background: white;
   border-radius: 1rem;
-  padding: 1.25rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--input-outline);
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .card-item:active {
@@ -141,8 +144,8 @@ const toggleAmountVisibility = () => {
 
 /* 카드 이미지 */
 .card-logo {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 0.5rem;
   object-fit: contain;
   flex-shrink: 0;
@@ -152,6 +155,7 @@ const toggleAmountVisibility = () => {
 .card-info {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .info-top {
@@ -159,6 +163,7 @@ const toggleAmountVisibility = () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.25rem;
+  width: 100%;
 }
 
 .name-section {
@@ -166,12 +171,19 @@ const toggleAmountVisibility = () => {
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .card-name {
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-darkgray);
+  /* 긴 카드명 말줄임표 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* 대표 뱃지 - 라벤더 색상으로 변경 */
@@ -182,7 +194,6 @@ const toggleAmountVisibility = () => {
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
-  margin-left: 0.25rem;
   flex-shrink: 0;
 }
 
@@ -218,11 +229,16 @@ const toggleAmountVisibility = () => {
   font-size: 0.75rem;
   color: var(--text-lightgray);
   margin: 0.25rem 0;
+  /* 긴 카드번호 말줄임표 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* 카드 금액 스타일 */
 .card-amount {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--base-blue-dark);
   margin: 0;

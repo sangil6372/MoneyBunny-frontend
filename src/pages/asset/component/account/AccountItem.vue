@@ -26,10 +26,21 @@
         </button>
       </div>
 
-      <p class="account-number">
-        {{ getBankName(account.bankCode) }}
-        {{ formatAccountNumber(account.accountNumber) }}
-      </p>
+      <!-- 계좌번호와 복사 버튼 -->
+      <div class="account-number-section">
+        <p class="account-number">
+          {{ getBankName(account.bankCode) }}
+          {{ formatAccountNumber(account.accountNumber) }}
+        </p>
+        <button class="copy-btn" @click.stop="copyAccountNumber">
+          <img
+            src="@/assets/images/icons/common/copy.png"
+            alt="복사"
+            class="copy-icon"
+          />
+        </button>
+      </div>
+
       <!-- 잔액 숨기기 적용 -->
       <p class="balance" v-if="!isBalanceHidden">
         {{ formatWon(account.balance) }}
@@ -112,7 +123,7 @@ const formatWon = (value) => `${value.toLocaleString()}원`;
 const formatAccountNumber = (number) =>
   number.replace(/(\d{3})(\d{2,3})(\d{4,6})/, '$1-$2-$3');
 
-// 계좌번호 복사
+// 계좌번호 복사 (간편 복사)
 const copyAccountNumber = async () => {
   try {
     await navigator.clipboard.writeText(props.account.accountNumber);
@@ -121,7 +132,6 @@ const copyAccountNumber = async () => {
     console.error('복사 실패:', error);
     alert('복사에 실패했습니다.');
   }
-  showSettingsModal.value = false;
 };
 
 // 계좌 별명 설정 - store 사용
@@ -154,15 +164,18 @@ const toggleBalanceVisibility = () => {
   position: relative;
   background: white;
   border-radius: 1rem;
-  padding: 1.25rem;
+  padding: 1rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--input-outline);
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: 0.75rem;
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 100%;
 }
 
 .account-item:active {
@@ -171,8 +184,8 @@ const toggleBalanceVisibility = () => {
 
 /* 은행 로고 */
 .bank-logo {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border-radius: 50%;
   object-fit: contain;
   flex-shrink: 0;
@@ -182,6 +195,7 @@ const toggleBalanceVisibility = () => {
 .account-info {
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .info-top {
@@ -189,6 +203,7 @@ const toggleBalanceVisibility = () => {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 0.25rem;
+  width: 100%;
 }
 
 .name-section {
@@ -196,6 +211,8 @@ const toggleBalanceVisibility = () => {
   align-items: center;
   gap: 0.5rem;
   flex: 1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .bank-name {
@@ -208,6 +225,11 @@ const toggleBalanceVisibility = () => {
   font-size: 0.85rem;
   font-weight: 500;
   color: var(--text-darkgray);
+  /* 긴 계좌명 말줄임표 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
 /* 대표 뱃지 - 라벤더 색상으로 변경 */
@@ -218,7 +240,6 @@ const toggleBalanceVisibility = () => {
   font-weight: 600;
   padding: 0.2rem 0.4rem;
   border-radius: 0.25rem;
-  margin-left: 0.25rem;
   flex-shrink: 0;
 }
 
@@ -250,14 +271,59 @@ const toggleBalanceVisibility = () => {
   opacity: 0.8;
 }
 
-.account-number {
-  font-size: 0.75rem;
-  color: var(--text-lightgray);
+/* 계좌번호와 복사 버튼 섹션 */
+.account-number-section {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem; /* 계좌번호와 복사 버튼 사이 간격 축소 */
   margin: 0.25rem 0;
 }
 
+.account-number {
+  font-size: 0.75rem;
+  color: var(--text-lightgray);
+  margin: 0;
+  /* 긴 계좌번호 말줄임표 처리 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1; /* 필요시 축소 가능 */
+}
+
+/* 복사 버튼 */
+.copy-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+
+  /* 모바일 터치 최적화 */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.copy-btn:active {
+  background: var(--input-bg-1);
+  transform: scale(0.95);
+}
+
+.copy-icon {
+  width: 1rem;
+  height: 1rem;
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+  object-fit: contain;
+}
+
+.copy-btn:active .copy-icon {
+  opacity: 0.8;
+}
+
 .balance {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--base-blue-dark);
   margin: 0;

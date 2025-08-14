@@ -1,22 +1,22 @@
 import { ref, computed } from "vue";
 import { defineStore } from "pinia";
-import { FCMTokenManager } from '@/firebase/FCMTokenManager';
+import { FCMTokenManager } from "@/firebase/FCMTokenManager";
 
-import axios from 'axios'; // axios 임포트 // <- 추가
+import axios from "axios"; // axios 임포트 // <- 추가
 
 // 💪(상일) 다른 Pinia 스토어들 import
-import { useBookmarkStore } from '@/stores/bookmark';
-import { useNotificationStore } from '@/stores/notification';
-import { useAssetStore } from '@/stores/asset';
-import { usePolicyQuizStore } from '@/stores/policyQuizStore';
-import { usePolicyMatchingStore } from '@/stores/policyMatchingStore';
+import { useBookmarkStore } from "@/stores/bookmark";
+import { useNotificationStore } from "@/stores/notification";
+import { useAssetStore } from "@/stores/asset";
+import { usePolicyQuizStore } from "@/stores/policyQuizStore";
+import { usePolicyMatchingStore } from "@/stores/policyMatchingStore";
 
 // 초기 상태 템플릿
 const initState = {
-  token: '', // JWT 접근 토큰
+  token: "", // JWT 접근 토큰
   user: {
-    username: '', // 사용자 ID
-    email: '', // 이메일
+    username: "", // 사용자 ID
+    email: "", // 이메일
     roles: [], // 권한 목록
   },
 
@@ -25,7 +25,7 @@ const initState = {
 };
 
 // 스토어 정의
-export const useAuthStore = defineStore('auth', () => {
+export const useAuthStore = defineStore("auth", () => {
   const state = ref({ ...initState });
 
   // Computed 속성들
@@ -49,7 +49,7 @@ export const useAuthStore = defineStore('auth', () => {
   // (3) 아바타 업데이트 액션 추가
   const updateAvatar = () => {
     state.value.avatarTimestamp = Date.now();
-    localStorage.setItem('auth', JSON.stringify(state.value));
+    localStorage.setItem("auth", JSON.stringify(state.value));
   };
 
   // 로그인 액션
@@ -62,7 +62,7 @@ export const useAuthStore = defineStore('auth', () => {
     // };
 
     // 💪(상일) 백엔드 MemberController의 정확한 엔드포인트 사용
-    const { data } = await axios.post('/api/auth/login', {
+    const { data } = await axios.post("/api/auth/login", {
       username: member.username,
       password: member.password,
     });
@@ -72,23 +72,23 @@ export const useAuthStore = defineStore('auth', () => {
     state.value.token = data.accessToken;
     state.value.user = {
       username: data.username,
-      email: '', // email은 응답에 없으므로 빈 값 또는 별도 API로 보완
+      email: "", // email은 응답에 없으므로 빈 값 또는 별도 API로 보완
       roles: [data.role], // role을 배열로 감싸서 roles로 매핑
     };
 
     // localStorage에 상태 저장
-    localStorage.setItem('auth', JSON.stringify(state.value));
+    localStorage.setItem("auth", JSON.stringify(state.value));
   };
 
   // 로그아웃 액션
   // 🎵(유정) + 💪(상일) FCM 토큰 정리 개선
   const logout = async () => {
-    console.log('[Logout] 로그아웃 시작');
+    console.log("[Logout] 로그아웃 시작");
 
     try {
       // 💪(상일) 로그아웃 전 필요한 토큰들 미리 수집
       const authToken = state.value.token;
-      
+
       console.log("[Logout] Auth 토큰 수집 완료:", !!authToken);
 
       // 💪(상일) FCM 토큰은 유지 (로그아웃 후에도 알림 수신)
@@ -117,7 +117,6 @@ export const useAuthStore = defineStore('auth', () => {
       } else {
         console.warn("[Logout] 인증 토큰이 없어 백엔드 로그아웃 생략");
       }
-
     } catch (error) {
       console.error("[Logout] 로그아웃 처리 중 예외 발생:", error);
     } finally {
@@ -128,7 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
         const assetStore = useAssetStore();
         const policyQuizStore = usePolicyQuizStore();
         const policyMatchingStore = usePolicyMatchingStore();
-        
+
         // 각 스토어 초기 상태로 리셋
         bookmarkStore.$reset();
         notificationStore.resetStore(); // 수동 초기화 함수 사용
@@ -136,24 +135,24 @@ export const useAuthStore = defineStore('auth', () => {
         assetStore.clearSummary(); // 추가 초기화
         policyQuizStore.$reset();
         policyMatchingStore.$reset();
-        
+
         console.log("[Logout] 모든 Pinia 스토어 초기화 완료");
       } catch (storeError) {
         console.warn("[Logout] 일부 스토어 초기화 실패:", storeError);
       }
-      
+
       // 💪(상일) FCM 토큰만 보존하고 나머지는 초기화
-      const fcmToken = localStorage.getItem('fcm_token');
-      
+      const fcmToken = localStorage.getItem("fcm_token");
+
       // localStorage 완전 초기화
       localStorage.clear();
-      
+
       // FCM 토큰만 영구 보존 (로그아웃 후에도 알림 수신을 위해)
       if (fcmToken) {
-        localStorage.setItem('fcm_token', fcmToken);
+        localStorage.setItem("fcm_token", fcmToken);
         console.log("[Logout] FCM 토큰 영구 보존");
       }
-      
+
       state.value = { ...initState };
       console.log("[Logout] 로컬 상태 초기화 완료 (FCM 토큰만 보존)");
     }
@@ -168,13 +167,13 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       // JWT 토큰의 payload 부분 디코딩 (base64)
-      const payload = JSON.parse(atob(state.value.token.split('.')[1]));
+      const payload = JSON.parse(atob(state.value.token.split(".")[1]));
       const currentTime = Math.floor(Date.now() / 1000); // 현재 시간을 초 단위로 변환
 
       // exp 필드와 현재 시간 비교 (5분 여유 시간 고려)
       return payload.exp && payload.exp < currentTime + 300;
     } catch (error) {
-      console.error('토큰 디코딩 에러:', error);
+      console.error("토큰 디코딩 에러:", error);
       return true; // 디코딩 실패 시 만료된 것으로 간주
     }
   };
@@ -182,7 +181,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 상태 복원 로직
   // - localStorage에 인증 정보(auth)가 저장되어 있을 경우 상태 복원
   const load = () => {
-    const auth = localStorage.getItem('auth');
+    const auth = localStorage.getItem("auth");
     if (auth != null) {
       state.value = JSON.parse(auth); // JSON 문자열을 객체로 변환
       console.log(state.value);
@@ -192,7 +191,7 @@ export const useAuthStore = defineStore('auth', () => {
   // 프로필 변경 후 로컬 상태 동기화 액션
   const changeProfile = (member) => {
     state.value.user.email = member.email; // 이메일 업데이트
-    localStorage.setItem('auth', JSON.stringify(state.value)); // 로컬스토리지 동기화
+    localStorage.setItem("auth", JSON.stringify(state.value)); // 로컬스토리지 동기화
   };
 
   // 스토어 초기화 시 자동 실행

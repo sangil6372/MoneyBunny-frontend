@@ -101,6 +101,17 @@
       }
     "
   />
+  
+  <!-- 💪(상일) 조건 미충족 시 리뷰 작성 모달 -->
+  <ReviewModal
+    v-if="showReviewModal"
+    :policy-id="reviewPolicyInfo?.policyId"
+    :policy-title="reviewPolicyInfo?.policyTitle"
+    :benefit-status="reviewPolicyInfo?.benefitStatus"
+    :is-edit="false"
+    @close="showReviewModal = false"
+    @save="handleReviewSave"
+  />
 </template>
 
 <script setup>
@@ -113,8 +124,13 @@ import { policyAPI } from '@/api/policy';
 // 💪(상일) 정책 신청 기능
 import { policyInteractionAPI } from '@/api/policyInteraction';
 import PolicyApplyStatusModal from './component/PolicyApplyStatusModal.vue';
+// 💪(상일) 조건 미충족 시 리뷰 작성용 모달
+import ReviewModal from '@/pages/mypage/application/ReviewModal.vue';
 const showStatusModal = ref(false);
 const currentApplication = ref(null); // 💪(상일) 현재 처리 중인 신청
+// 💪(상일) 리뷰 모달 상태
+const showReviewModal = ref(false);
+const reviewPolicyInfo = ref(null);
 
 const router = useRouter();
 const policyMatchingStore = usePolicyMatchingStore();
@@ -162,8 +178,8 @@ const formatPeriod = (periodStr) => {
   return `${s} ~ ${e}`;
 };
 
-// 정책 데이터 관리 (스토어/동적 API)
-const ALL_POLICIES = ref([]);
+// 💪(상일) 정책 데이터를 computed로 관리하여 store 변경 즉시 반영
+const ALL_POLICIES = computed(() => policyMatchingStore.recommendedPolicies);
 
 // 💪(상일) 미완료 신청 체크
 const checkIncompleteApplication = async () => {
@@ -192,6 +208,8 @@ const handleStatusSubmit = async (status) => {
         await policyInteractionAPI.completeApplication(
           currentApplication.value.policyId
         );
+        // 💪(상일) 신청 완료된 정책을 추천 목록에서 즉시 제거
+        policyMatchingStore.removePolicyById(currentApplication.value.policyId);
         break;
 
       case 'notYet':
@@ -202,10 +220,17 @@ const handleStatusSubmit = async (status) => {
         break;
 
       case 'notEligible':
-        // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제
+        // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제 후 리뷰 작성
         await policyInteractionAPI.removeApplication(
           currentApplication.value.policyId
         );
+        // 💪(상일) 즉시 리뷰 모달 표시
+        reviewPolicyInfo.value = {
+          policyId: currentApplication.value.policyId,
+          policyTitle: currentApplication.value.title,
+          benefitStatus: 'NOT_ELIGIBLE'
+        };
+        showReviewModal.value = true;
         break;
     }
   } catch (error) {
@@ -220,9 +245,8 @@ onMounted(async () => {
   try {
     const res = await policyAPI.getUserPolicySearch(); // 항상 요청
     policyMatchingStore.setRecommendedPolicies(res.data);
-    ALL_POLICIES.value = res.data;
   } catch (e) {
-    ALL_POLICIES.value = [];
+    policyMatchingStore.clearRecommendedPolicies();
   }
 
   // 💪(상일) 미완료 신청 체크
@@ -265,6 +289,19 @@ function getUniqueLargeCategories(policy) {
   }
   return [];
 }
+
+// 💪(상일) 리뷰 저장 처리
+const handleReviewSave = async (reviewData) => {
+  try {
+    await policyInteractionAPI.addReview(reviewPolicyInfo.value.policyId, reviewData);
+    alert('후기 작성이 완료되었습니다!');
+    showReviewModal.value = false;
+    reviewPolicyInfo.value = null;
+  } catch (error) {
+    console.error('리뷰 저장 실패:', error);
+    alert('후기 작성에 실패했습니다. 다시 시도해주세요.');
+  }
+};
 
 const goPolicyTypeTest = () => {
   router.push({ name: 'policyIntroForm' });

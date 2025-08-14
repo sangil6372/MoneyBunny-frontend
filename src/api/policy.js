@@ -39,4 +39,10 @@ export const policyAPI = {
 
   // 정책 상세 조회
   getPolicyDetail: (policyId) => axios.get(`/api/policy/detail/${policyId}`),
+
+  // 정책 조회수 TOP3 (추천)
+  getTop3Views: () => axios.get('/api/userPolicy/search/top3-views'),
+
+  // 정책 조회수 TOP3 (전체)
+  getTop3ViewsAll: () => axios.get('/api/userPolicy/search/top3-views/all'),
 };

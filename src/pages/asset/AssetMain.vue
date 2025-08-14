@@ -1,46 +1,46 @@
 <template>
   <div class="asset-page">
-    <!-- 각 탭별 요약카드를 상단에 배치 -->
+    <!-- 1) 요약카드 (모든 탭 공통 위치) -->
+    <div class="summary-area">
+      <!-- 메인 탭 요약카드 -->
+      <TotalAssetCard v-if="currentTab === '메인'" :summary="summary" />
 
-    <!-- 메인 탭 요약카드 -->
-    <TotalAssetCard v-if="currentTab === '메인'" :summary="summary" />
+      <!-- 계좌 탭 요약카드 -->
+      <SummaryCard
+        v-else-if="currentTab === '계좌'"
+        title="총 계좌 잔액"
+        :mainAmount="totalAccountBalance"
+        rightLabel="계좌 수"
+        :rightValue="rightValueForAccounts"
+        :rightUnit="typeof rightValueForAccounts === 'number' ? '개' : ''"
+      />
 
-    <!-- 계좌 탭 요약카드 -->
-    <SummaryCard
-      v-else-if="currentTab === '계좌'"
-      title="총 계좌 잔액"
-      :mainAmount="totalAccountBalance"
-      rightLabel="계좌 수"
-      :rightValue="(summary.accounts || []).length"
-      rightUnit="개"
-    />
+      <!-- 카드 탭 요약카드 -->
+      <SummaryCard
+        v-else-if="currentTab === '카드'"
+        title="이번 달 총 사용액"
+        :mainAmount="totalCardUsage"
+        rightLabel="카드 수"
+        :rightValue="rightValueForCards"
+        :rightUnit="typeof rightValueForCards === 'number' ? '개' : ''"
+      />
 
-    <!-- 카드 탭 요약카드 -->
-    <SummaryCard
-      v-else-if="currentTab === '카드'"
-      title="이번 달 총 사용액"
-      :mainAmount="totalCardUsage"
-      rightLabel="카드 수"
-      :rightValue="(summary.cards || []).length"
-      rightUnit="개"
-    />
+      <!-- 지출 탭 요약카드 (CalendarSection과 연동) -->
+      <SummaryCard
+        v-else-if="currentTab === '지출'"
+        title="이번 달 총 지출액"
+        :main-amount="spendingTabData.totalSpending"
+        right-label="지난달 대비"
+        :right-value="spendingTabData.comparisonText"
+        right-unit=""
+        variant="spending"
+      />
+    </div>
 
-    <!-- 지출 탭 요약카드 -->
-    <SummaryCard
-      v-else-if="currentTab === '지출'"
-      title="이번 달 총 지출액"
-      :mainAmount="totalSpending"
-      rightLabel="지난달 대비"
-      :rightValue="comparisonView.text"
-      rightUnit=""
-      variant="spending"
-    />
-
-    <!-- 탭 스위처 -->
+    <!-- 2) 탭 스위처 -->
     <AssetTabSwitcher :selectedTab="currentTab" @switchTab="switchTab" />
 
-    <!-- 각 탭별 컨텐츠 (요약카드 제외) -->
-
+    <!-- 3) 컨텐츠 -->
     <!-- 메인 탭 컨텐츠 -->
     <div v-if="currentTab === '메인'" class="tab-content">
       <AccountOverviewCard
@@ -79,54 +79,39 @@
     </div>
 
     <!-- 지출 탭 컨텐츠 -->
-    <div v-else-if="currentTab === '지출'" class="tab-content">
-      <!-- 월별 네비게이션 -->
-      <CalendarSection
-        :selected-date="currentDate"
-        @update:selectedDate="updateSelectedDate"
-      />
+    <AssetSpendingTab
+      v-else-if="currentTab === '지출'"
+      ref="spendingTabRef"
+      @spending-data-updated="updateSpendingData"
+      class="tab-content"
+    />
 
-      <!-- 도넛 차트 -->
-      <CategoryDonutChart
-        :total-spending="totalSpending"
-        :chart-data="chartData"
-        @category-click="handleCategoryClick"
-      />
-
-      <!-- 카테고리 리스트 -->
-      <CategoryList
-        :categories="categoryList"
-        :show-all="showAllCategories"
-        @toggle-show-all="toggleShowAll"
-        @category-click="handleCategoryDetailClick"
-      />
-
-      <!-- 월별 지출 추이 차트 -->
-      <CategoryChart
-        :monthly-trend-data="monthlyTrendData"
-        :selected-month="currentDate.getMonth() + 1"
-      />
-
-      <!-- 카테고리 상세보기 모달 -->
-      <DetailModal :visible="showCategoryDetail" @close="closeCategoryDetail">
-        <CategoryDetailView
-          v-if="selectedCategoryData"
-          :category-data="selectedCategoryData"
-          :selected-date="currentDate"
-          @back="closeCategoryDetail"
-        />
-      </DetailModal>
-    </div>
+    <!-- 추천 배너 -->
+    <RecommendBannerCarousel
+      v-if="!recommendLoading && recommendBanners.length > 1"
+      :items="recommendBanners"
+      :interval="5000"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useAssetStore } from '@/stores/asset';
-import { useSync } from '@/composables/useSync';
 import { useRoute, useRouter } from 'vue-router';
-import { useSpendingData } from '@/assets/utils/useSpendingData';
-import { categoryMap } from '@/constants/categoryMap';
+import {
+  fetchHrdkoreaCardExists,
+  fetchRentAccountExists,
+  fetchCardTransportationFees,
+  syncAccounts,
+  syncCards,
+} from '@/api/assetApi'; // API import 추가
+import {
+  regionCodeMap,
+  getRegionNameByCode,
+} from '@/assets/utils/regionCodeMap';
+import { policyAPI } from '@/api/policy';
+import axios from '@/api/index'; // axios 인스턴스 import
 
 // 컴포넌트 import
 import AssetTabSwitcher from './component/common/AssetTabSwitcher.vue';
@@ -137,128 +122,295 @@ import CardOverviewCard from './component/total/CardOverviewCard.vue';
 import AccountList from './component/account/AccountList.vue';
 import CardList from './component/card/CardList.vue';
 import NoDataCard from './component/common/NoDataCard.vue';
-import CalendarSection from './component/spending/CalendarSection.vue';
-import CategoryDonutChart from './component/spending/CategoryDonutChart.vue';
-import CategoryList from './component/spending/CategoryList.vue';
-import CategoryChart from './component/spending/CategoryChart.vue';
-import CategoryDetailView from './component/spending/CategoryDetailView.vue';
-import DetailModal from './component/detail/DetailModal.vue';
+import AssetSpendingTab from './tabs/AssetSpendingTab.vue';
+import RecommendBannerCarousel from './component/banner/RecommendBannerCarousel.vue';
 
-const accountTabRef = ref(null);
-const cardTabRef = ref(null);
+import certificateBunny from '@/assets/images/icons/bunny/certificate_bunny.png';
+import trafficBunny from '@/assets/images/icons/bunny/traffic_bunny.png';
+import rentBunny from '@/assets/images/icons/bunny/rent_bunny.png';
+import recommendBunny from '@/assets/images/icons/bunny/recommend_bunny.png';
 
+// 상태 관리
 const assetStore = useAssetStore();
-
 const route = useRoute();
 const router = useRouter();
 const currentTab = ref(route.query.tab || '메인');
-const getCategoryName = (id) => categoryMap?.[id] || '기타';
+
+// 지출 탭 데이터 (요약카드용) - reactive 상태로 관리
+const spendingTabData = ref({
+  totalSpending: 0,
+  comparisonText: '–',
+});
+
+// 지출 탭에서 데이터를 받는 함수
+const updateSpendingData = (data) => {
+  spendingTabData.value = {
+    totalSpending: data.totalSpending || 0,
+    comparisonText: data.comparisonText || '–',
+  };
+};
+
+const userName = ref('사용자');
+
+// 사용자 프로필에서 name을 받아와 userName에 할당
+async function loadUserName() {
+  try {
+    const { data } = await axios.get('/api/member/information');
+    userName.value = data?.name || '사용자';
+  } catch {
+    userName.value = '사용자';
+  }
+}
+
+// 추천 배너 관련 상태
+const recommendBanners = ref([]);
+const recommendLoading = ref(true);
+
+// 사용자 정책 정보 상태
+const userPolicy = ref(null);
+
+// 사용자 정책 정보 조회 및 지역 정책 추천 로직
+async function getUserRegionPolicyId() {
+  try {
+    if (!userPolicy.value) {
+      const { data } = await policyAPI.getUserPolicy();
+      userPolicy.value = data;
+    }
+    const regions = userPolicy.value?.regions || [];
+    // 지역코드 우선순위: 첫 번째 값 사용, 없으면 기본
+    const code = regions.length ? regions[0] : null;
+    if (!code) return { policyId: 3167, title: 'K패스', calcType: 'kpass' };
+    // 5자리 코드로 판별
+    if (code.startsWith('11')) {
+      // 서울(11000)
+      return { policyId: 423, title: '기후동행카드', calcType: 'climate' };
+    }
+    if (code.startsWith('41')) {
+      // 경기(41000)
+      return { policyId: 3167, title: '경기 K패스', calcType: 'specialKpass' };
+    }
+    return { policyId: 3589, title: 'K패스', calcType: 'kpass' };
+  } catch {
+    return { policyId: 3589, title: 'K패스', calcType: 'kpass' };
+  }
+}
+
+// 교통비 정책별 예상 혜택 계산 함수
+function calcKpassBenefit(amount) {
+  if (amount < 23250) return 0;
+  return Math.floor(amount * 0.3);
+}
+function calcClimateBenefit(amount) {
+  const benefit = amount - 55000;
+  return benefit > 0 ? benefit : 0;
+}
+function calcSpecialKpassBenefit(amount) {
+  if (amount < 93000) return calcKpassBenefit(amount);
+  return Math.floor(93000 * 0.3);
+}
+
+async function loadRecommendBanners() {
+  recommendLoading.value = true;
+  const banners = [];
+
+  const user = userName.value;
+
+  // 1. 기본 배너(개인화 멘트)
+  banners.push({
+    policyId: null,
+    title: `${user}님을 위한 맞춤 혜택`,
+    description: `꼭 필요한 정책만 모았어요. 확인해보세요!`,
+    amount: null,
+    tag: '',
+    deadline: null,
+    image: recommendBunny,
+  });
+
+  let hasPolicyBanner = false;
+
+  // 2. 교통비(후불교통대금) - 지역별 정책/계산방식 적용
+  try {
+    const { policyId, title, calcType } = await getUserRegionPolicyId();
+    const { data: transactions } = await fetchCardTransportationFees();
+    if (Array.isArray(transactions) && transactions.length > 0) {
+      // 월별로 그룹핑
+      const monthMap = {};
+      transactions.forEach((tx) => {
+        const date = new Date(tx.transactionDate);
+        const ym = `${date.getFullYear()}-${date.getMonth() + 1}`;
+        if (!monthMap[ym]) monthMap[ym] = [];
+        monthMap[ym].push(tx);
+      });
+      let totalBenefit = 0;
+      Object.values(monthMap).forEach((list) => {
+        const sum = list.reduce((acc, tx) => acc + (tx.amount || 0), 0);
+        if (calcType === 'climate') {
+          totalBenefit += calcClimateBenefit(sum);
+        } else if (calcType === 'kpass') {
+          totalBenefit += calcSpecialKpassBenefit(sum);
+        } else {
+          totalBenefit += calcKpassBenefit(sum);
+        }
+      });
+      banners.push({
+        policyId,
+        title: `${user}님에게 딱 맞는 ${title} 혜택`,
+        description: `${title}로 교통비 아껴보세요!`,
+        amount: totalBenefit,
+        tag: '추천',
+        deadline: '상시',
+        image: trafficBunny,
+      });
+      hasPolicyBanner = true;
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // 3. 월세 거래내역 있을 때만
+  try {
+    const { data: exists } = await fetchRentAccountExists();
+    if (exists) {
+      banners.push({
+        policyId: 1390,
+        title: `${user}님 월세 부담을 줄여드려요`,
+        description: '월 최대 20만원, 집 걱정 덜어보세요!',
+        amount: 2400000,
+        tag: '추천',
+        deadline: '상시',
+        image: rentBunny,
+      });
+      hasPolicyBanner = true;
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // 4. 한국산업인력공단 카드 결제내역 있을 때만
+  try {
+    const { data: exists } = await fetchHrdkoreaCardExists();
+    if (exists) {
+      banners.push({
+        policyId: 813,
+        title: `${user}님의 도전을 응원합니다!`,
+        description: '응시료부터 교육비까지 든든하게!',
+        amount: 0,
+        tag: '추천',
+        deadline: '상시',
+        image: certificateBunny,
+      });
+      hasPolicyBanner = true;
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  // 정책 배너가 하나도 없으면 기본 배너도 제거
+  if (!hasPolicyBanner) {
+    recommendBanners.value = [];
+  } else {
+    recommendBanners.value = banners;
+  }
+  recommendLoading.value = false;
+}
+
+const syncing = ref({ accounts: false, cards: false });
 
 // 뒤로/앞으로가기 등 쿼리 변화 대응
 watch(
   () => route.query.tab,
-  (tab) => {
-    if (tab && tab !== currentTab.value) {
-      currentTab.value = tab;
-    }
+  async (tab) => {
+    if (!tab) return;
+    if (tab !== currentTab.value) currentTab.value = tab;
   }
 );
 
-// 동기화 composable 가져오기
-const { syncWithUX: syncAccounts } = useSync('account');
-const { syncWithUX: syncCards } = useSync('card');
-
-// 지출 데이터 composable
-const {
-  currentDate,
-  totalSpending,
-  monthComparison,
-  categoryList,
-  chartData,
-  monthlyTrendData,
-  getCategoryDetail,
-} = useSpendingData();
-
-// AssetMain.vue 안의 adaptTx 교체
-const adaptTx = (vo, categoryName) => {
-  // vo.transactionDate: epoch(ms) 또는 ISO 라고 가정
-  const dt = vo.transactionDate ? new Date(vo.transactionDate) : null;
-
-  // YYYY-MM-DD / HH:mm 포맷
-  const yyyy = dt ? dt.getFullYear() : '';
-  const mm = dt ? String(dt.getMonth() + 1).padStart(2, '0') : '';
-  const dd = dt ? String(dt.getDate()).padStart(2, '0') : '';
-  const hh = dt ? String(dt.getHours()).padStart(2, '0') : '';
-  const mi = dt ? String(dt.getMinutes()).padStart(2, '0') : '';
-
-  return {
-    id: vo.id,
-    amount: Number(vo.amount ?? 0),
-    // 제목/상호
-    merchant: vo.storeName || vo.storeName1 || '',
-    storeName: vo.storeName || vo.storeName1 || '',
-    // 카테고리 태그용
-    category: categoryName || '',
-    // 날짜/시간
-    date: dt ? `${yyyy}-${mm}-${dd}` : '',
-    time: dt ? `${hh}:${mi}` : '',
-    // 옵션(있으면 상세에 노출됨)
-    storeType: vo.storeType || '',
-    paymentMethod: vo.payment_type || vo.paymentType || '', // 백엔드 키 케이스 커버
-    memo: vo.memo || '',
-    // 참고 필드
-    approvedAt: dt,
-    approvalNo: vo.approval_no || vo.approvalNo,
-  };
-};
-
-const openCategoryDetail = async (category) => {
-  try {
-    const raw = await getCategoryDetail(category.id);
-    const catName = getCategoryName(category.id);
-
-    const transactions = Array.isArray(raw)
-      ? raw.map((vo) => adaptTx(vo, catName))
-      : [];
-
-    selectedCategoryData.value = {
-      id: category.id,
-      name: catName,
-      color: category.color,
-      totalAmount: category.amount,
-      total: category.amount,
-      percentage: category.percentage,
-      transactions,
-    };
-
-    showCategoryDetail.value = true;
-  } catch (e) {
-    console.error('[openCategoryDetail] error', e);
-  }
-};
-
-// 새로고침, 진입시 항상 동기화 + summary 최신화
+// 컴포넌트 마운트 시 데이터 로드
 onMounted(async () => {
-  // await syncAccounts(true);
-  // await syncCards(true);
-  await assetStore.loadSummary();
+  await loadUserName();
+  await assetStore.loadSummary(true);
+  const navEntries = performance.getEntriesByType?.('navigation') || [];
+  const isReload = navEntries[0]?.type === 'reload';
+  if (
+    isReload &&
+    (currentTab.value === '계좌' || currentTab.value === '카드')
+  ) {
+    await autoSyncForTab(currentTab.value);
+  }
+  await loadRecommendBanners();
 });
 
+// 탭 전환 함수
 function switchTab(tab) {
   currentTab.value = tab;
   router.replace({ query: { ...route.query, tab } });
+}
 
-  if (tab === '계좌' && accountTabRef.value) {
-    accountTabRef.value.syncWithUX();
-  }
-  if (tab === '카드' && cardTabRef.value) {
-    cardTabRef.value.syncWithUX();
+// 요약 스냅샷 (변경 감지용)
+function snapshotSummary() {
+  const s = assetStore.summary || {};
+  return {
+    lastUpdatedAt: s.lastUpdatedAt || null,
+    totalAccountBalance:
+      (s.accounts || []).reduce((sum, acc) => sum + (acc.balance || 0), 0) || 0,
+    accountsLen: (s.accounts || []).length || 0,
+    totalCardUsage:
+      (s.cards || []).reduce((sum, c) => sum + (c.thisMonthUsed || 0), 0) || 0,
+    cardsLen: (s.cards || []).length || 0,
+  };
+}
+
+// sleep 유틸
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+// 탭별 자동 동기화
+async function autoSyncForTab(tab) {
+  console.debug('[autoSyncForTab]', tab);
+  if (tab === '계좌') {
+    if (syncing.value.accounts) return;
+    syncing.value.accounts = true;
+    const before = snapshotSummary();
+    try {
+      // 1) 동기화 트리거
+      const res = await syncAccounts(); // 202 or 200(+요약)
+      // 2) 응답에 요약이 있으면 즉시 반영
+      if (res?.data) {
+        assetStore.summary = res.data;
+      } else {
+        // 3) 없으면 잠깐 대기 후 서버 요약 딱 한 번만 강제 호출
+        await sleep(1000); // 필요시 1000~2000ms로 조절
+        await assetStore.loadSummary(true);
+      }
+      syncing.value.accounts = false;
+    } catch (e) {
+      console.error('[SYNC][계좌] 실패', e);
+    }
+  } else if (tab === '카드') {
+    if (syncing.value.cards) return;
+    syncing.value.cards = true;
+    const before = snapshotSummary();
+    try {
+      const res = await syncCards();
+      if (res?.data) {
+        assetStore.summary = res.data;
+      } else {
+        await sleep(1000);
+        await assetStore.loadSummary(true);
+      }
+      syncing.value.cards = false;
+    } catch (e) {
+      console.error('[SYNC][카드] 실패', e);
+      syncing.value.cards = false;
+    }
+  } else {
+    // 메인/지출 등은 기존 요약만 유지
   }
 }
 
+// computed 속성들
 const summary = computed(() => assetStore.summary || {});
 
-// 계좌 총 잔액 계산
 const totalAccountBalance = computed(() =>
   (summary.value.accounts || []).reduce(
     (sum, acc) => sum + (acc.balance || 0),
@@ -266,7 +418,6 @@ const totalAccountBalance = computed(() =>
   )
 );
 
-// 카드 총 사용액 계산
 const totalCardUsage = computed(() =>
   (summary.value.cards || []).reduce(
     (sum, card) => sum + (card.thisMonthUsed || 0),
@@ -274,110 +425,54 @@ const totalCardUsage = computed(() =>
   )
 );
 
-// 전월 대비 텍스트 계산
-const comparisonView = computed(() => {
-  const mc = monthComparison.value || {};
-  const isDecrease = !!mc.isDecrease; // 지출 감소 = 좋은 상태
-  const isIncrease = !!mc.isIncrease;
+// 우측 값: 동기화 중이면 "동기화중…"으로 표시
+const rightValueForAccounts = computed(() =>
+  syncing.value.accounts ? '동기화중…' : (summary.value.accounts || []).length
+);
+const rightValueForCards = computed(() =>
+  syncing.value.cards ? '동기화중…' : (summary.value.cards || []).length
+);
 
-  const arrow = isDecrease ? '▼' : isIncrease ? '▲' : '–';
-  const sign = isIncrease ? '+' : isDecrease ? '-' : '';
-
-  const absDiff = Number(mc.absDiff ?? 0);
-  const absPercent = Number(mc.absPercent ?? 0);
-
-  // 예) ▼ 252,720원 (-47.5%)
-  const text = `${arrow} ${absDiff.toLocaleString()}원 (${sign}${absPercent}%)`;
-
-  return { text, isDecrease, isIncrease };
-});
-
-// 월별 추이 차트용 데이터 변환
-const monthlyTrendChartData = computed(() => {
-  const { months, amounts } = monthlyTrendData.value;
-  return months.map((month, index) => ({
-    date: month.replace('월', '.1'),
-    price: amounts[index],
-    category: '지출',
-    memo: '월별 지출',
-  }));
-});
-
-// 지출 탭 관련 상태
-const showAllCategories = ref(false);
-const showCategoryDetail = ref(false);
-const selectedCategoryData = ref(null);
-
-// 지출 탭 이벤트 핸들러들
-const updateSelectedDate = (newDate) => {
-  if (!newDate) return;
-  const cur = currentDate.value;
-  const sameYM =
-    cur.getFullYear() === newDate.getFullYear() &&
-    cur.getMonth() === newDate.getMonth();
-  if (sameYM) return;
-  currentDate.value = newDate;
-};
-
-const toggleShowAll = () => {
-  showAllCategories.value = !showAllCategories.value;
-};
-
-const handleCategoryClick = (categoryIndex) => {
-  const category = categoryList.value[categoryIndex];
-  if (category) {
-    openCategoryDetail(category);
-  }
-};
-
-const handleCategoryDetailClick = (category) => {
-  openCategoryDetail(category);
-};
-
-// const openCategoryDetail = (category) => {
-//   selectedCategoryData.value = category;
-//   showCategoryDetail.value = true;
+// // 계좌/카드 관련 이벤트 핸들러들
+// const deleteAccount = (account) => {
+//   console.log('계좌 삭제:', account);
+//   // 실제 삭제 로직 구현 필요
 // };
 
-const closeCategoryDetail = () => {
-  showCategoryDetail.value = false;
-  selectedCategoryData.value = null;
-};
+// const onUpdateAccounts = (accounts) => {
+//   console.log('계좌 업데이트:', accounts);
+//   // 실제 업데이트 로직 구현 필요
+// };
 
-// 계좌/카드 관련 이벤트 핸들러들
-const deleteAccount = (account) => {
-  // 계좌 삭제 로직
-  console.log('계좌 삭제:', account);
-};
+// const onAddAccount = () => {
+//   alert('계좌 추가 기능(모달)!');
+//   // 실제 모달 열기 로직 구현 필요
+// };
 
-const onUpdateAccounts = (accounts) => {
-  // 계좌 업데이트 로직
-  console.log('계좌 업데이트:', accounts);
-};
+// const deleteCard = (cardToDelete) => {
+//   console.log('카드 삭제:', cardToDelete);
+//   // 실제 삭제 로직 구현 필요
+// };
 
-const onAddAccount = () => {
-  alert('계좌 추가 기능(모달)!');
-};
+// const onUpdateCards = (newCards) => {
+//   console.log('카드 업데이트:', newCards);
+//   // 실제 업데이트 로직 구현 필요
+// };
 
-const deleteCard = (cardToDelete) => {
-  // 카드 삭제 로직
-  console.log('카드 삭제:', cardToDelete);
-};
-
-const onUpdateCards = (newCards) => {
-  // 카드 업데이트 로직
-  console.log('카드 업데이트:', newCards);
-};
-
-const onAddCard = () => {
-  console.log('카드 추가 모달 열기');
-};
+// const onAddCard = () => {
+//   console.log('카드 추가 모달 열기');
+//   // 실제 모달 열기 로직 구현 필요
+// };
 </script>
 
 <style scoped>
 .asset-page {
   display: flex;
   flex-direction: column;
+}
+
+.summary-area {
+  margin-bottom: 0rem;
 }
 
 .tab-content {
@@ -389,6 +484,6 @@ const onAddCard = () => {
 }
 
 .tab-content > *:last-child {
-  margin-bottom: 0;
+  margin-bottom: 1rem;
 }
 </style>

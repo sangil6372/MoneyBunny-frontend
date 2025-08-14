@@ -16,6 +16,13 @@
     </span>
     <span
       class="tabItem font-13"
+      :class="{ active: currentTab === 'application' }"
+      @click="$emit('changeTab', 'application')"
+    >
+      신청 정책
+    </span>
+    <span
+      class="tabItem font-13"
       :class="{ active: currentTab === 'settings' }"
       @click="$emit('changeTab', 'settings')"
     >

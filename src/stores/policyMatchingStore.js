@@ -11,5 +11,11 @@ export const usePolicyMatchingStore = defineStore('policyMatching', {
     clearRecommendedPolicies() {
       this.recommendedPolicies = [];
     },
+    // 💪(상일) 특정 정책을 목록에서 제거
+    removePolicyById(policyId) {
+      this.recommendedPolicies = this.recommendedPolicies.filter(
+        policy => policy.policyId !== policyId
+      );
+    },
   },
 });

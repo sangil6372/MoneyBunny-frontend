@@ -165,17 +165,10 @@ export const useBookmarkStore = defineStore("bookmark", () => {
     try {
       await bookmarkAPI.removeBookmark(policyId);
 
-      // 💪(상일) 즉시 로컬 상태 업데이트 - 두 가지 방법으로 처리
-      // 방법 1: 해당 북마크를 배열에서 완전 제거
+      // 💪(상일) 즉시 로컬 상태 업데이트
       bookmarks.value = bookmarks.value.filter(
         (bookmark) => bookmark.policyId !== policyId
       );
-
-      // 방법 2: 만약 필터링 기반으로 하고 싶다면 isBookmarked를 false로 설정
-      // const bookmark = bookmarks.value.find(bookmark => bookmark.policyId === policyId);
-      // if (bookmark) {
-      //   bookmark.isBookmarked = false;
-      // }
 
       return true;
     } catch (err) {

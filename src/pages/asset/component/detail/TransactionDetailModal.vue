@@ -1,5 +1,5 @@
 <template>
-  <!-- 거래 상세 모달 오버레이 -->
+  <!-- 거래 상세(상세보기의 상세보기) 모달 오버레이 -->
   <div v-if="show" class="modal-overlay" @click.self="closeModal">
     <div class="modal-container">
       <!-- 헤더 영역 - 전체 가로폭 사용 -->

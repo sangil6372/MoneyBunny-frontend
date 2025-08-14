@@ -1,11 +1,11 @@
 <script setup>
-import { ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
 // 🎵(유정) 이메일 인증 후 아이디 결과 반환 페이지
 const route = useRoute();
 const router = useRouter();
 
-const loginId = route.query.loginId || 'unknown';
+const loginId = route.query.loginId || "unknown";
 const showCopyMsg = ref(false);
 const handleCopy = async () => {
   try {
@@ -15,12 +15,12 @@ const handleCopy = async () => {
       showCopyMsg.value = false;
     }, 1500);
   } catch (e) {
-    alert('복사에 실패했습니다.');
+    alert("복사에 실패했습니다.");
   }
 };
 // 로그인 버튼 핸들러
 const goLogin = () => {
-  router.push('/');
+  router.push("/");
 };
 </script>
 
@@ -61,11 +61,6 @@ const goLogin = () => {
         <button class="goLoginButton font-14" @click="goLogin">
           로그인하러가기
         </button>
-
-        <div class="signupLink font-11">
-          계정이 없으신가요?
-          <router-link to="/signUpEmailVerify">회원가입</router-link>
-        </div>
       </div>
     </div>
   </div>

@@ -95,6 +95,13 @@ export function useSpendingData() {
     }
   }
 
+  // 지출탭에서 강제로 다시 불러올 때 사용
+  async function refetch(trendMonths = 6) {
+    // 중복 호출 방지 로직은 유지하고 싶지 않다면 lastKey 초기화
+    lastKey.value = null;
+    await loadOverview(trendMonths);
+  }
+
   /** 이번 달 총 지출 */
   const totalSpending = computed(() =>
     Number(overview.value?.totalSpending ?? 0)
@@ -232,5 +239,6 @@ export function useSpendingData() {
     nextMonth,
     loadOverview,
     getCategoryDetail,
+    refetch,
   };
 }

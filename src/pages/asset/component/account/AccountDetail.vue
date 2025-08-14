@@ -1,7 +1,7 @@
 <template>
   <div class="account-detail">
     <DetailHeader title="계좌 상세" @back="onClose" />
-    <DetailInfoCard type="account" :data="accountData" />
+    <DetailSummaryCard type="account" :data="accountData" />
 
     <!-- 🥕 변경: AccountTransactionFilter → SearchFilterHeader -->
     <SearchFilterHeader
@@ -12,9 +12,10 @@
       @filter-modal-open="openFilterModal"
     />
 
-    <!-- 🥕 추가: AccountFilterModal -->
-    <AccountFilterModal
+    <!-- 🥕 수정: 통합된 TransactionFilterModal 사용 -->
+    <TransactionFilterModal
       :show="showFilterModal"
+      type="account"
       @close="closeFilterModal"
       @apply="onFilterApply"
     />
@@ -44,10 +45,10 @@
 import { ref } from 'vue';
 
 import DetailHeader from '../detail/DetailHeader.vue';
-import DetailInfoCard from '../detail/DetailInfoCard.vue';
-// 🥕 변경: SearchFilterHeader import 추가, AccountFilterModal import 추가
-import SearchFilterHeader from '../common/SearchFilterHeader.vue';
-import AccountFilterModal from '../account/AccountFilterModal.vue';
+import DetailSummaryCard from '../detail/DetailSummaryCard.vue';
+// 🥕 변경: 통합된 TransactionFilterModal import
+import SearchFilterHeader from '../detail/SearchFilterHeader.vue';
+import TransactionFilterModal from '../detail/TransactionFilterModal.vue';
 import TransactionList from '../detail/TransactionList.vue';
 import TransactionDetailModal from '../detail/TransactionDetailModal.vue';
 
@@ -73,16 +74,22 @@ const filter = ref('전체');
 const currentMonth = ref(new Date().toISOString().slice(0, 7)); // YYYY-MM
 
 // 🥕 추가: 고급 필터 상태 (검색, 기간, 정렬 등)
-const advancedFilters = ref({
-  searchKeyword: '',
-  dateRange: {
-    type: '3개월',
-    startDate: null,
-    endDate: null,
-  },
-  transactionType: '전체',
-  sortBy: '최신순',
-});
+function makeDefaultAdvancedFilters() {
+  const today = new Date();
+  const endDate = today.toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식
+
+  const start = new Date();
+  start.setMonth(start.getMonth() - 3);
+  const startDate = start.toISOString().slice(0, 10);
+
+  return {
+    searchKeyword: '',
+    dateRange: { type: '3개월', startDate, endDate },
+    transactionType: '전체',
+    sortBy: '최신순',
+  };
+}
+const advancedFilters = ref(makeDefaultAdvancedFilters());
 
 // 🥕 거래 상세 모달 관련 상태 (기존 유지)
 const showTransactionModal = ref(false);
@@ -121,23 +128,23 @@ const closeFilterModal = () => {
   showFilterModal.value = false;
 };
 
-// 🥕 추가: 필터 모달에서 필터 적용
+// 🥕 수정: 필터 모달에서 필터 적용 (통합 모달 대응)
 const onFilterApply = (appliedFilters) => {
-  console.log('필터 적용됨:', appliedFilters);
+  console.log('계좌 필터 적용됨:', appliedFilters);
 
   // 고급 필터 상태 업데이트
   advancedFilters.value = { ...appliedFilters };
 
-  // 기본 필터 업데이트
-  if (appliedFilters.transactionType === '입금만') {
+  // 기본 필터 업데이트 (계좌는 입금/출금)
+  if (appliedFilters.transactionType === '입금') {
     filter.value = '입금';
-  } else if (appliedFilters.transactionType === '출금만') {
+  } else if (appliedFilters.transactionType === '출금') {
     filter.value = '출금';
   } else {
     filter.value = '전체';
   }
 
-  // 검색어 업데이트
+  // 검색어 업데이트 (계좌는 검색 기능이 없지만 일관성을 위해 유지)
   searchKeyword.value = appliedFilters.searchKeyword || '';
 
   // 필터 텍스트 업데이트 (드롭다운 표시용)
@@ -146,8 +153,7 @@ const onFilterApply = (appliedFilters) => {
   const sort = appliedFilters.sortBy === '최신순' ? '최신' : '과거순';
   currentFilterText.value = `${period}·${type}·${sort}`;
 
-  // 모달 닫기
-  closeFilterModal();
+  // 모달은 통합 컴포넌트에서 자동으로 닫힘
 };
 </script>
 
