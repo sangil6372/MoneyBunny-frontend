@@ -93,7 +93,7 @@ const startTest = () => {
 .introContainer {
   padding: 20px;
   background-color: #fff;
-  border-radius: 12px;
+  border-radius: 6px;
   max-width: 360px;
   margin-bottom: 20px;
 }
@@ -107,7 +107,7 @@ const startTest = () => {
 .headerCard {
   text-align: center;
   background-color: var(--base-blue-dark);
-  border-radius: 12px;
+  border-radius: 6px;
   padding: 16px;
   color: white;
   max-width: 360px;

@@ -2,7 +2,7 @@
 <template>
   <div class="category-chart">
     <div class="chart-header">
-      <h4 class="chart-title">월별 지출 추이</h4>
+      <div class="chart-title">월별 지출 추이</div>
       <p class="chart-subtitle">최근 6개월</p>
     </div>
 
@@ -149,22 +149,20 @@ const formatBarAmount = (amount) => {
 <style scoped>
 .category-chart {
   background: white;
-  border-radius: 0.75rem;
-  padding: 1.5rem;
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); */
-  margin-top: 1.5rem;
+  border-radius: 6px;
+  padding: 1.2rem;
 }
 
 .chart-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .chart-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }
@@ -184,8 +182,8 @@ const formatBarAmount = (amount) => {
   align-items: flex-end;
   justify-content: space-between;
   height: 100px;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
   padding: 0 0.25rem;
 }
 
@@ -195,17 +193,17 @@ const formatBarAmount = (amount) => {
   flex-direction: column;
   align-items: center;
   position: relative;
-  max-width: 32px;
+  max-width: 40px;
 }
 
 /* 막대 위 금액 표시 */
 .bar-amount {
   position: absolute;
   bottom: 100%;
-  margin-bottom: 8px;
-  font-size: 0.7rem;
+  margin-bottom: 6px;
+  font-size: 0.6rem;
   color: var(--text-login);
-  font-weight: 600;
+  font-weight: bold;
   text-align: center;
   animation: slideUp 0.2s ease;
   white-space: nowrap;
@@ -225,11 +223,10 @@ const formatBarAmount = (amount) => {
 
 .chart-bar {
   width: 100%;
-  border-radius: 4px;
-  min-height: 8px;
-  transition: all 0.3s ease;
+  border-radius: 3px;
+
   position: relative;
-  background: var(--base-lavender);
+  background: #bfc8d9;
 }
 
 /* 현재 월 막대 스타일 */
@@ -240,8 +237,7 @@ const formatBarAmount = (amount) => {
 /* 선택된 막대 스타일 */
 .chart-bar.selected {
   background: var(--base-blue-dark);
-  transform: scaleY(1.05);
-  box-shadow: 0 2px 8px rgba(255, 230, 235, 0.6);
+  /* transform: scaleY(1.05); */
 }
 
 .chart-labels {
@@ -256,20 +252,32 @@ const formatBarAmount = (amount) => {
   text-align: center;
   font-size: 0.75rem;
   color: var(--text-bluegray);
-  padding: 0.375rem 0.25rem;
+  padding: 0.25rem 0.15rem;
   border-radius: 2px;
-  transition: all 0.2s ease;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 .chart-label.active {
   color: var(--base-blue-dark);
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .chart-label.selected {
   color: var(--text-login);
-  font-weight: 600;
+  font-weight: bold;
+}
+
+.no-data {
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.no-data-text {
+  font-size: 0.75rem;
+  color: var(--text-lightgray);
+  margin: 0;
 }
 
 /* 반응형 처리 */

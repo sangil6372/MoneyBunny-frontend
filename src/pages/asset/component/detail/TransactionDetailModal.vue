@@ -20,7 +20,7 @@
           </div>
 
           <!-- 거래 제목 -->
-          <h2 class="transaction-title">{{ transaction.description }}</h2>
+          <div class="transaction-title">{{ transaction.description }}</div>
 
           <!-- 상세 정보 리스트 -->
           <div class="detail-grid">
@@ -98,7 +98,7 @@
 
         <!-- 거래 메모 카드 -->
         <div class="memo-card">
-          <h3>메모</h3>
+          <div>메모</div>
           <!-- 메모 입력 필드 -->
           <input
             type="text"
@@ -126,16 +126,36 @@
         <button class="confirm-btn" @click="closeModal">확인</button>
       </div>
     </div>
+    <div
+      v-if="toast.show"
+      class="mbToast"
+      :class="toast.type"
+      role="status"
+      aria-live="polite"
+    >
+      {{ toast.message }}
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue';
+import { onBeforeUnmount } from 'vue';
 import DetailHeader from './DetailHeader.vue';
 import {
   updateCardTransactionMemo,
   updateAccountTransactionMemo,
 } from '@/api/assetApi';
+
+//👸🏻(은진) : 저장 토스트
+const toast = ref({ show: false, message: '', type: 'success' }); // type: 'success' | 'error'
+let toastTimer = null;
+function showToast(message, type = 'success', ms = 1800) {
+  toast.value = { show: true, message, type };
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (toast.value.show = false), ms);
+}
+onBeforeUnmount(() => clearTimeout(toastTimer));
 
 // Props 정의
 const props = defineProps({
@@ -210,9 +230,9 @@ const saveMemo = async () => {
     memoText.value = newMemo;
     props.transaction.memo = newMemo;
     emit('memo-updated', { id: txId, memo: newMemo });
-    alert('메모 저장 완료!');
+    showToast('메모가 저장되었습니다.', 'success');
   } catch (e) {
-    alert('메모 저장 실패');
+    showToast('메모 저장에 실패했어요.', 'error');
   } finally {
     isSaving.value = false;
   }
@@ -245,7 +265,7 @@ watch(
 /* 모달 컨테이너 - 실제 모달 내용을 담는 영역 */
 .modal-container {
   width: 100%;
-  max-width: 474px;
+  max-width: 390px;
   background: var(--input-bg-2);
   min-height: 100vh;
   display: flex;
@@ -275,7 +295,7 @@ watch(
 /* 컨텐츠 영역 - 스크롤 가능, 패딩 적용 */
 .modal-content {
   flex: 1;
-  padding: 0 1rem 2rem;
+  padding: 1rem;
   overflow-y: auto;
   box-sizing: border-box;
 }
@@ -283,13 +303,10 @@ watch(
 /* 거래 정보 카드 스타일 */
 .info-card {
   background: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 6px;
+  padding: 16px;
 }
 
-/* 카드 상단 영역 - 로고, 제목, 금액이 포함된 영역 */
 .info-top {
   display: flex;
   justify-content: space-between;
@@ -297,7 +314,7 @@ watch(
   margin-bottom: 1.5rem;
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--input-bg-1);
-  gap: 1rem; /* 좌우 영역 간 간격 확보 */
+  gap: 1rem;
 }
 
 /* 좌측 영역 - 텍스트만 */
@@ -316,19 +333,18 @@ watch(
 
 /* 거래 제목 (상점명 등) - 크기 증가 */
 .transaction-title {
-  font-size: 1.7rem;
-  font-weight: 500;
+  font-size: 1rem;
   color: var(--text-login);
-  margin: 0.75rem 0 1.5rem 0; /* 상단, 하단 마진 증가 */
   line-height: 1.3;
   word-break: break-all;
-  padding-bottom: 1rem;
+  margin: 0;
+  padding: 8px 0 12px;
   border-bottom: 1px solid var(--input-bg-1);
 }
 
 /* 거래 부제목 */
 .transaction-sub {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-bluegray);
   margin: 0;
 }
@@ -346,8 +362,8 @@ watch(
 
 /* 거래 금액 텍스트 */
 .transaction-amount {
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: bold;
   margin: 0;
 }
 
@@ -363,16 +379,16 @@ watch(
 
 /* 금액 라벨 */
 .amount-label {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-lightgray);
-  font-weight: 500;
 }
 
 /* 상세 정보 그리드 */
 .detail-grid {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0rem;
+  margin-top: 0;
 }
 
 /* 상세 정보 아이템 */
@@ -380,34 +396,37 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid var(--input-bg-1);
 }
 
-/* 마지막 아이템은 하단 구분선 제거 */
+detail-item:first-child {
+  padding-top: 10px;
+}
 .detail-item:last-child {
+  padding-bottom: 0; /* 마지막 행 아래 과한 공백 제거 */
   border-bottom: none;
 }
 
 /* 상세 정보 라벨 */
 .detail-label {
-  font-size: 0.9rem;
+  line-height: 1.35;
+  font-size: 0.8rem;
   color: var(--text-darkgray);
-  font-weight: 500;
 }
 
 /* 상세 정보 값 */
 .detail-value {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-login);
-  font-weight: 600;
-  text-align: right;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.35;
 }
 
 /* 잔액 표시 색상 */
 .detail-value.balance {
   color: var(--base-blue-dark);
-  font-weight: 700;
+  font-weight: bold;
 }
 
 /* 거래구분 입금/환불 색상 */
@@ -423,59 +442,60 @@ watch(
 /* 메모 카드 스타일 */
 .memo-card {
   background: white;
-  border-radius: 1rem;
+  border-radius: 6px;
   padding: 1.5rem;
   margin-top: 1rem;
 }
 
 /* 메모 카드 제목 */
-.memo-card h3 {
-  font-size: 1rem;
+.memo-card {
+  font-size: 0.9rem;
   margin-bottom: 0.75rem;
   color: var(--base-blue-dark);
-  font-weight: 600;
+  font-weight: bold;
 }
 
 /* 메모 입력 필드 */
 .memo-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--input-bg-3);
-  border-radius: 0.75rem;
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
+  padding: 0.5rem;
+  border: 1.5px solid var(--input-outline);
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  font-size: 0.8rem;
   box-sizing: border-box;
 }
 
 /* 메모 입력 필드 포커스 시 */
 .memo-input:focus {
   outline: none;
-  border-color: var(--base-blue-dark);
+  border-color: var(--input-bg-3);
 }
 
-/* 메모 하단 영역 - 글자수와 저장 버튼 */
 .memo-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-top: 0.75rem;
+  gap: 10px;
+  margin-top: 8px;
 }
 
-/* 글자수 카운터 */
 .memo-count {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-lightgray);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1px;
 }
 
 /* 메모 저장 버튼 기본 상태 */
 .memo-save {
+  height: 34px;
   background: var(--input-disabled-1);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  border-radius: 6px;
+  padding: 0 12px;
+  font-size: 0.75rem;
 }
 
 /* 메모 저장 버튼 활성화 상태 */
@@ -493,16 +513,29 @@ watch(
   background: var(--base-blue-dark);
   color: white;
   border: none;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-top: 1.5rem;
+  border-radius: 6px;
+  padding: 0.8rem;
+  font-size: 1rem;
+  margin-top: 1rem;
 }
 
-/* 확인 버튼 터치 시 피드백 */
-.confirm-btn:active {
-  background: #263952;
-  transform: scale(0.98);
+.mbToast {
+  position: fixed;
+  left: 50%;
+  top: 40%;
+  transform: translateX(-50%);
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 0.75rem;
+  z-index: 3000;
+  animation: mbToastIn 0.12s ease-out, mbToastOut 0.2s ease-in forwards;
+  animation-delay: 0s, 1.6s;
+}
+.mbToast.success {
+  background: var(--base-blue-dark);
+}
+.mbToast.error {
+  background: var(--alert-red);
 }
 </style>

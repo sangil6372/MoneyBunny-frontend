@@ -1,6 +1,10 @@
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue';
-import { fetchCardTransportationFees } from '@/api/assetApi';
+import { ref, onMounted, watch, computed } from "vue";
+import { fetchCardTransportationFees } from "@/api/assetApi";
+import { useAuthStore } from "@/stores/auth";
+
+const authStore = useAuthStore();
+const isLoggedIn = computed(() => authStore.isLogin); // 또는 getToken() 여부
 
 const props = defineProps({
   description: String,
@@ -10,7 +14,7 @@ const props = defineProps({
 });
 
 const formatPeriod = (periodStr) => {
-  if (!periodStr) return '상시';
+  if (!periodStr) return "상시";
   const match = periodStr.match(/^(\d{8})\s*~\s*(\d{8})$/);
   if (!match) return periodStr;
   const [_, start, end] = match;
@@ -21,11 +25,20 @@ const formatPeriod = (periodStr) => {
 
 // 줄바꿈 분리 함수
 const splitLines = (str) =>
-  str ? str.split('\n').filter((s) => s.trim() !== '') : [];
+  str ? str.split("\n").filter((s) => s.trim() !== "") : [];
 
 // K패스/기후동행카드 혜택 금액 관련 상태
 const kpassBenefit = ref(null);
 const kpassLoading = ref(false);
+
+// k패스 비로그인 화면 처리
+const requiresLogin = ref(false); // 401 여부
+const benefitError = ref(null); // 그 외 에러 메시지
+
+// 로그인 && 해당 정책일 때만 보이게
+const showBenefitSection = computed(
+  () => isLoggedIn.value && [3167, 423, 3589].includes(props.policyId)
+);
 
 const calcKpassBenefit = (amount) => {
   if (amount < 23250) return 0;
@@ -50,7 +63,7 @@ function groupByMonth(transactions, policyId) {
     const date = new Date(tx.transactionDate);
     const month = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
       2,
-      '0'
+      "0"
     )}`;
     if (!result[month]) result[month] = 0;
     result[month] += tx.amount;
@@ -84,12 +97,34 @@ function groupByMonth(transactions, policyId) {
 
 const loadKpassBenefit = async () => {
   kpassLoading.value = true;
+
+  // 비로그인 처리
+  requiresLogin.value = false;
+  benefitError.value = null;
+
+  if (!isLoggedIn.value) {
+    kpassBenefit.value = [];
+    requiresLogin.value = true;
+    kpassLoading.value = false;
+    return;
+  }
+
   try {
     const res = await fetchCardTransportationFees();
     const transactions = res.data || [];
     kpassBenefit.value = groupByMonth(transactions, props.policyId);
   } catch (e) {
-    kpassBenefit.value = [];
+    // kpassBenefit.value = [];
+    // 401이면 로그인 필요 플래그만 세우고 조용히 빈 데이터
+    if (e?.response?.status === 401) {
+      requiresLogin.value = true;
+      kpassBenefit.value = [];
+    } else {
+      benefitError.value =
+        "일시적 오류가 발생했어요. 잠시 후 다시 시도해주세요.";
+      kpassBenefit.value = [];
+      // console.error('[KPASS] load error', e);  // 필요 시 로깅
+    }
   }
   kpassLoading.value = false;
 };
@@ -100,6 +135,13 @@ onMounted(() => {
     props.policyId === 423 ||
     props.policyId === 3589
   ) {
+    // loadKpassBenefit();
+    // 로그인 아닐 땐 즉시 requiresLogin 표시하고 호출 생략
+    if (!isLoggedIn.value) {
+      requiresLogin.value = true;
+      kpassBenefit.value = [];
+      return;
+    }
     loadKpassBenefit();
   }
 });
@@ -107,8 +149,22 @@ onMounted(() => {
 watch(
   () => props.policyId,
   (val) => {
-    if (val === 3167 || val === 423) {
+    // if (val === 3167 || val === 423) {
+    //   loadKpassBenefit();
+    // }
+    if ([3167, 423, 3589].includes(val)) {
+      // loadKpassBenefit();
+      if (!isLoggedIn.value) {
+        requiresLogin.value = true;
+        kpassBenefit.value = [];
+        return;
+      }
       loadKpassBenefit();
+    } else {
+      // 해당 정책이 아니면 섹션 비우기
+      kpassBenefit.value = [];
+      requiresLogin.value = false;
+      benefitError.value = null;
     }
   }
 );
@@ -116,7 +172,7 @@ watch(
 // ▼ 월별 혜택 요약/펼치기 상태
 const isBenefitOpen = ref(false);
 const recentCount = 6; // 6개월로 변경
-const monthLabel = (ym) => `${Number(ym.split('-')[1])}월 혜택`;
+const monthLabel = (ym) => `${Number(ym.split("-")[1])}월 혜택`;
 const fmt = (n) => (n ?? 0).toLocaleString();
 
 // 최근 N개월 평균/기간 계산
@@ -125,14 +181,14 @@ const benefitSummary = computed(() => {
     .slice()
     .sort((a, b) => a.month.localeCompare(b.month));
   if (!list.length) {
-    return { label: `최근 ${recentCount}개월 평균`, period: '—', avg: 0 };
+    return { label: `최근 ${recentCount}개월 평균`, period: "—", avg: 0 };
   }
   const tail = list.slice(-recentCount);
   const avg = Math.round(
     tail.reduce((s, x) => s + (x.benefit || 0), 0) / tail.length
   );
-  const start = tail[0].month.split('-');
-  const end = tail[tail.length - 1].month.split('-');
+  const start = tail[0].month.split("-");
+  const end = tail[tail.length - 1].month.split("-");
   const period = `${start[0]}년 ${Number(start[1])}월 ~ ${end[0]}년 ${Number(
     end[1]
   )}월`;
@@ -212,11 +268,11 @@ const benefitSummary = computed(() => {
       </div>
     </div> -->
     <!-- K패스/기후동행카드 혜택 금액 (요약 + 펼치기) -->
-    <div v-if="[3167, 423, 3589].includes(policyId)" class="benefitSection">
+    <div v-if="showBenefitSection" class="benefitSection">
       <div class="sectionHeaderRow">
         <div class="sectionTitle">월별 혜택 금액</div>
         <button class="toggleBtn" @click="isBenefitOpen = !isBenefitOpen">
-          {{ isBenefitOpen ? '접기' : '자세히 보기' }}
+          {{ isBenefitOpen ? "접기" : "자세히 보기" }}
           <span :class="['chev', { open: isBenefitOpen }]">▾</span>
         </button>
       </div>

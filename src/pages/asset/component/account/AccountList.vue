@@ -105,7 +105,7 @@ const toggleAccountBalance = (accountId, isHidden) => {
   display: flex;
   flex-direction: column;
   gap: 0;
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
 }
 
 /* 전체보기 버튼 */
@@ -114,17 +114,16 @@ const toggleAccountBalance = (accountId, isHidden) => {
   padding: 0.75rem;
   background: none;
   border: 1px solid var(--base-blue-dark);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   color: var(--base-blue-dark);
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease;
   margin: 0.5rem 0;
 }
 
-.view-all-btn:hover {
+/* .view-all-btn:hover {
   background: var(--base-blue-dark);
   color: white;
-}
+} */
 </style>

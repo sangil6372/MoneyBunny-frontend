@@ -25,23 +25,26 @@
           />
         </button>
       </div>
-
       <!-- 계좌번호와 복사 버튼 -->
-      <div class="account-number-section">
+      <div class="account-number-row">
         <p class="account-number">
           {{ getBankName(account.bankCode) }}
           {{ formatAccountNumber(account.accountNumber) }}
         </p>
-        <button class="copy-btn" @click.stop="copyAccountNumber">
+        <button
+          class="copy-btn"
+          @click.stop="copyAccountNumber"
+          aria-label="계좌번호 복사"
+        >
           <img
-            src="@/assets/images/icons/common/copy.png"
-            alt="복사"
+            src="@/assets/images/icons/signup/copy.png"
+            alt=""
             class="copy-icon"
           />
         </button>
       </div>
 
-      <!-- 잔액 숨기기 적용 -->
+      <!-- 잔액 -->
       <p class="balance" v-if="!isBalanceHidden">
         {{ formatWon(account.balance) }}
       </p>
@@ -64,17 +67,30 @@
     @set-main="handleSetMain"
     @toggle-balance="toggleBalanceVisibility"
   />
+
+  <transition name="fade">
+    <div v-if="toast.show" class="toast">{{ toast.text }}</div>
+  </transition>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, reactive } from 'vue';
 import { useAccountSettingsStore } from '@/stores/assetSettings';
 import DetailModal from '../detail/DetailModal.vue';
 import AccountDetail from './AccountDetail.vue';
 import AccountSettingsModal from './AccountSettingsModal.vue';
 import { getBankLogoByCode } from '@/assets/utils/bankLogoMap.js';
 import { getBankName } from '@/assets/utils/bankCodeMap.js';
+import Toast from '@/components/common/Toast.vue';
 
+const toast = ref({ show: false, text: '', timer: null });
+
+const showToast = (msg = '계좌번호가 복사되었습니다.', ms = 1500) => {
+  clearTimeout(toast.value.timer);
+  toast.value.text = msg;
+  toast.value.show = true;
+  toast.value.timer = setTimeout(() => (toast.value.show = false), ms);
+};
 const props = defineProps({
   account: { type: Object, required: true },
 });
@@ -123,14 +139,14 @@ const formatWon = (value) => `${value.toLocaleString()}원`;
 const formatAccountNumber = (number) =>
   number.replace(/(\d{3})(\d{2,3})(\d{4,6})/, '$1-$2-$3');
 
-// 계좌번호 복사 (간편 복사)
+// 계좌번호 복사 (토스트 알림)
 const copyAccountNumber = async () => {
   try {
     await navigator.clipboard.writeText(props.account.accountNumber);
-    alert('계좌번호가 복사되었습니다.');
+    showToast(); // 성공
   } catch (error) {
     console.error('복사 실패:', error);
-    alert('복사에 실패했습니다.');
+    showToast('복사에 실패했습니다.'); // 실패 문구
   }
 };
 
@@ -163,16 +179,14 @@ const toggleBalanceVisibility = () => {
 .account-item {
   position: relative;
   background: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 12px;
   border: 1px solid var(--input-outline);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.85rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
   width: 100%;
   box-sizing: border-box;
   max-width: 100%;
@@ -184,8 +198,8 @@ const toggleBalanceVisibility = () => {
 
 /* 은행 로고 */
 .bank-logo {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   object-fit: contain;
   flex-shrink: 0;
@@ -196,14 +210,17 @@ const toggleBalanceVisibility = () => {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 .info-top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
   width: 100%;
+  margin-bottom: 4px;
 }
 
 .name-section {
@@ -213,56 +230,51 @@ const toggleBalanceVisibility = () => {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  /* margin-bottom: 3px; */
 }
 
 .bank-name {
-  font-size: 0.85rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
 }
 
 .account-name {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: bold;
   color: var(--text-darkgray);
   /* 긴 계좌명 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  max-width: calc(100% - 2rem);
 }
 
-/* 대표 뱃지 - 라벤더 색상으로 변경 */
 .main-badge {
-  background: var(--base-lavender);
+  background: #a5b8d6;
   color: white;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
-  flex-shrink: 0;
+  font-size: 0.625rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
 }
 
 /* 인라인 설정 버튼 - 패딩 원래대로 복구 */
 .settings-btn-inline {
+  position: absolute;
+  top: 50%; /* info-top 높이의 가운데 */
+  right: 0; /* 오른쪽 끝 고정 */
+  transform: translateY(-50%); /* 가운데 정렬 보정 */
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 50%;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-}
-
-.settings-btn-inline:hover {
-  background: var(--input-bg-1);
 }
 
 .setting-icon-inline {
-  width: 0.75rem;
-  height: 0.75rem;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
+  width: 0.85rem;
+  height: 0.85rem;
+  opacity: 0.75;
   object-fit: contain;
   object-position: center;
 }
@@ -271,67 +283,73 @@ const toggleBalanceVisibility = () => {
   opacity: 0.8;
 }
 
-/* 계좌번호와 복사 버튼 섹션 */
-.account-number-section {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem; /* 계좌번호와 복사 버튼 사이 간격 축소 */
-  margin: 0.25rem 0;
-}
-
 .account-number {
-  font-size: 0.75rem;
-  color: var(--text-lightgray);
   margin: 0;
-  /* 긴 계좌번호 말줄임표 처리 */
+  font-size: 0.7rem;
+  color: var(--text-lightgray);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex-shrink: 1; /* 필요시 축소 가능 */
+  min-width: 0;
+  letter-spacing: 0.1px;
+}
+.account-number-row {
+  display: inline-flex;
+  align-items: center;
+  /* justify-content: flex-start; */
+  gap: 4px;
+  margin: 2px 0 4px;
+  min-width: 0;
 }
 
-/* 복사 버튼 */
 .copy-btn {
-  background: none;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
   border: none;
+  background: none;
+  border-radius: 8px;
   cursor: pointer;
-  padding: 0.25rem;
-  border-radius: 50%;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
-
-  /* 모바일 터치 최적화 */
   -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-}
-
-.copy-btn:active {
-  background: var(--input-bg-1);
-  transform: scale(0.95);
 }
 
 .copy-icon {
-  width: 1rem;
-  height: 1rem;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
+  width: 14px;
+  height: 14px;
+  opacity: 0.6;
+  transform: translateY(1px);
   object-fit: contain;
 }
 
-.copy-btn:active .copy-icon {
-  opacity: 0.8;
-}
-
 .balance {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
-  margin: 0;
+  margin: 2px 0 0;
 }
 
 .balance.hidden {
   color: var(--text-lightgray);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-style: italic;
+}
+
+.toast {
+  position: relative;
+  left: 50%;
+  top: 50%;
+  transform: translateX(-50%);
+  max-width: 390px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: rgba(24, 24, 27, 0.92);
+  color: #fff;
+  font-size: 0.7rem;
+  z-index: 2147483647;
+  pointer-events: none;
+  text-align: center;
+  word-break: keep-all;
 }
 </style>

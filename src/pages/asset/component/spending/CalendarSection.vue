@@ -10,9 +10,9 @@
         &#8249;
       </button>
 
-      <h3 class="calendar-title">
+      <div class="calendar-title">
         {{ formatDate(currentDate) }}
-      </h3>
+      </div>
 
       <button class="calendar-nav-btn" @click="nextMonth" aria-label="다음 달">
         &#8250;
@@ -75,9 +75,9 @@ onMounted(() => {
 <style scoped>
 .calendar-section {
   background: white;
-  border-radius: 0.75rem;
-  padding: 0.75rem 1rem;
-  margin-bottom: 1rem;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .calendar-header {
@@ -89,12 +89,12 @@ onMounted(() => {
 .calendar-nav-btn {
   background: none;
   border: none;
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: var(--base-blue-dark);
   padding: 0.375rem;
-  border-radius: 0.25rem;
-  width: 2rem;
-  height: 2rem;
+  border-radius: 6px;
+  width: 4rem;
+  height: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,14 +104,9 @@ onMounted(() => {
   touch-action: manipulation;
 }
 
-.calendar-nav-btn:active {
-  background-color: var(--input-bg-1);
-  transform: scale(0.9);
-}
-
 .calendar-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }

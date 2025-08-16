@@ -51,7 +51,6 @@ onMounted(() => {
   background-color: white;
   border-radius: 1rem;
   padding: 1.25rem;
-  /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05); */
 }
 
 .asset-section-header {

@@ -93,7 +93,7 @@ function onCtaClick() {
   display: flex;
   align-items: center;
   /* gap: 12px; */
-  min-height: 138px;
+  min-height: 130px;
   width: 100%;
   isolation: isolate;
   box-sizing: border-box;

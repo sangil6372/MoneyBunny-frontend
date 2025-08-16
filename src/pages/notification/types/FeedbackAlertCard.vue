@@ -3,12 +3,20 @@
     :is-read="item.read"
     :notification-type="item.type"
     @delete="handleDelete"
+    @card-click="handleButtonClick"
   >
     <h3 class="title">{{ item.title }}</h3>
     <p class="message">{{ item.description || item.message }}</p>
     <div class="bottom">
       <small class="date">{{ formatDate(item.created_at || item.date) }}</small>
-      <button class="action-btn" @click="handleButtonClick">
+      <button 
+        class="action-btn" 
+        @click.stop="handleButtonClick"
+        @touchstart.stop=""
+        @touchend.stop=""
+        @mousedown.stop=""
+        @mouseup.stop=""
+      >
         {{ getButtonText(item.type) }}
       </button>
     </div>

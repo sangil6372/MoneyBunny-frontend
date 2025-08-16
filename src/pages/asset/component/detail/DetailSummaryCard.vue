@@ -24,9 +24,7 @@
         <p class="info-number">{{ displayNumber }}</p>
         <p class="info-balance">
           {{ formattedBalance }}
-          <span class="unit">{{
-            type === 'card' ? '원 (이번 달 사용)' : '원'
-          }}</span>
+          <span class="unit">{{ type === 'card' ? '원' : '원' }}</span>
         </p>
       </slot>
     </div>
@@ -90,10 +88,9 @@ const formattedBalance = computed(() => {
   display: flex;
   align-items: center;
   background-color: #ffffff;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   padding: 1.25rem 1.5rem;
   margin: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--input-bg-3);
 }
 
@@ -104,18 +101,17 @@ const formattedBalance = computed(() => {
 }
 
 .card-img {
-  width: 3.25rem;
+  width: 3rem;
   height: auto;
   border-radius: 0.5rem;
 }
 
 .bank-logo {
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   object-fit: contain;
   border-radius: 50%;
   background: white;
-  padding: 0.25rem;
 }
 
 .info-right {
@@ -123,29 +119,29 @@ const formattedBalance = computed(() => {
 }
 
 .info-name {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   margin: 0;
   color: var(--base-blue-dark);
 }
 
 .info-number {
-  font-size: 0.8125rem;
+  font-size: 0.725rem;
   color: var(--text-bluegray);
-  margin: 0.25rem 0 0.5rem;
+  margin: 0.25rem 0;
 }
 
 .info-balance {
-  font-size: 1.375rem;
-  font-weight: 700;
+  font-size: 1.15rem;
+  font-weight: bold;
   margin: 0;
   color: var(--base-blue-dark);
 }
 
 .unit {
   font-size: 0.75rem;
-  font-weight: 400;
-  margin-left: 0.25rem;
+  font-weight: bold;
+  /* margin-left: 0.05rem; */
   color: var(--text-lightgray);
 }
 
@@ -156,7 +152,6 @@ const formattedBalance = computed(() => {
   border-radius: 0.75rem;
   margin: 0 1rem 1rem 1rem;
   padding: 1rem 1.5rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
   border: 1px solid var(--input-bg-3);
 }
 </style>

@@ -119,6 +119,23 @@ export const usePolicyQuizStore = defineStore('policyQuiz', () => {
   }
 
   function getRequestPayload() {
+    // 성별 코드 자동 추가
+    let specialCodes = [...specialConditionCodes.value];
+    // regionName에 '남성' 또는 '여성'이 포함되어 있으면 해당 코드 추가
+    if (regionName.value) {
+      if (
+        regionName.value.includes('남성') &&
+        !specialCodes.includes('0014007')
+      ) {
+        specialCodes.push('0014007');
+      }
+      if (
+        regionName.value.includes('여성') &&
+        !specialCodes.includes('0014002')
+      ) {
+        specialCodes.push('0014002');
+      }
+    }
     return {
       age: age.value,
       educationLevels: educationLevelCode.value
@@ -135,7 +152,7 @@ export const usePolicyQuizStore = defineStore('policyQuiz', () => {
       periodRank: periodRank.value,
       popularityRank: popularityRank.value,
       regions: [regions.value],
-      specialConditions: specialConditionCodes.value,
+      specialConditions: specialCodes,
     };
   }
 

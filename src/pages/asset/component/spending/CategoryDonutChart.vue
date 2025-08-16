@@ -95,14 +95,13 @@ onUnmounted(() => {
 .chart-section {
   display: flex;
   justify-content: center;
-  margin-bottom: 1.5rem;
   background-color: white;
 }
 
 .chart-container {
   position: relative;
-  height: 250px;
-  width: 250px;
+  height: 200px;
+  width: 200px;
 }
 
 .chart-center-text {
@@ -114,14 +113,14 @@ onUnmounted(() => {
 }
 
 .center-label {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-bluegray);
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.15rem 0;
 }
 
 .center-amount {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 1rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }

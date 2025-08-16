@@ -43,6 +43,6 @@ export const policyAPI = {
   // 정책 조회수 TOP3 (추천)
   getTop3Views: () => axios.get('/api/userPolicy/search/top3-views'),
 
-  // 정책 조회수 TOP3 (전체)
-  getTop3ViewsAll: () => axios.get('/api/userPolicy/search/top3-views/all'),
+  // 정책 조회수 TOP3 (전체) - 조건 없이 is_financial_support=1 정책을 조회수 순으로 topN 반환
+  getTop3ViewsAll: () => axios.get('/api/userPolicy/search/top-views/all'),
 };

@@ -11,24 +11,27 @@
       새로운 알림이 오면 여기에 표시됩니다.
     </p>
     <div class="button-group">
-      <button class="btn primary" @click="goToSettings">알림 설정</button>
+      <button class="btn primary" @click="openSettings">알림 설정</button>
       <button class="btn secondary" @click="refreshList">새로고침</button>
     </div>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-const router = useRouter();
+import { defineEmits } from 'vue';
+import { useNotificationStore } from '@/stores/notification';
 
-//알림 설정
-const goToSettings = () => {
-  router.push('/mypage'); // 마이페이지 메인 경로로 이동
+const emit = defineEmits(['open-settings']);
+const notificationStore = useNotificationStore();
+
+//💪(상일) 알림 설정 모달 열기
+const openSettings = () => {
+  emit('open-settings');
 };
 
 //알림 새로고침
-const refreshList = () => {
-  // 알림 목록 새로고침 기능
+const refreshList = async () => {
+  await notificationStore.fetchNotifications();
 };
 </script>
 

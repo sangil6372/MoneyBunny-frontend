@@ -51,7 +51,6 @@
       <PolicyReviewEmpty
         v-if="isEmpty"
         :policyTitle="policyTitle"
-        @write="goWriteReview"
       />
 
       <template v-else>
@@ -422,9 +421,6 @@ onBeforeUnmount(() => {
   if (observer && sentinel.value) observer.unobserve(sentinel.value);
 });
 
-const goWriteReview = () => {
-  router.push({ name: "policyReviewWrite", params: { id: policyId.value } });
-};
 
 // 💪(상일) 필터 변경 함수들
 const setSortOrder = (order) => {

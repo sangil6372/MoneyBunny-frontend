@@ -50,18 +50,13 @@ const handleClick = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 0;
+  padding: 16px;
   border-bottom: 1px solid var(--input-outline);
   cursor: pointer;
-  /* transition: background-color 0.2s ease; */
 }
 
 .category-item:last-child {
   border-bottom: none;
-}
-
-.category-item:active {
-  background-color: var(--input-bg-1);
 }
 
 .category-info {
@@ -71,21 +66,21 @@ const handleClick = () => {
 }
 
 .category-color-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  margin-right: 12px;
+  margin-right: 10px;
   flex-shrink: 0;
 }
 
 .category-name {
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 13px;
   color: var(--text-login);
   margin-right: 8px;
 }
 
 .category-amount-info {
+  margin-top: 1px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -93,14 +88,13 @@ const handleClick = () => {
 }
 
 .category-amount {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 13px;
   color: var(--text-login);
-  margin-bottom: 2px;
+  margin-bottom: 1px;
 }
 
 .category-percentage {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-bluegray);
 }
 </style>

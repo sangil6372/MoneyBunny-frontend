@@ -10,11 +10,18 @@
     <p class="sub-text">
       간단한 유형 검사를 통해<br />나에게 딱 맞는 정책을 찾아보세요!
     </p>
-    <button class="start-btn" @click="$emit('start-quiz')">
-      유형 검사 시작하기 →
-    </button>
+    <button class="start-btn" @click="goToQuiz">유형 검사 시작하기 →</button>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router';
+const router = useRouter();
+
+function goToQuiz() {
+  router.push({ name: 'policyTypeIntro' });
+}
+</script>
 
 <style scoped>
 .no-policy-card {
@@ -22,40 +29,40 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 1rem;
-  border-radius: 1rem;
+  padding: 0.75rem;
+  border-radius: 6px;
   background-color: white;
 }
 
 .bunny-img {
   width: 90px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .main-text {
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: bold;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   color: var(--base-blue-dark);
 }
 
 .sub-text {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-lightgray);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .start-btn {
   background-color: var(--base-blue-dark);
   color: white;
   padding: 0.5rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
 }
 
 .see-all {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-bluegray);
   text-decoration: underline;
   cursor: pointer;

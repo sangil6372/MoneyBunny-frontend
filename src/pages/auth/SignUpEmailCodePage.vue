@@ -1,15 +1,15 @@
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
 // 🎵(유정) 회원가입 - 이메일 인증코드 입력 페이지
 const route = useRoute();
-const email = ref(route.query.email || '');
+const email = ref(route.query.email || "");
 
 const router = useRouter();
-const code = ref('');
-const errorMsg = ref('');
+const code = ref("");
+const errorMsg = ref("");
 const showToast = ref(false);
 
 const time = 180; // 180초 == 3분
@@ -17,18 +17,30 @@ const timeLeft = ref(time);
 let timerInterval = null;
 const isExpired = computed(() => timeLeft.value === 0);
 
+const resetState = () => {
+  // 메시지/입력/토스트/타이머 모두 초기화
+  errorMsg.value = "";
+  code.value = "";
+  showToast.value = false;
+  timeLeft.value = time;
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+};
+
 // 인증코드 검증 (회원가입용)
 const verify = async () => {
   if (isExpired.value) {
-    errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+    errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     return;
   }
   if (!email.value || !code.value) {
-    errorMsg.value = '이메일과 인증코드를 모두 입력해주세요.';
+    errorMsg.value = "이메일과 인증코드를 모두 입력해주세요.";
     return;
   }
   try {
-    await axios.post('/api/auth/verify', {
+    await axios.post("/api/auth/verify", {
       email: email.value,
       code: code.value,
     });
@@ -37,22 +49,24 @@ const verify = async () => {
     setTimeout(() => {
       showToast.value = false;
       // 회원가입 입력폼(예: SignUpProfilePage)으로 이동
-      router.push({ name: 'signUpProfile', query: { email: email.value } });
+      router.push({ name: "signUpProfile", query: { email: email.value } });
     }, 1000);
   } catch (err) {
     errorMsg.value =
-      '인증 실패: ' + (err.response?.data?.message || '코드를 확인해주세요');
+      "인증 실패: " + (err.response?.data?.message || "코드를 확인해주세요");
   }
 };
 
 // 타이머
 const startTimer = () => {
+  if (timerInterval) clearInterval(timerInterval);
   timerInterval = setInterval(() => {
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
       clearInterval(timerInterval);
-      errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+      timerInterval = null;
+      errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     }
   }, 1000);
 };
@@ -62,10 +76,20 @@ onBeforeUnmount(() => {
 });
 
 const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
-  const seconds = String(timeLeft.value % 60).padStart(2, '0');
+  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
+  const seconds = String(timeLeft.value % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
 });
+
+// 재전송(페이지로 돌아가기)
+const goBackToEmailRequest = () => {
+  if (timerInterval) clearInterval(timerInterval);
+  resetState(); // 초기화
+  router.push({
+    name: "signUpEmailRequest",
+    query: { email: email.value || "" },
+  });
+};
 </script>
 
 <template>
@@ -129,8 +153,18 @@ const formattedTime = computed(() => {
           :disabled="isExpired"
           :class="{ expired: isExpired }"
         >
-          {{ isExpired ? '인증 만료' : '인증하기' }}
+          {{ isExpired ? "인증 만료" : "인증하기" }}
         </button>
+
+        <!-- 만료 시: 재전송(요청 페이지로 돌아가기) -->
+        <button
+          v-if="isExpired"
+          class="submitButton font-14"
+          @click="goBackToEmailRequest"
+        >
+          인증코드 재전송
+        </button>
+
         <div class="signupLink font-11">
           이미 계정이 있으신가요? <a href="/login">로그인</a>
         </div>

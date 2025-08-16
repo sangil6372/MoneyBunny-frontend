@@ -4,7 +4,7 @@
     <div class="modal-container">
       <!-- 헤더 -->
       <div class="modal-header">
-        <h2>필터</h2>
+        <div>필터</div>
         <button class="close-btn" @click="closeModal">
           <img
             src="@/assets/images/icons/common/x.png"
@@ -18,7 +18,7 @@
       <div class="modal-content">
         <!-- 조회기간 -->
         <div class="filter-section">
-          <h3>조회기간</h3>
+          <div>조회기간</div>
           <div class="period-tabs">
             <button
               v-for="period in periodOptions"
@@ -59,7 +59,7 @@
 
         <!-- 유형선택 -->
         <div class="filter-section">
-          <h3>유형선택</h3>
+          <div>유형선택</div>
           <div class="type-buttons">
             <button
               v-for="transactionType in transactionTypes"
@@ -77,7 +77,7 @@
 
         <!-- 정렬선택 -->
         <div class="filter-section">
-          <h3>정렬선택</h3>
+          <div>정렬선택</div>
           <div class="sort-buttons">
             <button
               v-for="sort in sortOptions"
@@ -285,7 +285,7 @@ watch(
 /* 모달 컨테이너 */
 .modal-container {
   width: 100%;
-  max-width: 474px;
+  /* max-width: 390px; */
   background: white;
   border-radius: 1rem 1rem 0 0;
   max-height: 80vh;
@@ -307,15 +307,15 @@ watch(
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.25rem;
+  padding: 1rem 1.25rem 0.5rem 1.25rem;
   border-bottom: 1px solid var(--input-bg-3);
   background: white;
   border-radius: 1rem 1rem 0 0;
 }
 
-.modal-header h2 {
-  font-size: 1.125rem;
-  font-weight: 600;
+.modal-header {
+  font-size: 1rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }
@@ -326,8 +326,7 @@ watch(
   color: var(--text-darkgray);
   cursor: pointer;
   padding: 0.5rem;
-  border-radius: 0.25rem;
-  transition: background-color 0.2s ease;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -338,14 +337,14 @@ watch(
 }
 
 .close-icon {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 /* 모달 내용 */
 .modal-content {
   flex: 1;
-  padding: 1.25rem;
+  padding: 1rem 1rem 0.5rem 1rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
@@ -355,28 +354,27 @@ watch(
   margin-bottom: 1.5rem;
 }
 
-.filter-section h3 {
-  font-size: 1rem;
-  font-weight: 600;
+.filter-section {
+  font-size: 0.9em;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0 0 0.75rem 0;
 }
 
 /* 검색 입력 */
-.search-input {
+/* .search-input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid var(--input-bg-3);
   border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
 }
 
 .search-input:focus {
   outline: none;
   border-color: var(--base-blue-dark);
-}
+} */
 
 /* 기간 탭 */
 .period-tabs {
@@ -387,22 +385,22 @@ watch(
 }
 
 .period-tab {
-  padding: 0.75rem 0.5rem;
+  margin-top: 10px;
+  padding: 0.65rem 0.4rem;
   border: 1px solid var(--input-bg-3);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background: white;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-darkgray);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 44px; /* 터치 친화적 최소 높이 */
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .period-tab:active {
-  transform: scale(0.98);
+  /* transform: scale(0.98); */
 }
 
 .period-tab.active {
@@ -424,51 +422,46 @@ watch(
 
 .date-input-group label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: var(--text-darkgray);
-  margin-bottom: 0.25rem;
-  font-weight: 500;
+  margin-bottom: 0.35rem;
 }
 
 .date-input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 0.5rem;
   border: 1px solid var(--input-bg-3);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
 }
 
 .date-input:focus {
   outline: none;
   border-color: var(--base-blue-dark);
+  opacity: 0.5;
 }
 
 /* 유형 버튼들 */
 .type-buttons {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .type-btn {
-  padding: 0.75rem 0.5rem;
+  margin-top: 10px;
+  padding: 0.65rem 0.4rem;
   border: 1px solid var(--input-bg-3);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background: white;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-darkgray);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 44px; /* 터치 친화적 최소 높이 */
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.type-btn:active {
-  transform: scale(0.98);
 }
 
 .type-btn.active {
@@ -477,30 +470,25 @@ watch(
   color: white;
 }
 
-/* 정렬 버튼들 */
 .sort-buttons {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .sort-btn {
-  padding: 0.75rem 0.5rem;
+  margin-top: 10px;
+  padding: 0.65rem 0.4rem;
   border: 1px solid var(--input-bg-3);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background: white;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-darkgray);
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 44px; /* 터치 친화적 최소 높이 */
+  min-height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.sort-btn:active {
-  transform: scale(0.98);
 }
 
 .sort-btn.active {
@@ -512,48 +500,40 @@ watch(
 /* 모달 푸터 */
 .modal-footer {
   display: flex;
-  gap: 0.75rem;
-  padding: 1rem 1.25rem;
+  gap: 0.4rem;
+  padding: 1rem;
   border-top: 1px solid var(--input-bg-3);
   background: white;
 }
 
 .reset-btn {
   flex: 1;
-  padding: 0.875rem;
+  padding: 0.75rem;
   border: 1px solid var(--input-bg-3);
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background: white;
   color: var(--text-darkgray);
-  font-size: 0.9rem;
-  font-weight: 500;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 48px; /* 터치 친화적 최소 높이 */
+  min-height: 38px;
 }
 
 .confirm-btn {
   flex: 2;
-  padding: 0.875rem;
+  padding: 0.75rem;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 6px;
   background: var(--base-blue-dark);
   color: white;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: 0.8rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  min-height: 48px; /* 터치 친화적 최소 높이 */
+  min-height: 38px;
 }
-
+/* 
 .reset-btn:active,
 .confirm-btn:active {
   transform: scale(0.98);
-}
-
-.confirm-btn:active {
-  background: var(--base-lavender);
-}
+} */
 
 /* 터치 디바이스에서 더 나은 스크롤링 */
 @media (max-width: 768px) {

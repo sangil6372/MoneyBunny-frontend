@@ -123,16 +123,14 @@ const toggleAmountVisibility = () => {
 .card-item {
   position: relative;
   background: white;
-  border-radius: 1rem;
-  padding: 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+  padding: 12px;
   border: 1px solid var(--input-outline);
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
   width: 100%;
   box-sizing: border-box;
   max-width: 100%;
@@ -144,8 +142,9 @@ const toggleAmountVisibility = () => {
 
 /* 카드 이미지 */
 .card-logo {
-  width: 2.25rem;
-  height: 2.25rem;
+  margin-left: 6px;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 0.5rem;
   object-fit: contain;
   flex-shrink: 0;
@@ -159,10 +158,11 @@ const toggleAmountVisibility = () => {
 }
 
 .info-top {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.25rem;
+  /* margin-bottom: 0.15rem; */
   width: 100%;
 }
 
@@ -173,52 +173,55 @@ const toggleAmountVisibility = () => {
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  margin-bottom: 5px;
 }
 
 .card-name {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.8rem;
+  font-weight: bold;
   color: var(--text-darkgray);
-  /* 긴 카드명 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
+  /* max-width: 100%; */
+  max-width: calc(100% - 2rem);
 }
 
-/* 대표 뱃지 - 라벤더 색상으로 변경 */
 .main-badge {
-  background: var(--base-lavender);
+  background: #a5b8d6;
   color: white;
-  font-size: 0.7rem;
-  font-weight: 600;
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.25rem;
+  font-size: 0.6rem;
+  /* font-weight: bold; */
+  padding: 0.15rem 0.35rem;
+  border-radius: 6px;
   flex-shrink: 0;
 }
 
 /* 인라인 설정 버튼 */
 .settings-btn-inline {
+  position: absolute;
+  top: 50%; /* info-top 높이의 가운데 */
+  right: 0; /* 오른쪽 끝 고정 */
+  transform: translateY(-50%); /* 가운데 정렬 보정 */
   background: none;
   border: none;
   cursor: pointer;
   padding: 0.25rem;
   border-radius: 50%;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
 }
 
-.settings-btn-inline:hover {
+/* .settings-btn-inline:hover {
   background: var(--input-bg-1);
-}
+} */
 
 .setting-icon-inline {
-  width: 0.75rem;
-  height: 0.75rem;
-  opacity: 0.5;
-  transition: opacity 0.2s ease;
+  width: 0.85rem;
+  height: 0.85rem;
+  opacity: 0.75;
+  /* transition: opacity 0.2s ease; */
   object-fit: contain;
   object-position: center;
+  /* margin-left: auto; */
 }
 
 .settings-btn-inline:hover .setting-icon-inline {
@@ -226,10 +229,9 @@ const toggleAmountVisibility = () => {
 }
 
 .card-number {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-lightgray);
-  margin: 0.25rem 0;
-  /* 긴 카드번호 말줄임표 처리 */
+  margin: 0 0 0.35rem 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -238,10 +240,10 @@ const toggleAmountVisibility = () => {
 
 /* 카드 금액 스타일 */
 .card-amount {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.95rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
+  /* margin-top: 5px; */
   margin: 0;
-  transition: all 0.2s ease;
 }
 </style>

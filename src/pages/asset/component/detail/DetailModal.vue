@@ -24,7 +24,7 @@ const onOverlayClick = () => emit('close');
   transform: translateX(-50%); /* 중앙 정렬 */
   background: var(--input-bg-2); /* 배경색 */
   z-index: 9999;
-  width: 474px; /* main.css의 #app 기준 폭 */
+  width: 390px; /* main.css의 #app 기준 폭 */
   height: calc(100% - 60px); /* 헤더 영역 제외 */
   max-width: 100%; /* 작은 화면 대응 */
 }

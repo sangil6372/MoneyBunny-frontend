@@ -18,7 +18,7 @@
 
       <!-- 💪(상일) 날짜별 그룹 알림 목록 -->
       <div v-else-if="visibleGroups.length === 0">
-        <NoNotification />
+        <NoNotification @open-settings="showSettingsModal = true" />
       </div>
       <div v-else class="grouped-notifications">
         <div
@@ -34,6 +34,12 @@
         </div>
       </div>
     </div>
+
+    <!-- 💪(상일) 알림 설정 모달 -->
+    <NotificationSettingsModal 
+      v-if="showSettingsModal" 
+      @close="showSettingsModal = false" 
+    />
   </div>
   <h1></h1>
 </template>
@@ -46,10 +52,14 @@ import NotificationHeader from './common/NotificationHeader.vue';
 import NotificationTabSwitcher from './common/NotificationTabSwitcher.vue';
 import NoNotification from './common/NoNotification.vue';
 import NotificationList from './common/NotificationList.vue';
+import NotificationSettingsModal from '@/pages/mypage/modals/NotificationSettingsModal.vue';
 import { useNotificationStore } from '@/stores/notification';
 
 // 현재 선택된 탭
 const selectedTab = ref('all');
+
+// 💪(상일) 알림 설정 모달 상태
+const showSettingsModal = ref(false);
 
 // Pinia 스토어 사용
 const notificationStore = useNotificationStore();

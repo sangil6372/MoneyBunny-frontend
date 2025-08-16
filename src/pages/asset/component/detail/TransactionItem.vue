@@ -1,5 +1,9 @@
 <template>
-  <div class="transaction-item" @click="handleClick">
+  <div
+    class="transaction-item"
+    :class="{ hasMemo: !!data.memo }"
+    @click="handleClick"
+  >
     <div class="transaction-left">
       <p class="transaction-sub">
         {{ data.date2 }}
@@ -11,7 +15,7 @@
       <p class="transaction-title">
         {{ data.description }}
       </p>
-      <p class="transaction-sub">
+      <p v-if="data.memo" class="transaction-memo">
         {{ data.memo }}
       </p>
     </div>
@@ -20,7 +24,7 @@
         {{ amountSign }}{{ formattedAmount }}원
       </p>
       <p v-if="type === 'account'" class="transaction-balance">
-        잔액 {{ data.balanceAfter.toLocaleString() }}원
+        잔액 : {{ data.balanceAfter.toLocaleString() }}원
       </p>
     </div>
   </div>
@@ -63,14 +67,19 @@ const handleClick = () => {
 .transaction-item {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 0.75rem 0; /* 카드 내부 간격 축소 */
-  background: transparent; /* 개별 아이템 배경 제거 (리스트 카드 내 배경 유지) */
-  border-bottom: 1px solid var(--input-bg-3); /* 리스트 구분선 */
+  align-items: flex-start;
+  padding: 0.5rem;
+  background: transparent;
+  border-bottom: 1px solid var(--input-bg-3);
+  min-height: 60px;
+  gap: 0.5rem;
 
   /* 🥕 클릭 가능하도록 추가 */
   cursor: pointer;
-  transition: background-color 0.2s ease;
+}
+
+.transaction-item.hasMemo {
+  min-height: 68px;
 }
 
 /* 🥕 터치 시 피드백 */
@@ -79,35 +88,59 @@ const handleClick = () => {
 }
 
 .transaction-item:last-child {
-  border-bottom: none; /* 마지막 아이템은 구분선 제거 */
+  border-bottom: none;
 }
 
 .transaction-left {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 3px;
+  min-width: 0;
 }
 
 .transaction-title {
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin: 0;
+  font-size: 0.75rem;
   color: var(--base-blue-dark);
 }
 
 .transaction-sub {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-bluegray);
+}
+
+.transaction-memo {
+  font-size: 0.65rem;
+  color: var(--text-bluegray);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.transaction-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* gap: 2px; */
+  /* padding-top: 2px; */
+  white-space: nowrap;
+}
+.transaction-item.hasMemo .transaction-right {
+  padding-top: 8px;
+}
+
+.transaction-title,
+.transaction-sub,
+.transaction-memo,
+.transaction-amount,
+.transaction-balance {
+  line-height: 1.28;
   margin: 0;
 }
 
-.transaction-right {
-  text-align: right;
-}
-
 .transaction-amount {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: bold;
   margin: 0;
 }
 
@@ -120,7 +153,7 @@ const handleClick = () => {
 }
 
 .transaction-balance {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-lightgray);
   margin-top: 0.25rem;
 }

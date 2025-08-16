@@ -157,9 +157,36 @@ export const useNotificationStore = defineStore("notification", () => {
     } catch (err) {
       console.error("구독 상태 조회 실패:", err);
 
-      // 💪(상일) 404나 구독 데이터가 없는 경우 초기 구독 설정 필요
+      // 💪(상일) 토큰 관련 오류 처리
       if (err.response?.status === 404 || err.response?.status === 400) {
+        console.log("🔄 구독 데이터 없음 - 초기 구독 설정");
         await createInitialSubscription();
+      } else if (err.response?.status === 401 || err.response?.status === 403) {
+        // 토큰이 무효한 경우 토큰 갱신 후 재시도
+        console.log("🔄 토큰 무효 - 토큰 갱신 후 재시도");
+        const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
+        await fcmTokenManager.refresh();
+        
+        // 새 토큰으로 재시도
+        try {
+          const newToken = await fcmTokenManager.getValidToken();
+          const response = await subscriptionAPI.getStatus(newToken);
+          
+          if (response.data) {
+            const data = response.data;
+            subscriptionStatus.subscribed = data.subscribed ?? false;
+            subscriptionStatus.status = data.status || "INACTIVE";
+            subscriptionStatus.message = data.message || "";
+            subscriptionStatus.isActiveBookmark = data.activeBookmark ?? false;
+            subscriptionStatus.isActiveTop3 = data.activeTop3 ?? false;
+            subscriptionStatus.isActiveNewPolicy = data.activeNewPolicy ?? false;
+            subscriptionStatus.isActiveFeedback = data.activeFeedback ?? false;
+          }
+        } catch (retryErr) {
+          console.error("토큰 갱신 후 재시도 실패:", retryErr);
+          // 재시도도 실패하면 초기 구독 설정
+          await createInitialSubscription();
+        }
       }
     }
   };

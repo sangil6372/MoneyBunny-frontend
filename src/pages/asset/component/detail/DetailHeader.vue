@@ -7,7 +7,7 @@
         class="back-icon"
       />
     </button>
-    <h2 class="detail-title">{{ title }}</h2>
+    <div class="detail-title">{{ title }}</div>
   </header>
 </template>
 
@@ -23,7 +23,7 @@ export default {
 .detail-header {
   display: flex;
   align-items: center;
-  height: 3.5rem;
+  height: 3.4rem;
   padding: 0 1rem;
   background-color: #fff;
   border-bottom: 1px solid var(--input-bg-3);
@@ -32,27 +32,26 @@ export default {
 .back-btn {
   background: none;
   border: none;
-  margin-right: 0.75rem;
-  padding: 0.5rem;
+  margin-right: 0.65rem;
   border-radius: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
+/*
 .back-btn:active {
   background-color: var(--input-bg-1);
   transform: scale(0.95);
-}
+} */
 
 .back-icon {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
 }
 
 .detail-title {
-  font-size: 1.125rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
   margin: 0;
 }

@@ -29,6 +29,8 @@ body.modal-open {
   /*빈: 스크롤 숨기기*/
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
+  scroll-behavior: smooth; /* 부드럽게 스크롤 (선택사항) */
+  overflow-anchor: none; /* 자동 스크롤 anchor 기능 막기 */
 }
 
 /* 공통 레이아웃 박스 */

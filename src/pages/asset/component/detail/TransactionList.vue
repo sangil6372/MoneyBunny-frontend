@@ -244,7 +244,7 @@ onUnmounted(() => {
 <style scoped>
 .transaction-list {
   background: #fff;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   margin: 1rem;
   padding: 0.75rem 1rem;
   display: flex;
@@ -270,7 +270,7 @@ onUnmounted(() => {
   text-align: center;
   border: none;
   background: none;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--base-blue-dark);
   padding: 0.75rem 0 0.25rem;
   cursor: pointer;
@@ -279,7 +279,7 @@ onUnmounted(() => {
 .no-data {
   text-align: center;
   color: var(--text-lightgray);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   margin: 1rem 0;
 }
 </style>

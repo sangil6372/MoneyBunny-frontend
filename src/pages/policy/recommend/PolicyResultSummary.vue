@@ -33,7 +33,7 @@
     </div>
 
     <section class="recommendSection">
-      <h3 class="font-16 font-bold">추천 정책 미리보기</h3>
+      <div class="font-16 font-bold">추천 정책 미리보기</div>
       <div
         class="policyCard"
         v-for="policy in previewPolicies.slice(0, 2)"
@@ -45,19 +45,11 @@
         <p class="desc">{{ policy.policyBenefitDescription }}</p>
         <p class="match">
           신청기간:
-          <template v-if="policy.startDate && policy.endDate">
-            {{ formatDate(policy.startDate) }} ~
-            {{ formatDate(policy.endDate) }}
+          <template v-if="policy.startDate || policy.endDate">
+            {{ formatDate(policy.startDate, policy.endDate) }}
           </template>
-          <template v-else>
-            {{ formatDate(policy.endDate) }}
-          </template>
+          <template v-else> 상시 </template>
         </p>
-        <!--
-        <div class="tag">{{ policy.tag }}</div>
-        <p class="desc">{{ policy.description }}</p>
-        <p class="match">매칭도: {{ policy.match }}</p>
-        -->
       </div>
     </section>
 
@@ -74,7 +66,6 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { usePolicyQuizStore } from '@/stores/policyQuizStore';
-import { usePolicyMatchingStore } from '@/stores/policyMatchingStore'; // 🛠️ 제승 수정: 정책 매칭 스토어 import
 import { policyAPI } from '@/api/policy';
 
 export default {
@@ -82,7 +73,6 @@ export default {
   setup() {
     const router = useRouter();
     const policyQuizStore = usePolicyQuizStore();
-    const policyMatchingStore = usePolicyMatchingStore(); // 🛠️ 제승 수정: 스토어 사용
 
     const summary = computed(() => ({
       학력: policyQuizStore.educationLevels || '-',
@@ -106,49 +96,39 @@ export default {
       return arr;
     });
 
-    // 🛠️ 제승 수정: 정책 미리보기 API 연동 및 policyMatchingStore 연동
+    // 🛠️ 항상 API로 정책 미리보기 조회
     const previewPolicies = ref([]);
 
     onMounted(async () => {
-      if (policyMatchingStore.recommendedPolicies.length > 0) {
-        previewPolicies.value = policyMatchingStore.recommendedPolicies;
-        return;
-      }
       try {
         const res = await policyAPI.getUserPolicySearch();
         previewPolicies.value = res.data;
-        policyMatchingStore.setRecommendedPolicies(res.data);
       } catch (e) {
         previewPolicies.value = [];
       }
     });
 
-    // 🛠️ 제승 수정: 날짜 포맷 함수 개선 (YYYYMMDD → YYYY.MM.DD 또는 "YYYYMMDD ~ YYYYMMDD" 처리)
-    function formatDate(dateStr) {
+    // 🛠️ 신청기간 없을 경우 "상시" 반환하도록 formatDate 개선
+    function formatDate(startDate, endDate) {
+      // 둘 다 없으면 "상시"
+      if (!startDate && !endDate) return '상시';
+      // 둘 다 있으면 "YYYY.MM.DD ~ YYYY.MM.DD"
+      if (startDate && endDate) {
+        return `${formatSingleDate(startDate)} ~ ${formatSingleDate(endDate)}`;
+      }
+      // 하나만 있으면 해당 날짜만 포맷
+      if (startDate) return formatSingleDate(startDate);
+      if (endDate) return formatSingleDate(endDate);
+      return '';
+    }
+
+    function formatSingleDate(dateStr) {
       if (typeof dateStr !== 'string') return dateStr;
-      // "YYYYMMDD ~ YYYYMMDD" 형식 처리
-      const parts = dateStr.split('~').map((s) => s.trim());
-      if (
-        parts.length === 2 &&
-        /^\d{8}$/.test(parts[0]) &&
-        /^\d{8}$/.test(parts[1])
-      ) {
-        return `${parts[0].slice(0, 4)}.${parts[0].slice(
-          4,
-          6
-        )}.${parts[0].slice(6, 8)} ~ ${parts[1].slice(0, 4)}.${parts[1].slice(
-          4,
-          6
-        )}.${parts[1].slice(6, 8)}`;
+      const d = dateStr.trim();
+      if (/^\d{8}$/.test(d)) {
+        return `${d.slice(0, 4)}.${d.slice(4, 6)}.${d.slice(6, 8)}`;
       }
-      // 단일 날짜 "YYYYMMDD"
-      if (parts.length === 1 && /^\d{8}$/.test(parts[0])) {
-        return `${parts[0].slice(0, 4)}.${parts[0].slice(
-          4,
-          6
-        )}.${parts[0].slice(6, 8)}`;
-      }
-      return dateStr;
+      return d;
     }
 
     const redoQuiz = async () => {

@@ -18,7 +18,7 @@
       <!-- 카드 탭 요약카드 -->
       <SummaryCard
         v-else-if="currentTab === '카드'"
-        title="이번 달 총 사용액"
+        title="이번 달 카드 사용액"
         :mainAmount="totalCardUsage"
         rightLabel="카드 수"
         :rightValue="rightValueForCards"
@@ -30,7 +30,7 @@
         v-else-if="currentTab === '지출'"
         title="이번 달 총 지출액"
         :main-amount="spendingTabData.totalSpending"
-        right-label="지난달 대비"
+        right-label="지난달 대비 변화"
         :right-value="spendingTabData.comparisonText"
         right-unit=""
         variant="spending"

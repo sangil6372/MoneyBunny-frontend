@@ -155,14 +155,14 @@ const trackStyle = computed(() => {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 8px;
+  bottom: 4px;
   display: flex;
   gap: 4px;
   justify-content: center;
 }
 .dot {
-  width: 4px;
-  height: 4px;
+  width: 3px;
+  height: 3px;
   border-radius: 999px;
   border: none;
   background: rgba(31, 59, 97, 0.25);

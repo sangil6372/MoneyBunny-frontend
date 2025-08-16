@@ -14,9 +14,9 @@
           class="card-logo"
         />
         <div class="card-info">
-          <h3 class="card-title">
+          <div class="card-title">
             {{ getCardIssuer(card.issuerCode) }} {{ card.cardName }}
-          </h3>
+          </div>
           <p class="card-number">{{ card.cardMaskedNumber }}</p>
         </div>
       </div>
@@ -24,36 +24,43 @@
       <!-- 설정 옵션들 -->
       <div class="settings-options">
         <div class="section-group">
-          <!-- 금액 숨기기 토글 -->
           <div class="setting-item toggle-item">
-            <span class="setting-text">금액 숨기기</span>
-            <label class="toggle-switch">
+            <div class="setting-left">
+              <span class="setting-text">금액 숨기기</span>
+              <!-- <small class="setting-hint">{{
+                hideAmount ? '숨김 적용됨' : '현재 표시 중'
+              }}</small> -->
+            </div>
+
+            <label class="toggle-switch ios" aria-label="금액 숨기기">
               <input
                 type="checkbox"
                 v-model="hideAmount"
                 @change="handleToggleAmount"
               />
-              <span class="toggle-slider"></span>
+              <span class="toggle-slider"
+                ><span class="toggle-knob"></span
+              ></span>
             </label>
           </div>
 
           <!-- 대표 카드 설정 -->
-          <button
-            class="setting-item"
-            @click="handleSetMain"
-            :disabled="card.isRepresentative"
-          >
+          <button class="setting-item" @click="handleToggleMain">
             <div class="setting-content">
-              <span class="setting-text">대표 카드 설정</span>
-              <span v-if="card.isRepresentative" class="current-status"
-                >현재 대표 카드입니다</span
-              >
+              <span class="setting-text">
+                {{
+                  card.isRepresentative ? '대표 카드 해제' : '대표 카드 설정'
+                }}
+              </span>
+              <span v-if="card.isRepresentative" class="current-status">
+                현재 대표 카드입니다
+              </span>
             </div>
-            <!-- 대표 카드 여부에 따라 빈 별/색칠된 별 이미지 -->
-            <div class="action-icon">
+
+            <!-- 별 아이콘 클릭으로도 토글되게 -->
+            <div class="action-icon" @click.stop="handleToggleMain">
               <img
                 :src="card.isRepresentative ? fillStarIcon : emptyStarIcon"
-                :alt="card.isRepresentative ? '대표 카드' : '대표 카드 설정'"
                 class="star-icon"
               />
             </div>
@@ -70,8 +77,8 @@
 <script setup>
 import { ref, watch, onUnmounted } from 'vue';
 import cardCodeMap from '@/assets/utils/cardCodeMap.js';
-import emptyStarIcon from '@/assets/images/icons/common/empty_star.png';
-import fillStarIcon from '@/assets/images/icons/common/fill_star.png';
+import emptyStarIcon from '@/assets/images/icons/asset/star1.png';
+import fillStarIcon from '@/assets/images/icons/asset/star.png';
 
 const props = defineProps({
   visible: { type: Boolean, default: false },
@@ -166,7 +173,7 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
 /* ===== 바텀시트 컨테이너 ===== */
 .modal-content {
   width: 100%;
-  max-width: 474px;
+  max-width: 390px;
   background: #fff;
   border-radius: 1.25rem 1.25rem 0 0;
   padding: 1.25rem;
@@ -213,14 +220,14 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
 }
 
 .card-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
   margin: 0 0 0.25rem;
 }
 
 .card-number {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-lightgray);
   margin: 0;
 }
@@ -236,7 +243,7 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
   display: flex;
   flex-direction: column;
   gap: 0;
-  background: var(--input-bg-1);
+  background: none;
   border-radius: 0.75rem;
   overflow: hidden;
 }
@@ -245,7 +252,7 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.875rem 1rem;
+  padding: 0.75rem;
   background: none;
   border: none;
   border-bottom: 1px solid var(--input-outline);
@@ -267,15 +274,14 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
 }
 
 .setting-text {
-  font-size: 0.9375rem;
-  font-weight: 500;
+  font-size: 0.85rem;
   color: var(--base-blue-dark);
   line-height: 1.4;
 }
 
 /* 현재 상태 텍스트 */
 .current-status {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--text-green);
   line-height: 1.3;
 }
@@ -291,7 +297,6 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
 .star-icon {
   width: 18px;
   height: 18px;
-  transition: all 0.3s ease;
   object-fit: contain;
 }
 
@@ -314,72 +319,56 @@ const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음
   color: var(--text-lightgray);
 }
 
-/* ===== 토글 스위치 ===== */
-.toggle-item {
+/* 좌측 라벨+힌트 묶음 */
+.setting-left {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 2px;
+}
+.setting-hint {
+  font-size: 0.72rem;
+  color: var(--text-lightgray);
 }
 
-.toggle-switch {
+.toggle-switch.ios {
   position: relative;
-  display: inline-block;
-  width: 51px;
-  height: 31px;
+  width: 40px;
+  height: 24px;
 }
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
+.toggle-switch.ios input {
+  display: none;
 }
-
-.toggle-slider {
+.toggle-switch.ios .toggle-slider {
   position: absolute;
   inset: 0;
-  background-color: var(--input-disabled-1);
-  transition: 0.3s;
-  border-radius: 31px;
+  background: #d5d9e3;
+  border-radius: 24px;
 }
-
-.toggle-slider:before {
-  content: '';
+.toggle-switch.ios .toggle-knob {
   position: absolute;
-  height: 27px;
-  width: 27px;
+  top: 2px;
   left: 2px;
-  bottom: 2px;
-  background-color: #fff;
-  transition: 0.3s;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
+  background: #fff;
 }
-
-input:checked + .toggle-slider {
-  background-color: var(--base-blue-dark);
+.toggle-switch.ios input:checked + .toggle-slider {
+  background: var(--base-blue-dark);
 }
-
-input:checked + .toggle-slider:before {
-  transform: translateX(20px);
+.toggle-switch.ios input:checked + .toggle-slider .toggle-knob {
+  transform: translateX(16px);
 }
-
 /* ===== 닫기 버튼 ===== */
 .close-button {
   width: 100%;
-  padding: 0.875rem;
+  padding: 0.75rem;
   margin-top: 1rem;
   background: var(--base-blue-dark);
   border: none;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   color: #fff;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: 'NanumSquareNeo', sans-serif;
-  transition: transform 0.2s ease, background 0.2s ease;
+  font-size: 0.9rem;
   -webkit-tap-highlight-color: transparent;
-}
-
-.close-button:active {
-  background: var(--base-lavender);
-  transform: scale(0.98);
 }
 </style>

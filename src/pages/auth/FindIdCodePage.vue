@@ -1,21 +1,21 @@
 5
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import axios from 'axios';
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import axios from "axios";
 
 // 🎵(유정) 이메일 인증 코드 전송 후 인증코드 입력 for 아이디 찾기 페이지
 // 이메일 전송 및 인증 관련 변수
 const route = useRoute();
-const email = ref(route.query.email || '');
+const email = ref(route.query.email || "");
 
 const router = useRouter();
-const code = ref('');
-const errorMsg = ref('');
+const code = ref("");
+const errorMsg = ref("");
 
-// ✅ 토스트 관련 추가
+// 토스트 관련 추가
 const showToast = ref(false);
-
+const toastText = ref("");
 // 타이머 관련 변수
 const time = 180; // 180초 == 3분
 const timeLeft = ref(time); // 남은 시간
@@ -26,7 +26,7 @@ const isExpired = computed(() => timeLeft.value === 0);
 // 인증 만료 메시지 clear
 const clearError = () => {
   setTimeout(() => {
-    errorMsg.value = '';
+    errorMsg.value = "";
   }, 3000);
 };
 
@@ -36,35 +36,68 @@ const clearError = () => {
 const verify = async () => {
   // 인증 시간 관련
   if (isExpired.value) {
-    errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+    errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     // clearError();
     return;
   }
 
   // 이메일 & 인증코드 입력 관련
   if (!email.value || !code.value) {
-    errorMsg.value = '이메일과 인증코드를 모두 입력해주세요.';
+    errorMsg.value = "이메일과 인증코드를 모두 입력해주세요.";
     return;
   }
 
   // 인증 처리
   try {
-    await axios.post('/api/auth/verify', {
+    await axios.post("/api/auth/verify", {
       email: email.value,
       code: code.value,
     });
 
-    // 인증 성공 → 토스트 띄우고 이동
+    // 인증 성공 -> 토스트 띄우고 이동
+    toastText.value = "인증 성공!";
     showToast.value = true;
+
     setTimeout(async () => {
       showToast.value = false;
-      const res = await axios.post('/api/auth/find-id', { email: email.value });
+      const res = await axios.post("/api/auth/find-id", { email: email.value });
       const loginId = res.data;
-      router.push({ name: 'findIdResult', query: { loginId } });
+      router.push({ name: "findIdResult", query: { loginId } });
     }, 1000); // 1초 후 이동
   } catch (err) {
     errorMsg.value =
-      '인증 실패: ' + (err.response?.data?.message || '코드를 확인해주세요');
+      "인증 실패: " + (err.response?.data?.message || "코드를 확인해주세요");
+  }
+};
+
+// 인증코드 재전송 (중복방지 없음)
+const resendCode = async () => {
+  if (!email.value) {
+    errorMsg.value = "이메일을 입력해주세요.";
+    return;
+  }
+  // 만료되지 않았으면 재전송하지 않음 (버튼도 안 보이지만 안전장치)
+  if (!isExpired.value) return;
+
+  try {
+    await axios.post("/api/auth/send-find-id-code", {
+      email: email.value,
+    });
+    // 오류메시지 리셋
+    errorMsg.value = "";
+
+    // 타이머 리셋
+    if (timerInterval) clearInterval(timerInterval);
+    timeLeft.value = time;
+    startTimer();
+    // 토스트
+    toastText.value = "인증코드를 재전송했습니다.";
+    showToast.value = true;
+    setTimeout(() => (showToast.value = false), 2000);
+  } catch (err) {
+    errorMsg.value =
+      "재전송 실패: " +
+      (err.response?.data?.message || "잠시 후 다시 시도해주세요");
   }
 };
 
@@ -77,7 +110,7 @@ const startTimer = () => {
       timeLeft.value--;
     } else {
       clearInterval(timerInterval);
-      errorMsg.value = '인증 시간이 만료되었습니다. 다시 시도해주세요.';
+      errorMsg.value = "인증 시간이 만료되었습니다. 다시 시도해주세요.";
     }
   }, 1000);
 };
@@ -94,8 +127,8 @@ onBeforeUnmount(() => {
 
 // mm:ss 형식으로 포맷
 const formattedTime = computed(() => {
-  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, '0');
-  const seconds = String(timeLeft.value % 60).padStart(2, '0');
+  const minutes = String(Math.floor(timeLeft.value / 60)).padStart(2, "0");
+  const seconds = String(timeLeft.value % 60).padStart(2, "0");
   return `${minutes}:${seconds}`;
 });
 </script>
@@ -109,7 +142,7 @@ const formattedTime = computed(() => {
         class="bunnyImage"
       />
       <transition name="fade">
-        <div v-if="showToast" class="toastMsg">인증 성공!</div>
+        <div v-if="showToast" class="toastMsg">{{ toastText }}</div>
       </transition>
       <div class="card">
         <div class="title font-24 font-extrabold">MoneyBunny</div>
@@ -162,7 +195,16 @@ const formattedTime = computed(() => {
           :disabled="isExpired"
           :class="{ expired: isExpired }"
         >
-          {{ isExpired ? '인증 만료' : '인증하기' }}
+          {{ isExpired ? "인증 만료" : "인증하기" }}
+        </button>
+
+        <!-- 만료됐을 때만 재전송 버튼 노출 -->
+        <button
+          v-if="isExpired"
+          class="submitButton font-14"
+          @click="resendCode"
+        >
+          인증코드 재전송
         </button>
 
         <div class="loginLink font-11">
@@ -172,7 +214,7 @@ const formattedTime = computed(() => {
         </div>
 
         <div class="signupLink font-11">
-          계정이 없으신가요? <a href="/signUpEmailVerify">회원가입</a>
+          계정이 없으신가요? <a href="/signUpEmailRequest">회원가입</a>
         </div>
       </div>
     </div>

@@ -17,14 +17,14 @@
           class="bunnyImg"
         />
       </div>
-      <p class="title font-18 font-bold">로그아웃</p>
-      <p class="desc font-14 font-regular">
+      <p class="title font-17 font-bold">로그아웃</p>
+      <p class="desc font-13 font-regular">
         정말 로그아웃 하시겠습니까?<br />
         저장되지 않은 정보는 사라질 수 있습니다.
       </p>
       <div class="btnGroup">
-        <button class="cancelBtn font-14" @click="$emit('close')">취소</button>
-        <button class="logoutBtn font-14" @click="$emit('logout')">
+        <button class="cancelBtn font-13" @click="$emit('close')">취소</button>
+        <button class="logoutBtn font-13" @click="$emit('logout')">
           로그아웃
         </button>
       </div>
@@ -44,9 +44,9 @@
 }
 .modalCard {
   background-color: white;
-  border-radius: 12px;
-  width: 330px;
-  padding: 24px 24px 28px 24px;
+  border-radius: 6px;
+  width: 320px;
+  padding: 24px;
   text-align: center;
   position: relative;
 }
@@ -61,8 +61,8 @@
   cursor: pointer;
 }
 .xIcon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 .circle {
   width: 90px;
@@ -84,32 +84,32 @@
 }
 .title {
   color: var(--text-login);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 .desc {
   color: var(--text-bluegray);
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   line-height: 1.6;
 }
 .btnGroup {
   display: flex;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
 }
 .cancelBtn {
   background-color: #f0f4f8;
   color: var(--text-login);
   flex: 1;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: 6px;
   border: none;
 }
 .logoutBtn {
   background-color: #d85c5c;
   color: white;
   flex: 1;
-  padding: 10px;
-  border-radius: 10px;
+  padding: 8px;
+  border-radius: 6px;
   border: none;
 }
 </style>

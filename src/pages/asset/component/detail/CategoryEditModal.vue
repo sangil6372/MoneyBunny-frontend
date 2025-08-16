@@ -35,7 +35,7 @@
         </div>
 
         <!-- 선택된 카테고리 미리보기 -->
-        <div v-if="selectedCategory" class="selected-preview">
+        <!-- <div v-if="selectedCategory" class="selected-preview">
           <h3 class="section-title">선택된 카테고리</h3>
           <div class="preview-card">
             <div
@@ -52,7 +52,7 @@
               <p class="preview-type">기본 카테고리</p>
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- 확인 버튼 -->
         <div class="button-section">
@@ -162,10 +162,9 @@ watch(
   z-index: 2000;
 }
 
-/* 모달 전체 영역 */
 .modal-container {
   width: 100%;
-  max-width: 474px;
+  max-width: 390px;
   height: 92vh;
   background: var(--input-bg-2);
   display: flex;
@@ -190,10 +189,9 @@ watch(
   box-sizing: border-box !important;
 }
 
-/* 내용 영역 */
 .modal-content {
   flex: 1;
-  padding: 0.75rem 1rem 1.25rem;
+  padding: 1rem;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   box-sizing: border-box;
@@ -202,15 +200,13 @@ watch(
 /* 섹션 */
 .category-section {
   background: white;
-  border-radius: 1rem;
+  border-radius: 6px;
   padding: 1rem;
-  margin-top: 0.75rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 .section-title {
-  font-size: 0.9375rem;
-  font-weight: 600;
+  font-size: 0.8rem;
+  font-weight: bold;
   color: var(--text-login);
   margin-bottom: 0.75rem;
 }
@@ -220,126 +216,74 @@ watch(
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
 }
 
 .category-item {
   display: flex;
   align-items: center;
-  padding: 0.625rem;
-  border: 2px solid var(--input-bg-3);
-  border-radius: 0.625rem;
+  padding: 0.5rem;
+  border: 1px solid #e6ecf5;
+  border-radius: 6px;
   cursor: pointer;
   position: relative;
 }
 
 .category-item.selected {
-  border-color: var(--base-blue-dark);
-  background: var(--base-blue-light);
+  background: #e6ecf5;
 }
 
 .category-icon {
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 0.5rem;
+  margin-right: 0.6rem;
   flex-shrink: 0;
 }
 
 .category-dot {
-  width: 0.875rem;
-  height: 0.875rem;
+  width: 0.75rem;
+  height: 0.75rem;
   border-radius: 50%;
 }
 
 .category-name {
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 0.75rem;
   color: var(--text-login);
   flex: 1;
 }
 
 .check-icon {
   color: var(--base-blue-dark);
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: bold;
   position: absolute;
   top: 0.25rem;
   right: 0.25rem;
 }
 
-/* 선택된 카테고리 미리보기 */
-.selected-preview {
-  background: white;
-  border-radius: 1rem;
-  padding: 1.25rem;
-  margin-top: 0.75rem;
-}
-
-.preview-card {
-  display: flex;
-  align-items: center;
-  padding: 0.875rem;
-  background: var(--input-bg-1);
-  border-radius: 0.75rem;
-}
-
-.preview-icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.75rem;
-}
-
-.preview-dot {
-  width: 1rem;
-  height: 1rem;
-  border-radius: 50%;
-}
-
-.preview-info {
-  flex: 1;
-}
-
-.preview-name {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--text-login);
-  margin: 0 0 0.25rem 0;
-}
-
-.preview-type {
-  font-size: 0.75rem;
-  color: var(--text-bluegray);
-  margin: 0;
-}
-
 /* 하단 버튼 */
 .button-section {
   display: flex;
   gap: 0.5rem;
-  margin-top: 1.25rem;
+  margin-top: 1rem;
 }
 
 .cancel-btn,
 .save-btn {
   flex: 1;
-  padding: 0.875rem;
+  padding: 0.6rem;
   border: none;
-  border-radius: 0.75rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
+  border-radius: 6px;
+  font-size: 0.8rem;
   cursor: pointer;
 }
 
 .cancel-btn {
-  border: 2px solid var(--input-bg-3);
+  border: 1px solid var(--input-bg-3);
   background: white;
   color: var(--text-darkgray);
 }

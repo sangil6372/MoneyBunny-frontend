@@ -94,116 +94,131 @@ const formatSubValue = (subInfo) => {
 <style scoped>
 @import '@/assets/styles/homecard.css';
 
-/* SummaryCard 전용 스타일 */
+/* 카드 레이아웃 */
 .summary-card {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 1.25rem;
+
   height: 120px;
-  padding: 1.25rem 1.5rem;
-  gap: 1rem; /* 기존 0.5rem → 1rem으로 늘림 */
-  /* 텍스트 오버플로우 방지 */
+  padding: 1.25rem;
+  border-radius: 6px;
+
+  background: var(--base-blue-dark);
+  color: #fff;
+  position: relative; /* 구분선용 */
   overflow: hidden;
 }
 
+/* 좌측(메인/서브 묶음) */
 .summary-content {
-  flex: 1;
-  min-width: 0; /* flex item 축소 허용 */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.25rem;
+  gap: 0.375rem;
 }
 
 .summary-main .home-card-label {
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .summary-main .home-card-value {
-  font-size: 1.1rem;
+  margin: 0.15rem 0 0;
+  line-height: 1.2;
+  font-size: 1.05rem;
   font-weight: bold;
-  margin: 0;
-  /* 긴 텍스트 처리 */
+  font-variant-numeric: tabular-nums;
   word-break: keep-all;
-  overflow-wrap: break-word;
-  line-height: 1.3;
 }
 
+/* 서브 값 */
+.sub-value {
+  line-height: 1.25;
+  word-break: keep-all;
+  color: rgba(255, 255, 255, 0.95);
+}
+
+/* 우측 영역 */
 .summary-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
+  row-gap: 0.275rem;
+  min-width: 160px;
   text-align: right;
-  gap: 0.25rem;
-  /* 고정 너비로 우측 영역 확보 */
-  flex-shrink: 0;
-  min-width: 120px; /* 비교 텍스트가 길 때를 대비 */
 }
 
 .summary-right .home-card-rate {
-  font-size: 0.775rem;
-  font-weight: bold;
-  color: var(--text-rate);
   margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
 }
 
-/* 기본 우측 값 스타일 */
+/* 우측 값 */
 .summary-right-value {
-  font-weight: bold;
   margin: 0;
-  /* 긴 텍스트 처리 */
+  font-weight: bold;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
   word-break: keep-all;
-  overflow-wrap: break-word;
-  max-width: 100%;
+  text-align: right;
 }
 
-/* 개수 표시용 (3개, 15건 등) */
+/* 개수(2개 등) */
 .summary-right-value.count-text {
-  font-size: 0.9rem;
-  color: white;
+  font-size: 1rem;
+  color: #fff;
 }
 
-/* 비교 텍스트용 (+417,500원(+20%) 등) */
+/* 비교 텍스트(+417,500원 등) */
 .summary-right-value.comparison-text {
-  font-size: 0.775rem;
+  font-size: 0.8rem;
+  color: #fff;
 }
 
+/* 증감 컬러 */
 .summary-right-value.positive,
 .sub-value.positive {
-  color: var(--alert-strong); /* 커스텀 변수 없으면 기본 빨강 */
+  color: var(--alert-strong);
 }
 .summary-right-value.negative,
 .sub-value.negative {
-  color: var(--text-green); /* 성공/감소는 녹색으로 변경 */
+  color: var(--text-green);
 }
 
-/* 서브 값에도 같은 규칙 적용 */
-.sub-value {
-  font-weight: 700;
-  word-break: keep-all;
-  overflow-wrap: break-word;
-  line-height: 1.3;
+/* 좌/우 얇은 구분선 */
+.summary-card::after {
+  content: '';
+  position: absolute;
+  right: calc(160px + 1.5rem);
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 1px;
 }
 
-/* 모바일 대응: 더 작은 화면에서는 폰트 사이즈 조정 */
-@media (max-width: 400px) {
+/* 모바일 */
+@media (max-width: 420px) {
   .summary-card {
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
+    column-gap: 1rem;
+    height: auto;
+    padding: 1rem 1.1rem;
   }
-
-  .summary-main .home-card-value {
-    font-size: 1.1rem;
-  }
-
-  .summary-right-value.comparison-text {
-    font-size: 0.75rem;
-  }
-
   .summary-right {
-    min-width: 100px;
+    min-width: 120px;
+  }
+  .summary-card::after {
+    right: calc(120px + 1.1rem);
+    top: 12px;
+    bottom: 12px;
   }
 }
 </style>

@@ -40,89 +40,102 @@ const monthlyExpenseDisplay = computed(() =>
 <style scoped>
 @import '@/assets/styles/homecard.css';
 
-/* SummaryCard와 동일한 기본 구조 */
+/* 카드 */
 .total-asset-card {
-  display: flex;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: 1fr auto;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 1.25rem;
+
   height: 120px;
-  padding: 1.25rem 1.5rem;
-  gap: 1rem;
+  padding: 1.25rem;
   border-radius: 6px;
+
+  background: var(--base-blue-dark);
+  color: #fff;
+  position: relative;
   overflow: hidden;
 }
 
-/* SummaryCard의 summary-content와 동일 */
 .asset-content {
-  flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 0.25rem;
+  gap: 0.375rem;
 }
 
 .asset-main .home-card-label {
-  margin-bottom: 0.5rem;
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .asset-main .home-card-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin: 0;
+  margin: 0.15rem 0 0;
+  line-height: 1.2;
+  font-size: 1.05rem;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
   word-break: keep-all;
-  overflow-wrap: break-word;
-  line-height: 1.3;
 }
 
-/* SummaryCard의 summary-right와 동일 */
+/* 우측 */
 .asset-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   justify-content: center;
-  text-align: right;
-  gap: 0.25rem;
-  flex-shrink: 0;
-  min-width: 120px;
+  row-gap: 0.275rem;
+  min-width: 160px;
 }
 
 .asset-right .home-card-rate {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-rate);
   margin: 0;
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  white-space: nowrap;
 }
 
-/* 우측 값 스타일 */
 .asset-right-value {
-  font-weight: 700;
   margin: 0;
+  font-weight: bold;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
   word-break: keep-all;
-  overflow-wrap: break-word;
-  max-width: 100%;
-  font-size: 1rem;
-  color: white;
+  color: #fff;
+  text-align: right;
 }
 
-/* 모바일 대응 */
-@media (max-width: 400px) {
+/* 좌/우 얇은 구분선 */
+.total-asset-card::after {
+  content: '';
+  position: absolute;
+  right: calc(160px + 1.5rem);
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 1px;
+}
+
+/* 모바일 */
+@media (max-width: 420px) {
   .total-asset-card {
-    gap: 0.75rem;
-    padding: 1rem 1.25rem;
+    grid-template-columns: 1fr auto;
+    column-gap: 1rem;
+    height: auto;
+    padding: 1rem 1.1rem;
   }
-
-  .asset-main .home-card-value {
-    font-size: 1.1rem;
-  }
-
-  .asset-right-value {
-    font-size: 0.9rem;
-  }
-
   .asset-right {
-    min-width: 100px;
+    min-width: 120px;
+  }
+  .total-asset-card::after {
+    right: calc(120px + 1.1rem);
+    top: 12px;
+    bottom: 12px;
   }
 }
 </style>

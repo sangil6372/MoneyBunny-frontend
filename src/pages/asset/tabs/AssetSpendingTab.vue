@@ -270,8 +270,7 @@ async function maybeRefetchIfDirty() {
 /* 통합 지출 분석 카드 스타일 */
 .unified-spending-card {
   background-color: white;
-  border-radius: 0.75rem;
-  /* box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.04); */
+  border-radius: 6px;
   margin-bottom: 1rem;
   overflow: hidden;
 }
@@ -279,15 +278,14 @@ async function maybeRefetchIfDirty() {
 /* 개별 차트 카드 스타일 */
 .spending-card {
   background-color: white;
-  border-radius: 0.75rem;
-  /* box-shadow: 0 0.125rem 0.5rem rgba(0, 0, 0, 0.04); */
+  border-radius: 6px;
   margin-bottom: 1rem;
   overflow: hidden;
 }
 
 /* 카드 내부 구분선 */
 .card-divider {
-  height: 1px;
+  /* height: 1px; */
   background-color: var(--input-outline);
   margin: 0 1.5rem;
 }

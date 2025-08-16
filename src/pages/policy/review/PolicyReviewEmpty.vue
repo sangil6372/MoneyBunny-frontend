@@ -9,11 +9,8 @@
 
       <div class="emptyTitle">아직 등록된 리뷰가 없어요</div>
       <div class="emptySub text-gray">
-        첫 리뷰를 남겨주시면 다른 분들께 큰 도움이 돼요.
+        실제 이용하신 분들의 리뷰를 기다리고 있어요.
       </div>
-      <button class="primaryBtn" @click="$emit('write')">
-        첫 리뷰 작성하기
-      </button>
     </section>
 
     <section class="guide card">
@@ -32,12 +29,11 @@
 </template>
 
 <script setup>
-import reviewBunny from '@/assets/images/icons/policy/reviewbunny.png';
+import reviewBunny from "@/assets/images/icons/policy/reviewbunny.png";
 
 defineProps({
-  policyTitle: { type: String, default: '' },
+  policyTitle: { type: String, default: "" },
 });
-defineEmits(['write']);
 </script>
 
 <style scoped>

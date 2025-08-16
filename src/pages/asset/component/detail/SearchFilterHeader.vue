@@ -149,22 +149,18 @@ watch(
 .search-filter-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-
-  /* 🔥 수정: DetailInfoCard와 동일한 스타일 */
+  gap: 0.5rem;
   background: white;
-  border-radius: 0.75rem; /* DetailInfoCard와 동일 */
-  padding: 1rem;
+  border-radius: 6px;
+  padding: 0.75rem;
   margin: 1rem;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); /* DetailInfoCard와 동일 */
-  border: 1px solid var(--input-bg-3); /* DetailInfoCard와 동일 */
-
+  border: 1px solid var(--input-bg-3);
   /* 가로 폭 맞춤 */
   width: calc(100% - 2rem);
   box-sizing: border-box;
+  max-width: 100%;
 }
 
-/* 검색 영역 */
 .search-container {
   flex: 1;
   min-width: 0;
@@ -175,19 +171,19 @@ watch(
   display: flex;
   align-items: center;
   background: #f8f9fb;
-  border-radius: 0.5rem; /* 🔥 수정: 더 작은 둥글기 */
-  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  padding: 0.65rem 0.9rem;
   border: none;
-  box-shadow: none;
+  flex: 1;
+  min-width: 0;
 }
 
 .search-icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   opacity: 0.6;
-  margin-right: 0.75rem;
+  margin-right: 0.25rem;
   flex-shrink: 0;
-  transition: opacity 0.2s ease;
 }
 
 .search-input {
@@ -195,16 +191,14 @@ watch(
   border: none;
   outline: none;
   background: transparent;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #1f2937;
-
-  /* 🔥 플레이스홀더 스타일 */
-  font-weight: 400;
+  min-width: 0;
+  width: 0;
 }
 
 .search-input::placeholder {
   color: #9ca3af;
-  font-weight: 400;
 }
 
 /* 필터 버튼 영역 */
@@ -216,29 +210,22 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
-
-  padding: 0.75rem 1rem;
+  padding: 0.75rem;
   background: #f8f9fb;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  color: #374151;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #9ca3af;
   cursor: pointer;
-  font-weight: 500;
-
-  /* 너비 조정 */
-  min-width: 130px;
-  max-width: 160px;
+  min-width: 120px;
+  max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  transition: background-color 0.2s ease;
 }
 
 .filter-button:active {
-  transform: scale(0.98);
+  /* transform: scale(0.98); */
   background: #d1d5db;
 }
 
@@ -304,7 +291,7 @@ watch(
 
 /* 포커스 상태 */
 .search-input-wrapper:focus-within {
-  background: #e5e7eb;
+  border: 1px solid #e5e7eb;
 }
 
 .search-input-wrapper:focus-within .search-icon {

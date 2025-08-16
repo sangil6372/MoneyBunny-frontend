@@ -3,6 +3,9 @@
 <template>
   <div v-if="show" class="modal-overlay" @click.self="closeModal">
     <div class="modal-container">
+      <transition name="fade">
+        <div v-if="showToast" class="toast-msg">저장되었습니다!</div>
+      </transition>
       <!-- 헤더 -->
       <div class="modal-header">
         <DetailHeader :title="'거래 상세'" @back="closeModal" />
@@ -15,7 +18,7 @@
             #{{ localTx.category }}
           </div>
 
-          <h2 class="transaction-title">{{ getTransactionTitle() }}</h2>
+          <div class="transaction-title">{{ getTransactionTitle() }}</div>
 
           <!-- 상세 정보 리스트 -->
           <div class="detail-grid">
@@ -71,7 +74,7 @@
 
         <!-- 메모 카드 -->
         <div class="memo-card">
-          <h3>메모</h3>
+          <div>메모</div>
           <input
             type="text"
             v-model="memoText"
@@ -124,6 +127,8 @@ const showCategoryEditModal = ref(false);
 const categoryEditData = ref({});
 
 const isSaveActive = computed(() => memoText.value.trim().length > 0);
+
+const showToast = ref(false);
 
 // 모달 열릴 때 데이터 동기화
 watch(
@@ -186,6 +191,11 @@ const saveMemo = () => {
   const id = localTx.value.transactionId || localTx.value.id;
   localTx.value.memo = memo;
   emit('memo-updated', { transactionId: id, memo });
+
+  showToast.value = true;
+  setTimeout(() => {
+    showToast.value = false;
+  }, 1500);
 };
 
 // 카테고리 편집 모달 관리
@@ -217,7 +227,6 @@ const handleCategorySave = (updatedCategory) => {
 </script>
 
 <style scoped>
-/* 모달 기본 구조 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -233,7 +242,7 @@ const handleCategorySave = (updatedCategory) => {
 
 .modal-container {
   width: 100%;
-  max-width: 474px;
+  max-width: 390px;
   background: var(--input-bg-2);
   height: 100vh;
   display: flex;
@@ -271,15 +280,14 @@ const handleCategorySave = (updatedCategory) => {
 /* 카드 스타일 */
 .info-card {
   background: white;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
+  border-radius: 6px;
+  padding: 1rem;
   margin-top: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .memo-card {
   background: white;
-  border-radius: 0.75rem;
+  border-radius: 6px;
   padding: 1.25rem;
   margin-top: 0.75rem;
 }
@@ -287,24 +295,23 @@ const handleCategorySave = (updatedCategory) => {
 /* 카테고리 태그 */
 .category-tag {
   display: inline-block;
-  background: var(--base-blue-light);
+  border: 1px solid var(--input-bg-3);
   color: var(--base-blue-dark);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.75rem;
-  border-radius: 0.75rem;
-  margin-bottom: 0.75rem;
+  font-size: 0.65rem;
+  font-weight: bold;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
 }
 
 /* 거래 제목 */
 .transaction-title {
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0.5rem 0 1rem 0;
   line-height: 1.3;
   word-break: break-all;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
   border-bottom: 1px solid var(--input-bg-1);
 }
 
@@ -312,14 +319,14 @@ const handleCategorySave = (updatedCategory) => {
 .detail-grid {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  /* gap: 0.8rem; */
 }
 
 .detail-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.6rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--input-bg-1);
 }
 
@@ -328,21 +335,19 @@ const handleCategorySave = (updatedCategory) => {
 }
 
 .detail-label {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-darkgray);
-  font-weight: 500;
 }
 
 .detail-value {
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--text-login);
-  font-weight: 600;
   text-align: right;
 }
 
 .amount-item .detail-value {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 0.8rem;
+  font-weight: bold;
 }
 
 .transaction-amount-detail.negative {
@@ -357,23 +362,20 @@ const handleCategorySave = (updatedCategory) => {
 .category-edit-section {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
 }
 
 .category-tag-inline {
-  background: var(--base-blue-light);
+  border: 1px solid var(--input-bg-3);
   color: var(--base-blue-dark);
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
+  font-size: 0.65rem;
+  padding: 0.15rem 0.4rem;
+  border-radius: 6px;
 }
 
 .edit-category-btn {
   background: none;
   border: none;
-  padding: 0.25rem;
-  border-radius: 0.25rem;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -382,65 +384,72 @@ const handleCategorySave = (updatedCategory) => {
 
 .edit-category-btn:active {
   background: var(--input-bg-1);
-  transform: scale(0.95);
 }
 
 .edit-icon {
-  width: 1rem;
-  height: 1rem;
+  width: 0.8rem;
+  height: 0.8rem;
+}
+/* 메모 카드 스타일 */
+.memo-card {
+  background: white;
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-top: 1rem;
 }
 
-/* 메모 입력 */
-.memo-card h3 {
-  font-size: 1rem;
-  margin-bottom: 0.75rem;
+/* 메모 카드 제목 */
+.memo-card {
+  font-size: 0.85rem;
+  margin-bottom: 0.7rem;
   color: var(--base-blue-dark);
-  font-weight: 600;
+  font-weight: bold;
 }
 
 .memo-input {
   width: 100%;
-  padding: 0.75rem;
-  border: 2px solid var(--input-bg-3);
-  border-radius: 0.75rem;
-  margin-top: 0.25rem;
-  font-size: 0.9rem;
+  padding: 0.4rem;
+  border: 1.5px solid var(--input-outline);
+  border-radius: 6px;
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
   box-sizing: border-box;
 }
 
 .memo-input:focus {
   outline: none;
-  border-color: var(--base-blue-dark);
+  border-color: var(--input-bg-3);
 }
 
 .memo-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
-  margin-top: 0.75rem;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .memo-count {
-  font-size: 0.8rem;
+  font-size: 0.65rem;
   color: var(--text-lightgray);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.1px;
 }
 
+/* 메모 저장 버튼 기본 상태 */
 .memo-save {
+  height: 28px;
   background: var(--input-disabled-1);
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-size: 0.85rem;
-  font-weight: 500;
+  border-radius: 6px;
+  padding: 0 8px;
+  font-size: 0.7rem;
 }
 
+/* 메모 저장 버튼 활성화 상태 */
 .memo-save.active {
   background: var(--base-blue-dark);
-}
-
-.memo-save:active {
-  transform: scale(0.98);
 }
 
 /* 확인 버튼 */
@@ -448,17 +457,31 @@ const handleCategorySave = (updatedCategory) => {
   background: var(--base-blue-dark);
   color: white;
   border: none;
-  border-radius: 0.75rem;
-  padding: 1rem;
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin-top: 0.75rem;
-  width: 100%;
-  flex-shrink: 0;
+  border-radius: 6px;
+  padding: 0.7rem;
+  font-size: 0.9rem;
+  margin-top: 1rem;
 }
 
-.confirm-btn:active {
-  background: #263952;
-  transform: scale(0.98);
+.toast-msg {
+  position: fixed;
+  top: 30%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.6rem 1rem;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  z-index: 3000;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

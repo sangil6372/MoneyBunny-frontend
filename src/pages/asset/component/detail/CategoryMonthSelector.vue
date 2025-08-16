@@ -1,159 +1,288 @@
 <template>
-  <div class="category-month-selector">
-    <!-- 월 선택 드롭다운만 표시 -->
+  <div class="categoryMonthSelector" ref="root">
     <select
       v-model="selectedMonth"
-      class="month-dropdown"
-      @change="onMonthChange"
+      class="nativeSelect"
+      @change="emitChange"
+      aria-hidden="true"
+      tabindex="-1"
     >
-      <option v-for="month in months" :key="month.value" :value="month.value">
-        {{ month.label }}
+      <option v-for="m in months" :key="m.value" :value="m.value">
+        {{ m.label }}
       </option>
     </select>
+
+    <button
+      type="button"
+      class="monthTrigger"
+      @click="toggle"
+      :aria-expanded="open"
+    >
+      <span>{{ selectedLabel }}</span>
+      <svg class="chevron" viewBox="0 0 20 20" aria-hidden="true">
+        <path
+          d="M6 8l4 4 4-4"
+          stroke="currentColor"
+          stroke-width="1.6"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+
+    <transition name="fade">
+      <div
+        v-if="open"
+        class="monthPanel"
+        :class="{ openUp: openUp }"
+        role="listbox"
+        :style="panelStyle"
+        @keydown.stop.prevent="onKeydown"
+      >
+        <ul class="optionList" ref="listRef">
+          <li
+            v-for="(m, i) in months"
+            :key="m.value"
+            class="optionItem"
+            :class="{
+              selected: m.value === selectedMonth,
+              active: i === activeIndex,
+            }"
+            role="option"
+            :aria-selected="m.value === selectedMonth"
+            @click="pick(m.value)"
+            @mousemove="activeIndex = i"
+          >
+            <span class="label">{{ m.label }}</span>
+            <!-- <span v-if="m.value === selectedMonth" class="check">✓</span> -->
+          </li>
+        </ul>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import {
+  ref,
+  computed,
+  watch,
+  onMounted,
+  onBeforeUnmount,
+  nextTick,
+} from 'vue';
 
 const props = defineProps({
   currentMonth: {
     type: String,
-    default: () => new Date().toISOString().slice(0, 7), // YYYY-MM
-  },
+    default: () => new Date().toISOString().slice(0, 7),
+  }, // YYYY-MM
 });
-
 const emit = defineEmits(['month-change']);
 
-// 월 선택 관련 로직
+const root = ref(null);
+const listRef = ref(null);
+const open = ref(false);
+const openUp = ref(false);
+const panelStyle = ref({});
+
 const selectedMonth = ref(props.currentMonth);
-const months = ref(generateMonths());
+const months = ref(makeMonths());
 
-function generateMonths() {
-  const monthsList = [];
+function makeMonths() {
+  const arr = [];
   const now = new Date();
-
-  // 3년치 월 데이터 생성 (현재월부터 36개월 전까지)
   for (let i = 0; i < 36; i++) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-      2,
-      '0'
-    )}`;
-    monthsList.push({
-      label: `${date.getFullYear()}년 ${date.getMonth() + 1}월`,
-      value,
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    arr.push({
+      label: `${y}년 ${m}월`,
+      value: `${y}-${String(m).padStart(2, '0')}`,
     });
   }
-  return monthsList;
+  return arr;
 }
 
-function onMonthChange() {
+const selectedLabel = computed(
+  () =>
+    months.value.find((v) => v.value === selectedMonth.value)?.label ||
+    selectedMonth.value
+);
+
+function emitChange() {
   emit('month-change', selectedMonth.value);
 }
 
-// currentMonth props 변경 시 selectedMonth 업데이트
+function pick(val) {
+  selectedMonth.value = val;
+  emitChange();
+  close();
+}
+
+function toggle() {
+  open.value ? close() : openPanel();
+}
+function close() {
+  open.value = false;
+}
+
 watch(
   () => props.currentMonth,
-  (newVal) => {
-    selectedMonth.value = newVal;
-  }
+  (v) => (selectedMonth.value = v)
 );
+
+/** 패널 위치 계산: 트리거 아래 기본, 아래 공간 부족하면 위로 */
+async function openPanel() {
+  open.value = true;
+  await nextTick();
+  const trigger = root.value?.querySelector('.monthTrigger');
+  const rect = trigger.getBoundingClientRect();
+  const viewportH = window.innerHeight;
+  const panelH = 240; // 6행 정도
+  const wantDown = rect.bottom + 8 + panelH <= viewportH;
+  openUp.value = !wantDown;
+
+  panelStyle.value = {
+    minWidth: rect.width + 'px',
+    top: wantDown ? rect.height + 8 + 'px' : 'auto',
+    bottom: wantDown ? 'auto' : rect.height + 8 + 'px',
+    left: '0px',
+  };
+
+  // 선택 항목 보이게 스크롤
+  focusToSelected();
+}
+
+// 바깥 클릭 닫기
+function onClickOutside(e) {
+  if (open.value && root.value && !root.value.contains(e.target)) close();
+}
+onMounted(() => document.addEventListener('click', onClickOutside));
+onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
+
+/** 키보드 내비게이션 */
+const activeIndex = ref(0);
+function onKeydown(e) {
+  if (e.key === 'ArrowDown') move(1);
+  else if (e.key === 'ArrowUp') move(-1);
+  else if (e.key === 'Enter' || e.key === ' ')
+    pick(months.value[activeIndex.value].value);
+  else if (e.key === 'Escape') close();
+}
+function move(step) {
+  const max = months.value.length - 1;
+  activeIndex.value = Math.min(max, Math.max(0, activeIndex.value + step));
+  ensureVisible();
+}
+function focusToSelected() {
+  const idx = months.value.findIndex((m) => m.value === selectedMonth.value);
+  activeIndex.value = idx >= 0 ? idx : 0;
+  nextTick(ensureVisible);
+}
+function ensureVisible() {
+  const list = listRef.value;
+  const item = list?.children?.[activeIndex.value];
+  if (!list || !item) return;
+  const top = item.offsetTop,
+    bottom = top + item.offsetHeight;
+  if (top < list.scrollTop) list.scrollTop = top;
+  else if (bottom > list.scrollTop + list.clientHeight)
+    list.scrollTop = bottom - list.clientHeight;
+}
 </script>
 
 <style scoped>
-.category-month-selector {
-  display: flex;
-  justify-content: flex-end; /* 우측 정렬 */
+.categoryMonthSelector {
+  position: relative;
+  display: inline-block;
+}
+
+/* 숨긴 네이티브 select (값/폼 유지용) */
+.nativeSelect {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+/* 트리거 버튼: 기존 톤 유지 */
+.monthTrigger {
+  display: inline-flex;
   align-items: center;
-  padding: 0;
-  background: transparent;
-}
-
-/* 월 선택 드롭다운 스타일 */
-.month-dropdown {
+  gap: 0.5rem;
   padding: 0.5rem 0.75rem;
+  min-width: 100px;
   border: 1px solid var(--input-outline);
-  border-radius: 0.5rem;
-  background-color: white;
+  border-radius: 6px;
+  background: #fff;
   color: var(--text-login);
-  font-size: 0.875rem;
-  font-weight: 500;
-  min-width: 120px;
+  font-weight: bold;
+  font-size: 0.75rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+}
+.monthTrigger:hover {
+  border-color: var(--input-bg-3);
+}
+.chevron {
+  width: 1.1rem;
+  height: 1.1rem;
+  opacity: 0.8;
+}
 
-  /* 화살표 커스터마이징 */
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1rem;
-  padding-right: 2.5rem;
+.monthPanel {
+  position: absolute;
+  left: 0;
+  z-index: 40;
+  background: #fff;
+  color: var(--text-login);
+  border: 1px solid var(--input-outline);
+  border-radius: 6px;
+  min-width: 220px;
+}
 
-  /* 드롭다운 높이 제한 (1년치만 보이도록) */
-  max-height: 200px;
+.monthPanel.openUp {
+  transform-origin: bottom;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.optionList {
+  margin: 0;
+  padding: 0.25rem;
+  list-style: none;
+  max-height: 240px;
   overflow-y: auto;
+  /* 스크롤바 숨기기 (크로스브라우저) */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
 }
 
-.month-dropdown:hover {
-  border-color: var(--base-blue-dark);
+.optionList::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
-
-.month-dropdown:focus {
-  outline: none;
-  border-color: var(--base-blue-dark);
-  box-shadow: 0 0 0 3px var(--base-blue-light);
-}
-
-/* 드롭다운 옵션 스타일링 */
-.month-dropdown option {
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-login);
-  background-color: white;
-  border: none;
+.optionItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 6px;
   cursor: pointer;
-  line-height: 1.5;
-
-  /* 호버 효과 (브라우저 지원 제한적) */
-  transition: all 0.2s ease;
+  font-size: 0.8rem;
+  color: #374151;
+}
+.optionItem:hover,
+.optionItem.active {
+  background: var(--input-bg-1);
 }
 
-.month-dropdown option:hover {
-  background-color: var(--input-bg-1);
-  color: var(--base-blue-dark);
-}
-
-.month-dropdown option:checked {
-  background-color: var(--base-blue-dark);
-  color: white;
-  font-weight: 600;
-}
-
-/* 스크롤바 커스터마이징 (Webkit 브라우저) */
-.month-dropdown::-webkit-scrollbar {
-  width: 6px;
-}
-
-.month-dropdown::-webkit-scrollbar-track {
-  background: var(--input-bg-2);
-  border-radius: 3px;
-}
-
-.month-dropdown::-webkit-scrollbar-thumb {
-  background: var(--base-lavender);
-  border-radius: 3px;
-}
-
-.month-dropdown::-webkit-scrollbar-thumb:hover {
-  background: var(--base-blue-dark);
-}
-
-/* Firefox 스크롤바 */
-.month-dropdown {
-  scrollbar-width: thin;
-  scrollbar-color: var(--base-lavender) var(--input-bg-2);
+.label {
+  pointer-events: none;
 }
 </style>

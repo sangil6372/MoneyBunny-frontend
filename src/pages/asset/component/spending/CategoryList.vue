@@ -1,7 +1,10 @@
 <template>
   <div class="category-list-container">
     <!-- 데이터가 없을 때 -->
-    <SpendingNodata v-if="categories.length === 0" />
+    <div v-if="categories.length === 0" class="no-categories">
+      <p class="no-categories-text">지출 내역이 없습니다.</p>
+    </div>
+
     <!-- 카테고리 아이템들 -->
     <div v-else class="category-items">
       <CategoryItem
@@ -62,13 +65,11 @@ const handleCategoryClick = (category) => {
 <style scoped>
 .category-list-container {
   background-color: white;
-  border-radius: 12px;
-  padding: 20px;
-  margin-top: 24px;
+  border-radius: 6px;
+  padding: 16px;
 }
 
 .show-more-section {
-  margin-top: 16px;
   text-align: center;
 }
 
@@ -77,28 +78,23 @@ const handleCategoryClick = (category) => {
   padding: 12px 0;
   background-color: transparent;
   border: none;
-  font-size: 14px;
+  font-size: 12px;
   color: var(--text-bluegray);
   cursor: pointer;
-  border-radius: 8px;
-  /* transition: background-color 0.2s ease; */
+  border-radius: 6px;
 
   /* 모바일 터치 최적화 */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 }
 
-.show-more-button:active {
-  background-color: var(--input-bg-1);
-}
-
 .no-categories {
   text-align: center;
-  padding: 2rem 0;
+  padding-bottom: 2rem;
 }
 
 .no-categories-text {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-lightgray);
   margin: 0;
 }

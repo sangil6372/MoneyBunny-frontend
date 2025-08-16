@@ -162,14 +162,12 @@ onUnmounted(() => {
 /* 모달 콘텐츠 */
 .modal-content {
   background: white;
-  border-radius: 0.75rem;
-  padding: 1.25rem;
+  border-radius: 6px;
+  padding: 20px;
   width: 96%;
-  max-width: 420px;
+  max-width: 360px;
   max-height: 90vh;
   overflow-y: auto;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-  animation: modalAppear 0.3s ease-out;
   position: relative;
 }
 

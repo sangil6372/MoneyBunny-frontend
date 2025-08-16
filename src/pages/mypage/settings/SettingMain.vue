@@ -38,6 +38,14 @@
           class="arrowIcon"
         />
       </div>
+      <!-- 💪(상일) 관리자 페이지 링크 -->
+      <div class="settingItem" @click="goToAdminPage">
+        <span class="text">🔧 관리자 도구</span>
+        <img
+          src="@/assets/images/icons/mypage/right_arrow.png"
+          class="arrowIcon"
+        />
+      </div>
       <div class="settingItem versionRow">
         <span class="text">버전 정보</span>
         <span class="version">v1.2.3</span>
@@ -153,6 +161,11 @@ const goToPolicyRetest = async () => {
     router.push({ path: '/policy' });
   }
 };
+
+// 💪(상일) 관리자 페이지로 이동
+const goToAdminPage = () => {
+  router.push('/admin');
+};
 </script>
 
 <style scoped>
@@ -220,7 +233,7 @@ const goToPolicyRetest = async () => {
 }
 .logout {
   color: var(--alert-strong);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: bold;
   letter-spacing: 0.02em;
 }

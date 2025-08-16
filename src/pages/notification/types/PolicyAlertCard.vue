@@ -3,6 +3,7 @@
     :is-read="item.read"
     :notification-type="item.type"
     @delete="handleDelete"
+    @card-click="handleButtonClick"
   >
     <div class="title">{{ item.title }}</div>
     <p class="message">{{ item.description }}</p>
@@ -11,7 +12,11 @@
       <button
         v-if="item.targetUrl"
         class="action-btn"
-        @click="handleButtonClick"
+        @click.stop="handleButtonClick"
+        @touchstart.stop=""
+        @touchend.stop=""
+        @mousedown.stop=""
+        @mouseup.stop=""
       >
         {{ getButtonText(item.type) }}
       </button>
@@ -108,9 +113,11 @@ const handleDelete = async () => {
   background-color: #2c3e50;
   color: white;
   border: none;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
   cursor: pointer;
+  flex-shrink: 0; /* 버튼이 줄어들지 않도록 */
+  min-width: 60px; /* 최소 너비 보장 */
 }
 </style>

@@ -35,7 +35,7 @@
         <!-- 섹션 헤더: 제목 + 건수 + 월 선택 -->
         <div class="section-header">
           <div class="header-left">
-            <h4 class="section-title">거래 내역</h4>
+            <div class="section-title">거래 내역</div>
             <span class="transaction-count"> {{ transactions.length }}건 </span>
           </div>
 
@@ -345,23 +345,22 @@ const formatTransactionDate = (d) => {
 /* 카테고리 정보 카드 (고정) */
 .category-info-card {
   background: white;
-  border-radius: 0.75rem;
-  margin: 0.75rem 1rem 0 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  margin: 1rem;
   flex-shrink: 0;
 }
 
 .category-header {
   display: flex;
   align-items: center;
-  padding: 1.5rem;
+  padding: 1rem;
   gap: 1rem;
 }
 
 /* 카테고리 아이콘 */
 .category-icon {
-  width: 3rem;
-  height: 3rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -370,8 +369,8 @@ const formatTransactionDate = (d) => {
 }
 
 .category-dot {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1rem;
+  height: 1rem;
   border-radius: 50%;
 }
 
@@ -381,21 +380,21 @@ const formatTransactionDate = (d) => {
 }
 
 .category-name {
-  font-size: 1.125rem;
-  font-weight: 700;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
-  margin: 0 0 0.25rem 0;
+  margin: 0 0 0.125rem 0;
 }
 
 .category-period {
-  font-size: 0.875rem;
+  font-size: 0.65rem;
   color: var(--text-bluegray);
-  margin: 0 0 0.5rem 0;
+  margin: 0 0 0.25rem 0;
 }
 
 .category-amount {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.2rem;
+  font-weight: bold;
   color: var(--base-blue-dark);
   margin: 0;
 }
@@ -403,9 +402,8 @@ const formatTransactionDate = (d) => {
 /* 거래내역 카드 (스크롤 가능) */
 .transaction-card {
   background: white;
-  border-radius: 0.75rem;
-  margin: 0.75rem 1rem 1rem 1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 6px;
+  margin: 0 1rem 1rem 1rem;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -413,7 +411,7 @@ const formatTransactionDate = (d) => {
 }
 
 .transaction-section {
-  padding: 1.5rem;
+  padding: 1rem;
   flex: 1;
   min-height: 0;
   display: flex;
@@ -425,8 +423,7 @@ const formatTransactionDate = (d) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
+  padding: 0 0.25rem 0.5rem 0.25rem;
   border-bottom: 1px solid var(--input-bg-3);
   flex-shrink: 0;
 }
@@ -434,18 +431,18 @@ const formatTransactionDate = (d) => {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
 }
 
 .section-title {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   color: var(--text-login);
   margin: 0;
 }
 
 .transaction-count {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-bluegray);
 }
 
@@ -454,10 +451,8 @@ const formatTransactionDate = (d) => {
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  /* 스크롤바 숨기기 */
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE, Edge */
-  /* 하단 여백 추가로 마지막 아이템까지 스크롤 가능하게 */
   padding-bottom: 1rem;
 }
 
@@ -471,11 +466,10 @@ const formatTransactionDate = (d) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.75rem 0;
+  padding: 0.6rem;
   border-bottom: 1px solid var(--input-bg-3);
   user-select: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
 .transaction-item:active {
@@ -493,20 +487,19 @@ const formatTransactionDate = (d) => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 /* 거래 날짜 (상단) */
 .transaction-date {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-bluegray);
   margin: 0;
 }
 
 /* 거래 제목 (중간) */
 .transaction-title {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.75rem;
   color: var(--base-blue-dark);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -516,7 +509,7 @@ const formatTransactionDate = (d) => {
 
 /* 거래 메모 (하단) */
 .transaction-memo {
-  font-size: 0.75rem;
+  font-size: 0.65rem;
   color: var(--text-bluegray);
   margin: 0;
   overflow: hidden;
@@ -530,8 +523,8 @@ const formatTransactionDate = (d) => {
 }
 
 .transaction-amount .amount-text {
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: bold;
   color: var(--alert-red);
   margin: 0;
 }
@@ -546,7 +539,7 @@ const formatTransactionDate = (d) => {
 }
 
 .no-transactions-text {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   color: var(--text-lightgray);
   margin: 0;
   text-align: center;

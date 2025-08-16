@@ -27,21 +27,18 @@ const tabs = ['메인', '계좌', '카드', '지출'];
   display: flex;
   justify-content: space-between;
   background-color: white;
-  border-radius: 1rem;
-  padding: 0.5rem;
-  gap: 0.5rem;
+  border-radius: 6px;
+  padding: 0.25rem;
 }
 
 .tab {
   flex: 1;
   text-align: center;
-  padding: 0.625rem 0;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  padding: 0.5rem 0;
+  border-radius: 6px;
+  font-size: 0.75rem;
   color: var(--text-bluegray);
   background-color: transparent;
-  transition: background-color 0.2s ease, color 0.2s ease;
   cursor: pointer;
   user-select: none;
 }

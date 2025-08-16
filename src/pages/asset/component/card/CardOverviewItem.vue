@@ -34,11 +34,9 @@ const getCardIssuerName = (issuerCode) => {
 .overview-item-simple {
   display: flex;
   align-items: center;
-  padding: 12px 16px;
+  padding: 16px;
   background-color: var(--input-bg-2);
-  border-radius: 12px;
-  margin-bottom: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
   width: 100%;
   box-sizing: border-box;
   max-width: 100%;
@@ -46,11 +44,10 @@ const getCardIssuerName = (issuerCode) => {
 
 .card-image {
   width: 36px;
-  height: 23px;
-  border-radius: 4px;
-  margin-right: 12px;
-  object-fit: cover;
-  border: 1px solid var(--input-outline);
+  height: 36px;
+  border-radius: 6px;
+  margin-right: 14px;
+  object-fit: contain;
   flex-shrink: 0; /* 이미지 크기 고정 */
 }
 
@@ -61,13 +58,11 @@ const getCardIssuerName = (issuerCode) => {
 }
 
 .name {
-  font-family: 'NanumSquareNeo', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: bold;
   color: var(--text-login);
-  margin: 0 0 3px 0;
+  margin: 0 0 4px 0;
   line-height: 1.3;
-  /* 긴 이름 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -75,13 +70,11 @@ const getCardIssuerName = (issuerCode) => {
 }
 
 .number {
-  font-family: 'NanumSquareNeo', sans-serif;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 11px;
   color: var(--text-darkgray);
   margin: 0;
   line-height: 1.3;
-  /* 카드 번호도 말줄임표 처리 */
+  /* 계좌 번호도 말줄임표 처리 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

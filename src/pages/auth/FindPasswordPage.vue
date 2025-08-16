@@ -25,7 +25,7 @@ const handleSendCode = async () => {
   }
 
   try {
-    // ✅ 인증코드 전송 API 호출
+    // 인증코드 전송 API 호출
     await axios.post("/api/auth/send-find-password-code", {
       email: email.value,
       loginId: loginId.value,

@@ -2,7 +2,7 @@
   <div class="login-step">
     <!-- 헤더 -->
     <div class="modal-header">
-      <h2>{{ modalTitle }}</h2>
+      <div>{{ modalTitle }}</div>
       <button class="close-btn" @click="$emit('close')">✕</button>
     </div>
 
@@ -26,10 +26,10 @@
     </div>
 
     <!-- 선택된 기관 표시 -->
-    <div v-if="formData.code" class="selected-info">
+    <!-- <div v-if="formData.code" class="selected-info">
       <span class="selected-label">선택된 기관:</span>
       <span class="selected-name">{{ getInstitutionName(formData.code) }}</span>
-    </div>
+    </div> -->
 
     <!-- 로그인 폼 -->
     <form @submit.prevent="handleLogin" class="form-section">
@@ -43,6 +43,7 @@
         />
       </div>
 
+      <!-- 비밀번호 -->
       <div class="form-group">
         <label>비밀번호 <span class="required">*</span></label>
         <div class="password-wrapper">
@@ -55,9 +56,10 @@
           <button
             type="button"
             class="eye-btn"
+            :aria-label="showPassword ? '비밀번호 숨기기' : '비밀번호 보기'"
             @click="showPassword = !showPassword"
           >
-            👁
+            <img :src="showPassword ? eyeView : eyeHide" alt="" />
           </button>
         </div>
       </div>
@@ -82,6 +84,16 @@ import { getCardLogo } from '@/assets/utils/cardLogoMap.js';
 import cardCodeMap from '@/assets/utils/cardCodeMap.js';
 
 import { connectAccount, connectCard } from '@/api/assetApi.js';
+
+// 👁 눈 아이콘 (이미지 사용)
+const eyeView = new URL(
+  '@/assets/images/icons/signup/eye_view.png',
+  import.meta.url
+).href;
+const eyeHide = new URL(
+  '@/assets/images/icons/signup/eye_hide.png',
+  import.meta.url
+).href;
 
 const props = defineProps({
   type: { type: String, required: true },
@@ -185,26 +197,21 @@ const handleLogin = async () => {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1rem;
-}
-
-.modal-header h2 {
-  font-size: 1rem;
-  color: var(--base-blue-dark);
-  margin: 0;
+  font-size: 15px;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   cursor: pointer;
   color: var(--text-darkgray);
 }
 
 .section-title {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   color: var(--text-darkgray);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
 }
 
 .icon-grid {
@@ -218,42 +225,44 @@ const handleLogin = async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem;
-
-  border-radius: 0.5rem;
+  padding: 0.4rem;
+  border-radius: 6px;
   background: var(--input-bg-2);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
 .icon-item.selected {
-  background: var(--base-blue-light);
-  border-color: var(--base-blue-dark);
+  background: #e6ecf5;
 }
 
 .icon-item img {
-  width: 28px;
-  height: 28px;
-  margin-bottom: 0.25rem;
-  border-radius: 4px;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 0.35rem;
+  border-radius: 6px;
 }
 
 .icon-item span {
-  font-size: 0.65rem;
+  font-size: 0.55rem;
   text-align: center;
   color: var(--text-darkgray);
+  line-height: 1.2;
+}
+.icon-item.selected span {
+  color: var(--base-blue-dark);
+  font-weight: bold;
 }
 
 /* 선택된 기관 표시 */
-.selected-info {
+/* .selected-info {
   background: var(--input-bg-1);
   padding: 0.6rem;
   border-radius: 0.4rem;
   margin-bottom: 1rem;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   border: 1px solid var(--base-blue-light);
-}
-
+} */
+/*
 .selected-label {
   color: var(--text-darkgray);
   margin-right: 0.5rem;
@@ -262,33 +271,33 @@ const handleLogin = async () => {
 .selected-name {
   color: var(--base-blue-dark);
   font-weight: 600;
-}
+} */
 
 .form-group {
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 label {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   margin-bottom: 0.3rem;
   color: var(--text-darkgray);
   display: block;
-  font-weight: 500;
+  font-weight: bold;
 }
 
 input {
   width: 100%;
-  padding: 0.6rem;
+  padding: 0.5rem;
   border: 1px solid var(--input-outline);
   border-radius: 0.4rem;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   box-sizing: border-box;
-  transition: border-color 0.2s ease;
+  /* transition: border-color 0.2s ease; */
 }
 
 input:focus {
   outline: none;
-  border-color: var(--base-blue-dark);
+  border-color: var(--input-bg-3);
 }
 
 .required {
@@ -306,14 +315,20 @@ input:focus {
   transform: translateY(-50%);
   background: none;
   border: none;
+  padding: 0;
   cursor: pointer;
-  color: var(--text-lightgray);
+  width: 22px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.eye-btn:hover {
-  color: var(--text-darkgray);
+.eye-btn img {
+  width: 18px;
+  height: 18px;
+  display: block;
 }
-
 .modal-actions {
   display: flex;
   gap: 0.5rem;
@@ -323,12 +338,11 @@ input:focus {
 .cancel-btn,
 .submit-btn {
   flex: 1;
-  padding: 0.7rem;
+  padding: 0.6rem;
   border: none;
-  border-radius: 0.4rem;
-  font-size: 0.85rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
   cursor: pointer;
-  font-weight: 500;
 }
 
 .cancel-btn {
@@ -336,18 +350,18 @@ input:focus {
   color: var(--text-darkgray);
 }
 
-.cancel-btn:hover {
+/* .cancel-btn:hover {
   background: var(--input-disabled-2);
-}
+} */
 
 .submit-btn {
   background: var(--base-blue-dark);
   color: white;
 }
-
+/* 
 .submit-btn:hover:not(:disabled) {
   background: #243653;
-}
+} */
 
 .submit-btn:disabled {
   background: var(--input-disabled-1);

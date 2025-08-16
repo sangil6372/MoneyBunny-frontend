@@ -112,11 +112,10 @@ function onCtaClick() {
   background: #fff;
   color: var(--base-blue-dark);
   border-radius: 6px;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   align-items: center;
-  /* gap: 12px; */
-  min-height: 138px;
+  min-height: 140px;
   width: 100%;
   isolation: isolate;
   box-sizing: border-box;
@@ -125,7 +124,7 @@ function onCtaClick() {
 
 .left {
   min-width: 0;
-  width: 215px;
+  width: 220px;
 }
 
 .right {
@@ -158,9 +157,9 @@ function onCtaClick() {
   color: var(--base-blue-dark);
 }
 .title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: bold;
-  margin: 2px 0 6px;
+  margin: 0 0 4px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -168,8 +167,8 @@ function onCtaClick() {
 }
 .desc {
   font-size: 11px;
-  line-height: 1.38;
-  margin: 0 0 8px;
+  line-height: 1.3;
+  margin: 0 0 7px;
   color: var(--base-blue-dark);
   display: -webkit-box;
   -webkit-line-clamp: 2;

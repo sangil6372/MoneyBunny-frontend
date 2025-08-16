@@ -23,7 +23,15 @@
       <slot />
     </div>
     <!-- 💪(상일) 삭제 버튼 -->
-    <button class="delete-btn" @click="$emit('delete')" title="삭제">
+    <button 
+      class="delete-btn" 
+      @click.stop="$emit('delete')"
+      @touchstart.stop=""
+      @touchend.stop=""
+      @mousedown.stop=""
+      @mouseup.stop=""
+      title="삭제"
+    >
       <img src="@/assets/images/icons/common/x.png" alt="삭제" />
     </button>
   </div>
@@ -44,8 +52,8 @@ const props = defineProps({
   },
 });
 
-// 💪(상일) 삭제 이벤트 정의
-const emit = defineEmits(['delete']);
+// 💪(상일) 삭제 및 카드 클릭 이벤트 정의
+const emit = defineEmits(['delete', 'card-click']);
 
 // 💪(상일) 스와이프 관련 상태
 const startX = ref(0);
@@ -54,11 +62,15 @@ const translateX = ref(0);
 const opacity = ref(1);
 const isSwiping = ref(false);
 const isDragging = ref(false);
+const startTime = ref(0);
+const hasMoved = ref(false);
 
 // 💪(상일) 터치 시작
 const handleTouchStart = (e) => {
   startX.value = e.touches[0].clientX;
+  startTime.value = Date.now();
   isDragging.value = true;
+  hasMoved.value = false;
 };
 
 // 💪(상일) 터치 이동
@@ -67,6 +79,11 @@ const handleTouchMove = (e) => {
 
   currentX.value = e.touches[0].clientX;
   const diff = currentX.value - startX.value;
+
+  // 5px 이상 움직이면 움직임으로 간주
+  if (Math.abs(diff) > 5) {
+    hasMoved.value = true;
+  }
 
   // 왼쪽으로만 스와이프 가능 (삭제)
   if (diff < 0) {
@@ -99,6 +116,12 @@ const handleTouchEnd = () => {
     // 원위치로 복귀
     translateX.value = 0;
     opacity.value = 1;
+    
+    // 💪(상일) 움직임이 거의 없고 빠른 탭이면 카드 클릭으로 간주
+    const tapDuration = Date.now() - startTime.value;
+    if (!hasMoved.value && tapDuration < 300) {
+      emit('card-click');
+    }
   }
 
   isDragging.value = false;
@@ -108,7 +131,9 @@ const handleTouchEnd = () => {
 // 💪(상일) 마우스 이벤트 (데스크톱 지원)
 const handleMouseDown = (e) => {
   startX.value = e.clientX;
+  startTime.value = Date.now();
   isDragging.value = true;
+  hasMoved.value = false;
 };
 
 const handleMouseMove = (e) => {
@@ -116,6 +141,11 @@ const handleMouseMove = (e) => {
 
   currentX.value = e.clientX;
   const diff = currentX.value - startX.value;
+
+  // 5px 이상 움직이면 움직임으로 간주
+  if (Math.abs(diff) > 5) {
+    hasMoved.value = true;
+  }
 
   if (diff < 0) {
     translateX.value = diff;
@@ -141,6 +171,12 @@ const handleMouseUp = () => {
   } else {
     translateX.value = 0;
     opacity.value = 1;
+    
+    // 💪(상일) 움직임이 거의 없고 빠른 클릭이면 카드 클릭으로 간주
+    const clickDuration = Date.now() - startTime.value;
+    if (!hasMoved.value && clickDuration < 300) {
+      emit('card-click');
+    }
   }
 
   isDragging.value = false;

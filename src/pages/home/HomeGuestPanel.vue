@@ -24,25 +24,6 @@
         개인정보는 암호화되어 안전하게 보호됩니다.
       </p>
     </div>
-
-    <!-- 기능 설명 카드 -->
-    <div class="featuresCard">
-      <div class="featuresTitle">MoneyBunny와 함께하면</div>
-      <ul class="featureList">
-        <li>
-          <span class="dot"></span>
-          맞춤형 정책 추천
-        </li>
-        <li>
-          <span class="dot"></span>
-          자산 관리 및 분석
-        </li>
-        <li>
-          <span class="dot"></span>
-          정책 적용 시 예상 수익 계산
-        </li>
-      </ul>
-    </div>
   </section>
 </template>
 
@@ -166,40 +147,6 @@ function goSignup() {
   background: #fff;
   color: var(--base-blue-dark);
   border: 1.5px solid var(--input-outline-2, #e3e8f2);
-}
-
-/* 기능 카드 */
-.featuresCard {
-  padding: 16px;
-}
-.featuresTitle {
-  font-size: 16px;
-  font-weight: bold;
-  color: var(--base-blue-dark);
-  margin: 2px 0 10px;
-}
-.featureList {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 12px;
-}
-.featureList li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #0f172a;
-  font-size: 14px;
-  padding: 4px 0;
-}
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--base-blue-dark);
-  opacity: 0.18;
-  flex: 0 0 6px;
 }
 
 /* 신뢰 문구 */

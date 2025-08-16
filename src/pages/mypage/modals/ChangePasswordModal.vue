@@ -222,7 +222,7 @@ const handleChangePassword = async () => {
       emit("close");
       // 홈으로 완전 리로드
       window.location.href = "/";
-    }, 1300);
+    }, 3000);
   } catch {
     currentError.value = true;
   }
