@@ -220,9 +220,12 @@ const redoQuiz = async () => {
   try {
     await policyAPI.deleteUserPolicy();
     resetSummaryAndPriority(); // 모든 필드 초기화
+    // 캐시 무효화를 위한 짧은 대기
+    await new Promise(resolve => setTimeout(resolve, 200));
     router.push({ path: '/policy' });
   } catch (e) {
     resetSummaryAndPriority();
+    await new Promise(resolve => setTimeout(resolve, 200));
     router.push({ path: '/policy' });
   }
 };

@@ -3,7 +3,15 @@ import axios from './index';
 // 정책 관련 API 호출 함수 모음
 export const policyAPI = {
   // 사용자 정책 정보 조회
-  getUserPolicy: () => axios.get('/api/userPolicy'),
+  getUserPolicy: (noCache = false) => {
+    const config = noCache ? {
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
+    } : {};
+    return axios.get('/api/userPolicy', config);
+  },
 
   // 사용자 정책 정보 저장 (신규)
   createUserPolicy: (payload) => axios.post('/api/userPolicy', payload),

@@ -316,7 +316,7 @@ router.beforeEach(async (to, from, next) => {
     }
     // 로그인: 기존 로직 유지 (설문 유무에 따라 /policy vs /policy/main 라우팅)
     try {
-      const res = await policyAPI.getUserPolicy();
+      const res = await policyAPI.getUserPolicy(true); // 캐시 무효화
       if (res.data && Object.keys(res.data).length > 0) {
         if (to.path !== "/policy/main") return next("/policy/main");
         return next();
