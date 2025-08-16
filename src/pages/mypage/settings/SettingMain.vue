@@ -145,18 +145,18 @@ const goToChangePassword = () => {
 const goToPolicyRetest = async () => {
   try {
     const { data } = await policyAPI.getUserPolicy();
-    // 조건이 없으면(예: data가 없거나 주요 필드가 비어있으면) 검사 페이지로 이동
-    if (
-      !data ||
-      !data.educationLevels?.length ||
-      !data.majors?.length ||
-      !data.employmentStatuses?.length
-    ) {
-      router.push({ path: '/policy' });
-    } else {
+    console.log('[정책재설정] 사용자 정책 데이터:', data);
+    
+    // 정책 데이터가 있으면 재설정 페이지로, 없으면 새로 검사
+    if (data && Object.keys(data).length > 0) {
+      console.log('[정책재설정] 정책 데이터 있음 → 재설정 페이지로 이동');
       router.push({ name: 'myPageSettingsPolicy' });
+    } else {
+      console.log('[정책재설정] 정책 데이터 없음 → 새로 검사');
+      router.push({ path: '/policy' });
     }
   } catch (e) {
+    console.error('[정책재설정] API 호출 실패:', e);
     // 조회 실패 시에도 검사 페이지로 이동
     router.push({ path: '/policy' });
   }

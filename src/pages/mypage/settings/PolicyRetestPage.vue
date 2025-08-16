@@ -79,27 +79,27 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref, onMounted } from 'vue';
-import { policyAPI } from '@/api/policy';
+import { useRouter } from "vue-router";
+import { ref, onMounted } from "vue";
+import { policyAPI } from "@/api/policy";
 
-import EditEducationModal from '../modals/EditEducationModal.vue';
-import EditMajorModal from '../modals/EditMajorModal.vue';
-import EditStatusModal from '../modals/EditStatusModal.vue';
-import EditPriorityModal from '../modals/EditPriorityModal.vue';
+import EditEducationModal from "../modals/EditEducationModal.vue";
+import EditMajorModal from "../modals/EditMajorModal.vue";
+import EditStatusModal from "../modals/EditStatusModal.vue";
+import EditPriorityModal from "../modals/EditPriorityModal.vue";
 
-import { educationLevelCodeMap } from '@/assets/utils/educationLevelCodeMap';
-import { majorCodeMap } from '@/assets/utils/majorCodeMap';
-import { employmentStatusCodeMap } from '@/assets/utils/employmentStatusCodeMap';
+import { educationLevelCodeMap } from "@/assets/utils/educationLevelCodeMap";
+import { majorCodeMap } from "@/assets/utils/majorCodeMap";
+import { employmentStatusCodeMap } from "@/assets/utils/employmentStatusCodeMap";
 
 const router = useRouter();
-const activeModal = ref('');
+const activeModal = ref("");
 const priorityModal = ref(false);
 
 const summary = ref({
-  학력: '',
-  '전공 요건': '',
-  '현재 상황': '',
+  학력: "",
+  "전공 요건": "",
+  "현재 상황": "",
 });
 const priorityOrder = ref([]);
 const originalData = ref({}); // GET 결과 전체 저장
@@ -116,7 +116,7 @@ function labelToCode(map, label) {
 const educationOptions = Object.keys(educationLevelCodeMap);
 const majorOptions = Object.keys(majorCodeMap);
 const statusOptions = Object.keys(employmentStatusCodeMap);
-const priorityOptions = ['금액', '만료일', '조회수'];
+const priorityOptions = ["금액", "만료일", "조회수"];
 
 // 서버에서 초기값 받아오기
 onMounted(async () => {
@@ -124,11 +124,11 @@ onMounted(async () => {
     const { data } = await policyAPI.getUserPolicy();
     originalData.value = data; // 전체 데이터 저장
     summary.value = {
-      학력: codeToLabel(educationLevelCodeMap, data.educationLevels?.[0] || ''),
-      '전공 요건': codeToLabel(majorCodeMap, data.majors?.[0] || ''),
-      '현재 상황': codeToLabel(
+      학력: codeToLabel(educationLevelCodeMap, data.educationLevels?.[0] || ""),
+      "전공 요건": codeToLabel(majorCodeMap, data.majors?.[0] || ""),
+      "현재 상황": codeToLabel(
         employmentStatusCodeMap,
-        data.employmentStatuses?.[0] || ''
+        data.employmentStatuses?.[0] || ""
       ),
     };
     const rankMap = {
@@ -141,11 +141,11 @@ onMounted(async () => {
       .map(([label]) => label);
   } catch (e) {
     summary.value = {
-      학력: '대학 졸업',
-      '전공 요건': '공학계열',
-      '현재 상황': '취업 준비 중',
+      학력: "대학 졸업",
+      "전공 요건": "공학계열",
+      "현재 상황": "취업 준비 중",
     };
-    priorityOrder.value = ['조회수', '만료일', '금액'];
+    priorityOrder.value = ["조회수", "만료일", "금액"];
   }
 });
 
@@ -159,7 +159,7 @@ const openPriorityModal = () => {
   priorityModal.value = true;
 };
 const closeModal = () => {
-  activeModal.value = '';
+  activeModal.value = "";
 };
 
 const updateSummary = (key, val) => {
@@ -177,9 +177,9 @@ const save = async () => {
   // 우선순위 rank 객체 생성
   const rankObj = {};
   priorityOrder.value.forEach((label, idx) => {
-    if (label === '금액') rankObj.moneyRank = idx + 1;
-    if (label === '만료일') rankObj.periodRank = idx + 1;
-    if (label === '조회수') rankObj.popularityRank = idx + 1;
+    if (label === "금액") rankObj.moneyRank = idx + 1;
+    if (label === "만료일") rankObj.periodRank = idx + 1;
+    if (label === "조회수") rankObj.popularityRank = idx + 1;
   });
 
   // 실제 저장 로직 들어가면 이곳에 추가!
@@ -187,30 +187,30 @@ const save = async () => {
   // 토스트 1.3초 후 닫고 페이지 이동
   setTimeout(() => {
     showToast.value = false;
-    router.push({ name: 'mypage' });
+    router.push({ name: "mypage" });
   }, 1300);
 
   // 기존 값 유지, 수정된 값만 덮어쓰기
   const payload = {
     ...originalData.value,
     educationLevels: [
-      labelToCode(educationLevelCodeMap, summary.value['학력']),
+      labelToCode(educationLevelCodeMap, summary.value["학력"]),
     ],
-    majors: [labelToCode(majorCodeMap, summary.value['전공 요건'])],
+    majors: [labelToCode(majorCodeMap, summary.value["전공 요건"])],
     employmentStatuses: [
-      labelToCode(employmentStatusCodeMap, summary.value['현재 상황']),
+      labelToCode(employmentStatusCodeMap, summary.value["현재 상황"]),
     ],
     ...rankObj,
   };
   await policyAPI.updateUserPolicy(payload);
-  router.push({ name: 'mypage' });
+  router.push({ name: "mypage" });
 };
 
 const resetSummaryAndPriority = () => {
   summary.value = {
-    학력: '',
-    '전공 요건': '',
-    '현재 상황': '',
+    학력: "",
+    "전공 요건": "",
+    "현재 상황": "",
   };
   priorityOrder.value = [];
   originalData.value = {};
@@ -221,12 +221,12 @@ const redoQuiz = async () => {
     await policyAPI.deleteUserPolicy();
     resetSummaryAndPriority(); // 모든 필드 초기화
     // 캐시 무효화를 위한 짧은 대기
-    await new Promise(resolve => setTimeout(resolve, 200));
-    router.push({ path: '/policy' });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    router.push({ path: "/policy" });
   } catch (e) {
     resetSummaryAndPriority();
-    await new Promise(resolve => setTimeout(resolve, 200));
-    router.push({ path: '/policy' });
+    await new Promise((resolve) => setTimeout(resolve, 200));
+    router.push({ path: "/policy" });
   }
 };
 </script>
