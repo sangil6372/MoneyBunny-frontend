@@ -59,25 +59,16 @@ const activeHeader = computed(() => {
 </script>
 
 <style scoped>
-/* 💪(상일) 전체 페이지 스크롤 방식 - pull-to-refresh 정상 동작 */
 .layout {
   width: 100%;
+  padding-bottom: 60px; /* 하단 바 가려지지 않게 여백 확보 */
+
   min-height: 100vh;
   position: relative;
-  /* 하단 네비바 영역 확보 */
-  padding-bottom: calc(60px + env(safe-area-inset-bottom));
 }
 .main {
   /* 💪(상일) 헤더 높이 + 상태바 영역 고려 */
   padding-top: calc(70px + env(safe-area-inset-top));
   position: relative;
-  /* 본문 영역 독립 스크롤 제거 - 전체 페이지에서 스크롤 */
-}
-
-/* 💪(상일) iOS 전체 페이지 스크롤 최적화 */
-@supports (-webkit-touch-callout: none) {
-  .layout {
-    -webkit-overflow-scrolling: touch;
-  }
 }
 </style>
