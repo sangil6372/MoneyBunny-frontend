@@ -9,9 +9,12 @@ const email = ref("");
 const isCodeSent = ref(false);
 const errorMsg = ref("");
 const showToast = ref(false);
+const isLoading = ref(false);
 
 // 인증코드 전송
 const sendIdCode = async () => {
+  if (isLoading.value) return; // 이미 처리 중이면 리턴
+  
   errorMsg.value = "";
 
   // 이메일 입력 확인
@@ -27,21 +30,27 @@ const sendIdCode = async () => {
     return;
   }
 
+  isLoading.value = true; // 로딩 시작
+  
   try {
     // 인증 코드 요청
     await axios.post("/api/auth/send-find-id-code", { email: email.value });
     isCodeSent.value = true;
-    // 토스트 보여주기
-    showToast.value = true;
-
-    setTimeout(() => {
-      showToast.value = false;
-      router.push({ name: "findIdCode", query: { email: email.value } });
-    }, 1200);
+    
+    // 즉시 이동하고 토스트는 다음 페이지에서 표시
+    router.push({ 
+      name: "findIdCode", 
+      query: { 
+        email: email.value,
+        showSuccessToast: "true" // 성공 토스트 표시 플래그
+      } 
+    });
   } catch (err) {
     // 가입되지 않은 이메일 등 에러 처리
     errorMsg.value =
       err.response?.data?.message || "가입되지 않은 이메일입니다.";
+  } finally {
+    isLoading.value = false; // 로딩 종료
   }
 };
 
@@ -91,9 +100,10 @@ const handleClick = () => {
         <button
           class="submitButton font-14"
           @click="sendIdCode"
-          :disabled="isCodeSent"
+          :disabled="isCodeSent || isLoading"
+          :class="{ loading: isLoading }"
         >
-          인증코드 발송
+          {{ isLoading ? '발송 중...' : '인증코드 발송' }}
         </button>
         <div class="loginLink font-11">
           <router-link to="/findPassword">비밀번호 찾기</router-link>
@@ -185,6 +195,13 @@ input:focus {
   border: none;
   cursor: pointer;
   margin-top: 4px;
+  transition: background-color 0.2s;
+}
+.submitButton:disabled,
+.submitButton.loading {
+  background-color: var(--input-disabled-2);
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 .loginLink {
   margin-top: 12px;

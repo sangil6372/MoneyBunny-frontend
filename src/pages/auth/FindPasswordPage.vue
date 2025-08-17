@@ -7,10 +7,13 @@ const loginId = ref("");
 const email = ref("");
 const errorMessage = ref("");
 const showToast = ref(false);
+const isLoading = ref(false);
 
 const router = useRouter();
 
 const handleSendCode = async () => {
+  if (isLoading.value) return; // 이미 처리 중이면 리턴
+  
   if (!loginId.value || !email.value) {
     errorMessage.value = "아이디와 이메일을 모두 입력해주세요.";
     setTimeout(() => (errorMessage.value = ""), 2000);
@@ -24,6 +27,8 @@ const handleSendCode = async () => {
     return;
   }
 
+  isLoading.value = true; // 로딩 시작
+  
   try {
     // 인증코드 전송 API 호출
     await axios.post("/api/auth/send-find-password-code", {
@@ -31,16 +36,15 @@ const handleSendCode = async () => {
       loginId: loginId.value,
     });
 
-    // 토스트 먼저 띄우기!
-    showToast.value = true;
-    setTimeout(() => {
-      showToast.value = false;
-      // 실제 이동
-      router.push({
-        path: "/findPasswordCode",
-        query: { loginId: loginId.value, email: email.value },
-      });
-    }, 1200); // 1.2초 후 이동
+    // 즉시 이동하고 토스트는 다음 페이지에서 표시
+    router.push({
+      path: "/findPasswordCode",
+      query: { 
+        loginId: loginId.value, 
+        email: email.value,
+        showSuccessToast: "true" // 성공 토스트 표시 플래그
+      },
+    });
   } catch (err) {
     console.error(
       "[handleSendCode] 이메일 전송 실패:",
@@ -49,6 +53,8 @@ const handleSendCode = async () => {
     errorMessage.value =
       err.response?.data?.message || "이메일 전송에 실패했습니다.";
     setTimeout(() => (errorMessage.value = ""), 2000);
+  } finally {
+    isLoading.value = false; // 로딩 종료
   }
 };
 </script>
@@ -95,8 +101,10 @@ const handleSendCode = async () => {
           class="actionButton font-14"
           @click="handleSendCode"
           type="button"
+          :disabled="isLoading"
+          :class="{ loading: isLoading }"
         >
-          인증코드 발송
+          {{ isLoading ? '발송 중...' : '인증코드 발송' }}
         </button>
 
         <div class="loginLink font-11">
@@ -184,6 +192,13 @@ input:focus {
   border: none;
   margin-top: 6px;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+.actionButton:disabled,
+.actionButton.loading {
+  background-color: var(--input-disabled-2);
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 .loginLink {
   margin-top: 12px;

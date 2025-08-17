@@ -89,8 +89,8 @@
             <label class="toggle-switch ios" aria-label="금액 숨기기">
               <input
                 type="checkbox"
-                v-model="hideAmount"
-                @change="handleToggleAmount"
+                v-model="hideBalance"
+                @change="handleToggleBalance"
               />
               <span class="toggle-slider"
                 ><span class="toggle-knob"></span

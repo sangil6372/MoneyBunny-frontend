@@ -14,6 +14,7 @@ const errorMessage = ref("");
 const successMessage = ref("");
 
 const showToast = ref(false);
+const isResending = ref(false);
 
 const time = 180;
 const timeLeft = ref(time);
@@ -47,7 +48,7 @@ const handleVerify = async () => {
       code: code.value,
     });
     if (response.data === "verified") {
-      // successMessage.value = "인증에 성공했습니다!";
+      successMessage.value = "인증에 성공했습니다!";
       // 토스트 or 성공메시지 보여주고 이동
       showToast.value = true;
       setTimeout(() => {
@@ -65,12 +66,16 @@ const handleVerify = async () => {
 
 // 인증코드 재전송 (만료되었을 때만 허용)
 const resendCode = async () => {
+  if (isResending.value) return; // 이미 처리 중이면 리턴
+  
   if (!email.value) {
     errorMessage.value = "이메일 정보가 없습니다.";
     return;
   }
   if (!isExpired.value) return; // 안전 가드
 
+  isResending.value = true; // 로딩 시작
+  
   try {
     await axios.post("/api/auth/send-find-password-code", {
       email: email.value,
@@ -99,6 +104,8 @@ const resendCode = async () => {
     errorMessage.value =
       "재전송 실패: " +
       (err.response?.data?.message || "잠시 후 다시 시도해주세요");
+  } finally {
+    isResending.value = false; // 로딩 종료
   }
 };
 
@@ -116,6 +123,16 @@ const startTimer = () => {
 };
 
 onMounted(() => {
+  // URL 쿼리에서 성공 토스트 표시 여부 확인
+  if (route.query.showSuccessToast === "true") {
+    successMessage.value = "인증코드가 발송되었습니다!";
+    showToast.value = true;
+    setTimeout(() => {
+      showToast.value = false;
+      successMessage.value = "";
+    }, 2000);
+  }
+  
   startTimer();
 });
 onBeforeUnmount(() => {
@@ -144,7 +161,7 @@ const formattedTime = computed(() => {
       </transition> -->
       <transition name="fade">
         <div v-if="showToast" class="toastMsg">
-          {{ successMessage }}
+          {{ successMessage || "인증 성공! 비밀번호를 재설정해주세요." }}
         </div>
       </transition>
 
@@ -182,7 +199,7 @@ const formattedTime = computed(() => {
 
         <div class="formGroup">
           <label class="font-13 font-bold" for="code">인증코드</label>
-          <div class="inputRow">
+          <div class="inputWrapper">
             <input
               id="code"
               type="text"
@@ -190,7 +207,7 @@ const formattedTime = computed(() => {
               class="input"
               v-model="code"
               :disabled="isExpired"
-              style="flex: 1"
+              style="width: 100%"
             />
             <span
               class="timer font-11"
@@ -208,7 +225,7 @@ const formattedTime = computed(() => {
 
         <button
           class="submitButton font-14"
-          @click="verify"
+          @click="handleVerify"
           :disabled="isExpired"
           :class="{ expired: isExpired }"
         >
@@ -220,8 +237,10 @@ const formattedTime = computed(() => {
           v-if="isExpired"
           class="actionButton font-14"
           @click="resendCode"
+          :disabled="isResending"
+          :class="{ loading: isResending }"
         >
-          인증코드 재전송
+          {{ isResending ? '재전송 중...' : '인증코드 재전송' }}
         </button>
 
         <div class="loginLink font-11">
@@ -303,16 +322,20 @@ input {
 input:focus {
   border: 1.5px solid var(--input-outline-2);
 }
-.inputRow {
+.inputWrapper {
+  position: relative;
   width: 100%;
-  display: flex;
-  align-items: center;
+  margin-top: 7px;
 }
-.inputRow .input {
-  flex: 1;
+.inputWrapper .input {
+  width: 100%;
+  padding-right: 60px;
 }
 .timer {
-  margin-left: 5px;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--base-blue-dark);
   min-width: 50px;
   text-align: center;
@@ -327,6 +350,13 @@ input:focus {
   border: none;
   margin-top: 6px;
   cursor: pointer;
+  transition: background-color 0.2s;
+}
+.actionButton:disabled,
+.actionButton.loading {
+  background-color: var(--input-disabled-2);
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 .loginLink {
   margin-top: 12px;

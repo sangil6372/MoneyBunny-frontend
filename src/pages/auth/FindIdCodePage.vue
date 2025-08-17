@@ -16,6 +16,7 @@ const errorMsg = ref("");
 // 토스트 관련 추가
 const showToast = ref(false);
 const toastText = ref("");
+const isResending = ref(false);
 // 타이머 관련 변수
 const time = 180; // 180초 == 3분
 const timeLeft = ref(time); // 남은 시간
@@ -72,6 +73,8 @@ const verify = async () => {
 
 // 인증코드 재전송 (중복방지 없음)
 const resendCode = async () => {
+  if (isResending.value) return; // 이미 처리 중이면 리턴
+  
   if (!email.value) {
     errorMsg.value = "이메일을 입력해주세요.";
     return;
@@ -79,6 +82,8 @@ const resendCode = async () => {
   // 만료되지 않았으면 재전송하지 않음 (버튼도 안 보이지만 안전장치)
   if (!isExpired.value) return;
 
+  isResending.value = true; // 로딩 시작
+  
   try {
     await axios.post("/api/auth/send-find-id-code", {
       email: email.value,
@@ -98,6 +103,8 @@ const resendCode = async () => {
     errorMsg.value =
       "재전송 실패: " +
       (err.response?.data?.message || "잠시 후 다시 시도해주세요");
+  } finally {
+    isResending.value = false; // 로딩 종료
   }
 };
 
@@ -117,6 +124,16 @@ const startTimer = () => {
 
 // 컴포넌트 마운트 시 타이머 시작
 onMounted(() => {
+  // URL 쿼리에서 성공 토스트 표시 여부 확인
+  if (route.query.showSuccessToast === "true") {
+    toastText.value = "인증코드가 발송되었습니다!";
+    showToast.value = true;
+    setTimeout(() => {
+      showToast.value = false;
+      toastText.value = "";
+    }, 2000);
+  }
+  
   startTimer();
 });
 
@@ -166,14 +183,14 @@ const formattedTime = computed(() => {
 
         <div class="formGroup">
           <label class="font-13 font-bold" for="code">인증코드</label>
-          <div class="inputRow">
+          <div class="inputWrapper">
             <input
               id="code"
               type="text"
               placeholder="인증코드를 입력하세요"
               class="input"
               v-model="code"
-              style="flex: 1"
+              style="width: 100%"
             />
             <span
               class="timer font-10"
@@ -203,8 +220,10 @@ const formattedTime = computed(() => {
           v-if="isExpired"
           class="submitButton font-14"
           @click="resendCode"
+          :disabled="isResending"
+          :class="{ loading: isResending }"
         >
-          인증코드 재전송
+          {{ isResending ? '재전송 중...' : '인증코드 재전송' }}
         </button>
 
         <div class="loginLink font-11">
@@ -291,17 +310,21 @@ input:focus {
   border: 1.5px solid var(--input-outline-2);
 }
 
-.inputRow {
+.inputWrapper {
+  position: relative;
   width: 100%;
-  display: flex;
-  align-items: center;
+  margin-top: 7px;
 }
-.inputRow .input {
-  flex: 1;
+.inputWrapper .input {
+  width: 100%;
+  padding-right: 60px;
 }
 
 .timer {
-  margin-left: 5px;
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
   color: var(--base-blue-dark);
   min-width: 50px;
   text-align: center;
@@ -317,10 +340,14 @@ input:focus {
   border: none;
   margin-top: 12px;
   cursor: pointer;
+  transition: background-color 0.2s;
 }
-.submitButton.expired {
+.submitButton.expired,
+.submitButton:disabled,
+.submitButton.loading {
   background-color: var(--input-disabled-2);
   cursor: not-allowed;
+  opacity: 0.7;
 }
 
 .loginLink {
