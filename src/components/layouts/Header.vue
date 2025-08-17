@@ -84,41 +84,10 @@ const handleAdminAccess = async () => {
     clearTimeout(clickTimeout.value);
   }
 
-  // 5번 클릭 달성 시 이메일 확인 후 관리자 페이지로 이동
+  // 5번 클릭 달성 시 관리자 페이지로 이동 (라우터 가드에서 권한 검증)
   if (clickCount.value >= 5) {
     clickCount.value = 0;
-
-    // 💪(상일) 로그인 상태 확인
-    if (!authStore.isLogin) {
-      console.warn("로그인이 필요합니다.");
-      return;
-    }
-
-    // 💪(상일) API로 현재 사용자 정보 가져와서 이메일 확인
-    try {
-      const response = await fetch("/api/member/information", {
-        headers: {
-          Authorization: `Bearer ${authStore.getToken()}`,
-        },
-      });
-
-      if (!response.ok) {
-        console.warn("사용자 정보를 가져올 수 없습니다.");
-        return;
-      }
-
-      const userData = await response.json();
-      if (userData.email !== "sangil6372@naver.com") {
-        console.warn("관리자 페이지 접근 권한이 없습니다.");
-        return;
-      }
-
-      router.push("/admin");
-    } catch (error) {
-      console.error("사용자 정보 조회 실패:", error);
-      return;
-    }
-
+    router.push("/admin");
     return;
   }
 
