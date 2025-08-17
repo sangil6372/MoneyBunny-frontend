@@ -131,7 +131,7 @@ const profileImages = [imgSprout, imgBeard, imgEyelash, imgCarrot];
 
 // 페이지네이션 & 상태
 const page = ref(1);
-const pageSize = 4;
+const pageSize = 6;
 const loading = ref(false);
 const hasMore = ref(true);
 

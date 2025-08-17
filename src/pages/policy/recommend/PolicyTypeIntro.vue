@@ -40,7 +40,7 @@ const startTest = () => {
           <div class="textBox">
             <div class="itemTitle font-14 font-bold">개인 맞춤 분석</div>
             <div class="itemDesc font-12">
-              현재 상황, 관심 분야, 필요한 지원을 분석하여 <br></br>가장 적합한 정책을
+              현재 상황, 소비 패턴, 관심 분야를 분석하여 <br></br>가장 적합한 정책을
               추천해드립니다.
             </div>
           </div>
@@ -61,7 +61,7 @@ const startTest = () => {
           <div class="textBox">
             <div class="itemTitle font-14 font-bold">정확한 매칭</div>
             <div class="itemDesc font-12">
-              AI 기반 분석으로 매칭률이 높은 정책을 우선적으로<br></br> 추천드립니다.
+              데이터 기반 유사도 분석으로 매칭률이 높은 정책을 우선적으로<br></br> 추천드립니다.
             </div>
           </div>
         </li>
@@ -71,7 +71,7 @@ const startTest = () => {
       <div class="noticeBox">
         <div class="infoRow">
           <img :src="stopwatchIcon" alt="" class="infoIcon" />
-          <span class="font-12"><strong>소요 시간 :</strong> 약 2–3분</span>
+          <span class="font-12"><strong>소요 시간 :</strong> 약 1–2분</span>
         </div>
         <div class="infoRow">
           <img :src="padlockIcon" alt="" class="infoIcon" />
