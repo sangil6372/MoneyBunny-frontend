@@ -102,10 +102,11 @@
           <button
             class="setting-item"
             @click="handleSetMain"
-            :disabled="account.isMain"
           >
             <div class="setting-content">
-              <span class="setting-text">대표 계좌 설정</span>
+              <span class="setting-text">
+                {{ account.isMain ? '대표 계좌 해제' : '대표 계좌 설정' }}
+              </span>
               <span v-if="account.isMain" class="current-status"
                 >현재 대표 계좌입니다</span
               >
@@ -195,12 +196,10 @@ const formatAccountNumber = (number) => {
 
 const handleCopyAccount = () => emit('copy-account');
 
-// 대표 계좌 설정 - 모달 유지
+// 대표 계좌 설정/해제 - 모달 유지
 const handleSetMain = () => {
-  if (!props.account.isMain) {
-    emit('set-main');
-    // 모달은 닫지 않음 - 현재 모달에서 별 색상만 변경
-  }
+  emit('set-main');
+  // 모달은 닫지 않음 - 현재 모달에서 별 색상만 변경
 };
 
 // 잔액 숨기기 토글 - 모달 유지

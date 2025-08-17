@@ -118,6 +118,14 @@ export const useAccountSettingsStore = defineStore('accountSettings', {
     },
 
     /**
+     * 대표 계좌 해제
+     */
+    clearMainAccount() {
+      this.mainAccountId = null;
+      this.saveToLocalStorage();
+    },
+
+    /**
      * 계좌 삭제 시 관련 설정 정리
      * @param {string} accountId - 삭제할 계좌 ID
      */
@@ -182,6 +190,14 @@ export const useAccountSettingsStore = defineStore('accountSettings', {
      */
     setMainCard(cardId) {
       this.mainCardId = cardId;
+      this.saveToLocalStorage();
+    },
+
+    /**
+     * 대표 카드 해제
+     */
+    clearMainCard() {
+      this.mainCardId = null;
       this.saveToLocalStorage();
     },
 

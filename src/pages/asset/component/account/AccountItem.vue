@@ -158,12 +158,16 @@ const setAccountNickname = (newNickname) => {
   showSettingsModal.value = false;
 };
 
-// 대표 계좌 설정 - store 사용
+// 대표 계좌 설정/해제 - store 사용
 const handleSetMain = () => {
-  if (!isMainAccount.value) {
+  if (isMainAccount.value) {
+    // 대표 계좌 해제
+    accountSettings.clearMainAccount();
+  } else {
+    // 대표 계좌 설정
     accountSettings.setMainAccount(props.account.id);
-    emit('set-main', props.account);
   }
+  emit('set-main', props.account);
   // 모달은 유지하고 UI만 업데이트됨
 };
 
