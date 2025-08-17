@@ -102,12 +102,16 @@ const getCardIssuer = (issuerCode) => {
   return cardCodeMap[issuerCode] || '알 수 없음';
 };
 
-// 대표 카드 설정 - store 사용
+// 대표 카드 설정/해제 - store 사용
 const handleSetMain = () => {
-  if (!isMainCard.value) {
+  if (isMainCard.value) {
+    // 대표 카드 해제
+    assetSettings.clearMainCard();
+  } else {
+    // 대표 카드 설정
     assetSettings.setMainCard(props.card.id);
-    emit('set-main', props.card);
   }
+  emit('set-main', props.card);
   // 모달은 유지하고 UI만 업데이트됨
 };
 

@@ -128,12 +128,10 @@ const handleToggleAmount = () => {
   // 모달은 닫지 않음
 };
 
-// 대표 카드 설정 처리 함수
-const handleSetMain = () => {
-  if (!props.card.isRepresentative) {
-    emit('set-main');
-    // 모달은 유지하고 UI만 업데이트됨
-  }
+// 대표 카드 설정/해제 처리 함수
+const handleToggleMain = () => {
+  emit('set-main');
+  // 모달은 유지하고 UI만 업데이트됨
 };
 
 const getCardIssuer = (issuerCode) => cardCodeMap[issuerCode] || '알 수 없음';
