@@ -22,9 +22,6 @@
       </div>
     </div>
 
-    <!-- 구분선 -->
-    <div class="divider"></div>
-
     <!-- 우측 정보 -->
     <div class="summary-right">
       <p class="home-card-rate">{{ rightLabel }}</p>
@@ -100,7 +97,7 @@ const formatSubValue = (subInfo) => {
 /* 카드 레이아웃 */
 .summary-card {
   display: grid;
-  grid-template-columns: 1fr 1px auto;
+  grid-template-columns: 1fr auto;
   align-items: center;
   column-gap: 1.25rem;
 
@@ -196,24 +193,32 @@ const formatSubValue = (subInfo) => {
   color: var(--text-green);
 }
 
-/* 구분선 */
-.divider {
+/* 좌/우 얇은 구분선 */
+/* .summary-card::after {
+  content: '';
+  position: absolute;
+  right: calc(160px + 1.5rem);
+  top: 16px;
+  bottom: 16px;
+  width: 1px;
   background: rgba(255, 255, 255, 0.14);
   border-radius: 1px;
-  height: 100%;
-  align-self: stretch;
-}
+} */
 
 /* 모바일 */
 @media (max-width: 420px) {
   .summary-card {
-    grid-template-columns: 1fr 1px auto;
     column-gap: 1rem;
-    height: auto;
+    height: 120px;
     padding: 1rem 1.1rem;
   }
   .summary-right {
     min-width: 120px;
   }
+  /* .summary-card::after {
+    right: calc(120px + 1.1rem);
+    top: 12px;
+    bottom: 12px;
+  } */
 }
 </style>
