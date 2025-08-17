@@ -285,6 +285,43 @@ const router = createRouter({
 
 // 인증 가드
 router.beforeEach(async (to, from, next) => {
+  // 💪(상일) 관리자 페이지 접근 제어
+  if (to.name === "admin" || to.path === "/admin") {
+    const authStore = useAuthStore();
+    
+    // 로그인 확인
+    if (!authStore.isLogin) {
+      console.warn("관리자 페이지: 로그인 필요");
+      return next("/");
+    }
+    
+    // 사용자 이메일 확인
+    try {
+      const response = await fetch("/api/member/information", {
+        headers: {
+          Authorization: `Bearer ${authStore.getToken()}`,
+        },
+      });
+      
+      if (!response.ok) {
+        console.warn("관리자 페이지: 사용자 정보 조회 실패");
+        return next("/home");
+      }
+      
+      const userData = await response.json();
+      if (userData.email !== "sangil6372@naver.com") {
+        console.warn("관리자 페이지: 접근 권한 없음");
+        return next("/home");
+      }
+      
+      // 권한 있는 사용자는 통과
+      return next();
+    } catch (error) {
+      console.error("관리자 페이지 권한 확인 실패:", error);
+      return next("/home");
+    }
+  }
+
   // 리뷰 페이지는 비로그인 허용
   if (to.name === "policyReviewPage") {
     return next();
