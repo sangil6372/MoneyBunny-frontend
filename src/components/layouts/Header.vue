@@ -5,7 +5,7 @@
       <div class="admin-access-area" @click="handleAdminAccess"></div>
 
       <RouterLink to="/home" class="logo-link">
-        <div class="logo-text font-30 font-extrabold">MoneyBunny</div>
+        <div class="logo-text font-28 font-extrabold">MoneyBunny</div>
       </RouterLink>
       <!--💪(상일) 알림 이동 (미읽은 개수 배지 포함)-->
       <RouterLink
@@ -20,7 +20,7 @@
             class="logo-img"
           />
           <div v-if="unreadCount > 0" class="notification-badge">
-            {{ unreadCount > 9 ? "9+" : unreadCount }}
+            {{ unreadCount > 9 ? '9+' : unreadCount }}
           </div>
         </div>
       </RouterLink>
@@ -29,10 +29,10 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useNotificationStore } from "@/stores/notification";
-import { useAuthStore } from "@/stores/auth";
+import { onMounted, computed, ref, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useNotificationStore } from '@/stores/notification';
+import { useAuthStore } from '@/stores/auth';
 
 // 💪(상일) 알림 스토어 및 라우트 사용
 const route = useRoute();
@@ -57,8 +57,8 @@ onMounted(async () => {
   if (!isLoggedIn.value) return;
 
   // 💪(상일) 미읽은 알림 개수가 필요한 페이지만 체크 (policy 메인만 포함)
-  const targetRoutes = ["/home", "/asset", "/mypage"];
-  const exactRoutes = ["/policy", "/policy/main"];
+  const targetRoutes = ['/home', '/asset', '/mypage'];
+  const exactRoutes = ['/policy', '/policy/main'];
   if (
     targetRoutes.some((routePath) => route.path.startsWith(routePath)) ||
     exactRoutes.includes(route.path)
@@ -66,11 +66,11 @@ onMounted(async () => {
     try {
       await notificationStore.fetchUnreadCount();
       console.log(
-        "🔔 Header: 미읽은 알림 개수 조회 완료",
+        '🔔 Header: 미읽은 알림 개수 조회 완료',
         notificationStore.unreadCount
       );
     } catch (error) {
-      console.error("❌ Header: 미읽은 알림 개수 조회 실패", error);
+      console.error('❌ Header: 미읽은 알림 개수 조회 실패', error);
     }
   }
 });
@@ -87,7 +87,38 @@ const handleAdminAccess = async () => {
   // 5번 클릭 달성 시 관리자 페이지로 이동 (라우터 가드에서 권한 검증)
   if (clickCount.value >= 5) {
     clickCount.value = 0;
-    router.push("/admin");
+
+    // 💪(상일) 로그인 상태 확인
+    if (!authStore.isLogin) {
+      console.warn('로그인이 필요합니다.');
+      return;
+    }
+
+    // 💪(상일) API로 현재 사용자 정보 가져와서 이메일 확인
+    try {
+      const response = await fetch('/api/member/information', {
+        headers: {
+          Authorization: `Bearer ${authStore.getToken()}`,
+        },
+      });
+
+      if (!response.ok) {
+        console.warn('사용자 정보를 가져올 수 없습니다.');
+        return;
+      }
+
+      const userData = await response.json();
+      if (userData.email !== 'sangil6372@naver.com') {
+        console.warn('관리자 페이지 접근 권한이 없습니다.');
+        return;
+      }
+
+      router.push('/admin');
+    } catch (error) {
+      console.error('사용자 정보 조회 실패:', error);
+      return;
+    }
+
     return;
   }
 
@@ -139,7 +170,7 @@ const handleAdminAccess = async () => {
 }
 
 .logo-text {
-  font-size: clamp(24px, 6vw, 34px);
+  font-size: 28px;
   line-height: 1.2;
   color: var(--base-blue-dark);
 

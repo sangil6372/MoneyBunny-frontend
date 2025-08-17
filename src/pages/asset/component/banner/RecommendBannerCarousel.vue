@@ -14,11 +14,11 @@
       @touchend.passive="onTouchEnd"
     >
       <div
-        v-for="(b, i) in items"
+        v-for="(b, i) in list"
         :key="b.policyId ?? i"
         class="slide"
         aria-roledescription="slide"
-        :aria-label="`${i + 1}/${items.length}`"
+        :aria-label="`${i + 1}/${list.length}`"
       >
         <div class="slideInner">
           <RecommendBanner v-bind="b" />
@@ -27,9 +27,9 @@
     </div>
 
     <!-- 도트 -->
-    <div v-if="items.length > 1" class="dots" role="tablist">
+    <div v-if="list.length > 1" class="dots" role="tablist">
       <button
-        v-for="(b, i) in items"
+        v-for="(b, i) in list"
         :key="`dot-${i}`"
         :class="['dot', { active: i === index }]"
         @click="go(i)"
@@ -54,10 +54,11 @@ const root = ref(null);
 const index = ref(0);
 let timer = null;
 
+const list = computed(() => props.items ?? []);
 function start() {
   if (!props.autoplay) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!props.items?.length) return;
+  if (!list.value.length) return;
   stop();
   timer = setInterval(next, props.interval);
 }
@@ -74,10 +75,10 @@ function resume() {
   start();
 }
 function next() {
-  index.value = (index.value + 1) % props.items.length;
+  index.value = (index.value + 1) % list.value.length;
 }
 function prev() {
-  index.value = (index.value - 1 + props.items.length) % props.items.length;
+  index.value = (index.value - 1 + list.value.length) % list.value.length;
 }
 function go(i) {
   index.value = i;
@@ -126,7 +127,7 @@ const trackStyle = computed(() => {
   return {
     transform: `translateX(${x}%)`,
     transition: dragging ? 'none' : `transform ${props.transitionMs}ms ease`,
-    width: `${(props.items?.length || 1) * 100}%`,
+    width: `${Math.max(list.value.length, 1) * 100}%`,
   };
 });
 </script>

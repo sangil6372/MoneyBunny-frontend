@@ -65,7 +65,7 @@ let timer = null;
 function start() {
   if (!props.autoplay) return;
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-  if (!props.items?.length) return;
+  if (!items.value.length) return;
   stop();
   timer = setInterval(next, props.interval);
 }
@@ -82,10 +82,10 @@ function resume() {
   start();
 }
 function next() {
-  index.value = (index.value + 1) % props.items.length;
+  index.value = (index.value + 1) % items.value.length;
 }
 function prev() {
-  index.value = (index.value - 1 + props.items.length) % props.items.length;
+  index.value = (index.value - 1 + items.value.length) % items.value.length;
 }
 function go(i) {
   index.value = i;
@@ -186,7 +186,7 @@ const trackStyle = computed(() => {
   return {
     transform: `translateX(${x}%)`,
     transition: dragging ? 'none' : `transform ${props.transitionMs}ms ease`,
-    width: `${(props.items?.length || 1) * 100}%`,
+    width: `${Math.max(items.value.length, 1) * 100}%`,
   };
 });
 </script>

@@ -26,7 +26,7 @@ body.modal-open {
   overflow-x: hidden;
   padding: 20px;
   overflow-y: auto;
-  /*빈: 스크롤 숨기기*/
+  -webkit-overflow-scrolling: touch;
   scrollbar-width: none; /* Firefox */
   -ms-overflow-style: none; /* IE/Edge */
   scroll-behavior: smooth; /* 부드럽게 스크롤 (선택사항) */

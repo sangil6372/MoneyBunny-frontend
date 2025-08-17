@@ -89,7 +89,7 @@ function onCtaClick() {
   background: #fff;
   color: var(--base-blue-dark);
   border-radius: 6px;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   align-items: center;
   /* gap: 12px; */
@@ -102,7 +102,7 @@ function onCtaClick() {
 
 .left {
   min-width: 0;
-  width: 220px;
+  width: 230px;
 }
 
 .right {
@@ -135,7 +135,7 @@ function onCtaClick() {
   color: var(--base-blue-dark);
 }
 .title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: bold;
   margin: 2px 0 6px;
   display: -webkit-box;
