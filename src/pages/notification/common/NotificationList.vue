@@ -62,6 +62,6 @@ const getComponent = (backendType) => {
   flex-direction: column;
   gap: 12px;
   align-items: center; /* 카드가 가운데 정렬됨 */
-  padding: 0; /* 💪(상일) 패딩 제거 */
+  padding: 0; /* 패딩 제거 */
 }
 </style>

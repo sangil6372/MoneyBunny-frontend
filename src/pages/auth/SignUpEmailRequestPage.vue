@@ -3,7 +3,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 
-// 🎵 회원가입 - 이메일 인증 시작 페이지
+// 회원가입 - 이메일 인증 시작 페이지
 const router = useRouter();
 const signUpEmail = ref('');
 const isRequesting = ref(false);
@@ -31,19 +31,19 @@ const requestSignUpCode = async () => {
     await axios.post('/api/auth/send-join-code', {
       email: signUpEmail.value,
     });
-    // 💪(상일) 즉시 다음 페이지로 이동하고 토스트는 다음 페이지에서 표시
+    // 즉시 다음 페이지로 이동하고 토스트는 다음 페이지에서 표시
     router.push({
       name: 'signUpEmailCode',
       query: { 
         email: signUpEmail.value,
-        showSuccessToast: 'true'  // 성공 토스트 표시 플래그
+        showSuccessToast: 'true'
       },
     });
   } catch (err) {
     errorMsg.value =
       err.response?.data?.message ||
       '이미 가입된 이메일이거나 오류가 발생했습니다.';
-    isRequesting.value = false;  // 에러 발생 시에만 false로 변경
+    isRequesting.value = false;
   }
 };
 </script>

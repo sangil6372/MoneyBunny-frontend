@@ -3,7 +3,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
 import AttendanceCheckModal from "./AttendanceCheckModal.vue";
-// 💪(상일) FCM 토큰 관리 및 알림 설정용 import 추가
+// FCM 토큰 관리 및 알림 설정용 import 추가
 import { fcmTokenManager, TOKEN_STATES } from "@/firebase/FCMTokenManager";
 import { useNotificationStore } from "@/stores/notification";
 
@@ -12,7 +12,7 @@ const showToast = ref(false);
 const router = useRouter();
 const route = useRoute();
 const authStore = useAuthStore();
-// 💪(상일) 알림 스토어 추가
+// 알림 스토어 추가
 const notificationStore = useNotificationStore();
 
 // 돌아갈 목적지: 쿼리의 redirect가 있으면 그걸, 없으면 /home
@@ -27,7 +27,7 @@ const isLoading = ref(false);
 const errorMessage = ref('');
 const showPassword = ref(false);
 
-// 👁️ 비밀번호 보기/숨기기 아이콘
+// 비밀번호 보기/숨기기 아이콘
 const eyeView = new URL(
   '@/assets/images/icons/signup/eye_view.png',
   import.meta.url
@@ -42,12 +42,11 @@ const guestIcon = new URL(
   import.meta.url
 ).href;
 
-// 💪(상일) 로그인 성공 후 알림 권한 자동 요청
+// 로그인 성공 후 알림 권한 자동 요청
 const requestNotificationAfterLogin = async () => {
   try {
     // 브라우저 알림 지원 확인
     if (!('Notification' in window)) {
-      console.log('이 브라우저는 알림을 지원하지 않습니다.');
       return;
     }
 
@@ -56,7 +55,6 @@ const requestNotificationAfterLogin = async () => {
     // default 상태에서만 자동 권한 요청 (granted/denied는 사용자 의도 존중)
     if (tokenState === TOKEN_STATES.NEED_PERMISSION && 
         Notification.permission === "default") {
-      console.log('🔔 로그인 후 알림 권한 자동 요청 시작');
       
       // FCM 토큰 발급 (권한 요청 포함)
       const token = await fcmTokenManager.getValidToken();
@@ -71,17 +69,14 @@ const requestNotificationAfterLogin = async () => {
       };
       
       await notificationStore.updateSubscription(initialSubscription);
-      console.log('✅ 로그인 후 알림 권한 요청 및 초기 구독 완료');
     } else {
-      console.log('알림 권한 자동 요청 건너뜀 - 상태:', tokenState);
     }
   } catch (error) {
     // 권한 거부 또는 기타 오류 시에도 로그인 진행에는 영향 없음
-    console.log('로그인 후 알림 권한 요청 실패:', error.message);
   }
 };
 
-// 🔐 실제 서버 로그인 로직 구현
+// 실제 서버 로그인 로직 구현
 const handleLogin = async () => {
   // 입력값 검증
   if (!id.value.trim()) {
@@ -98,13 +93,12 @@ const handleLogin = async () => {
     errorMessage.value = '';
 
     // auth store의 login 메서드 호출
-    console.log('로그인 시도:', id.value.trim());
     await authStore.login({
       username: id.value.trim(),
       password: password.value,
     });
 
-    // 💪(상일) 로그인 성공 후 알림 권한 자동 요청
+    // 로그인 성공 후 알림 권한 자동 요청
     await requestNotificationAfterLogin();
 
     // 로그인 성공 시 출석체크 모달 표시
@@ -135,11 +129,11 @@ const handleLogin = async () => {
   } finally {
     isLoading.value = false;
   }
-  // 🔐 서버 로그인 로직 생략
+  // 서버 로그인 로직 생략
   // showModal.value = true;
 
   // setTimeout(() => {
-  //   router.push('/home'); // ✅ HomeTotalTab 으로 이동
+  //   router.push('/home'); // HomeTotalTab 으로 이동
   // }, 1000); // 1초 후 이동 (원하는 시간으로 조절 가능)
 };
 
@@ -170,9 +164,9 @@ const goGuestPolicyPage = () => {
   router.push({ name: 'policyMain' });
 };
 
-// 💪(상일) URL 파라미터로 전달된 에러 메시지 처리
+// URL 파라미터로 전달된 에러 메시지 처리
 onMounted(() => {
-  // ✅ 이미 로그인 상태로 /login 접근한 경우: redirect 목적지로
+  // 이미 로그인 상태로 /login 접근한 경우: redirect 목적지로
   if (authStore.isLogin) {
     router.replace(redirectTarget.value);
     return;
@@ -210,7 +204,7 @@ watch(errorMessage, () => {
         <div class="loginTitle font-24 font-extrabold">MoneyBunny</div>
         <p class="loginSubtitle font-13">아이디와 비밀번호를 입력해주세요</p>
 
-        <!-- 💪(상일) 에러 메시지 표시 영역 추가 -->
+        <!-- 에러 메시지 표시 영역 추가 -->
         <div v-if="errorMessage" class="errorMessage font-11">
           {{ errorMessage }}
         </div>
@@ -444,7 +438,7 @@ input:focus {
   font-size: 12px;
 }
 
-/* 💪(상일) 에러 메시지 및 로딩 상태 스타일 추가 */
+/* 에러 메시지 및 로딩 상태 스타일 추가 */
 .errorMessage {
   background-color: var(--alert-light-3);
   color: var(--alert-red);

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { policyAPI } from '@/api/policy';
-// 🛠️ 제승 추가: api import
+// api import
 
 // ─── 레이아웃 ──────────────────────────────
 import DefaultLayout from '@/components/layouts/DefaultLayout.vue';
@@ -29,14 +29,14 @@ import MypageMain from '@/pages/mypage/MypageMain.vue';
 import SettingMain from '@/pages/mypage/settings/SettingMain.vue';
 import ChangePassword from '@/pages/mypage/settings/ChangePassword.vue';
 import PolicyRetestPage from '@/pages/mypage/settings/PolicyRetestPage.vue';
-// 💪(상일) 알림 설정은 모달로 변경됨
+// 알림 설정은 모달로 변경됨
 
 //
 // ─── 탭 메인 페이지 ────────────────────────────────────
 import HomeMainPage from '@/pages/home/HomeMainPage.vue'; // 홈메인
-import AssetMain from '@/pages/asset/AssetMain.vue'; //🥕성빈: 자산 메인탭
+import AssetMain from '@/pages/asset/AssetMain.vue'; // 자산 메인탭
 import PolicyMainTab from '@/pages/policy/PolicyMainTab.vue';
-import PolicyGuestMainTab from '@/pages/policy/PolicyGuestMainTab.vue'; // 🎵(유정) 게스트 로그인 정책탭
+import PolicyGuestMainTab from '@/pages/policy/PolicyGuestMainTab.vue'; // 게스트 로그인 정책탭
 import NotificationCenter from '@/pages/notification/NotificationCenter.vue';
 
 //
@@ -55,7 +55,7 @@ import PolicySearchPage from '@/pages/policy/search/PolicySearchPage.vue';
 import PolicySearchResult from '@/pages/policy/search/PolicySearchResult.vue';
 import PolicyReviewPage from '@/pages/policy/review/PolicyReviewPage.vue';
 
-// 💪(상일) 관리자 페이지 import
+// 관리자 페이지 import
 import AdminPage from '@/pages/admin/AdminPage.vue';
 
 // 비로그인 정책 조회 페이지
@@ -122,7 +122,7 @@ const routes = [
       { path: '', redirect: '/home' },
       { path: 'home', name: 'home', component: HomeMainPage },
       { path: 'asset', name: 'asset', component: AssetMain },
-      //  🥕성빈: 경로 수정(0801)
+      // 경로 수정(0801)
 
       // {
       //   path: 'account/:id',
@@ -148,7 +148,7 @@ const routes = [
         name: 'myPageSettingsPolicy',
         component: PolicyRetestPage,
       },
-      // 💪(상일) 알림 센터 라우트
+      // 알림 센터 라우트
       {
         path: 'notification',
         name: 'notification',
@@ -223,7 +223,7 @@ const routes = [
         name: 'policySearchResult',
         component: PolicySearchResult,
       },
-      // 💪(상일) 관리자 페이지 라우트
+      // 관리자 페이지 라우트
       {
         path: 'admin',
         name: 'admin',
@@ -253,7 +253,7 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-  // 💪(상일) 라우터 이동 시 스크롤 위치 제어
+  // 라우터 이동 시 스크롤 위치 제어
   scrollBehavior(to, from, savedPosition) {
     // #app 요소의 스크롤을 직접 제어
     const app = document.querySelector('#app');
@@ -288,7 +288,7 @@ router.beforeEach(async (to, from, next) => {
     return next({ name: 'intro' });
   }
 
-  // 💪(상일) 관리자 페이지 접근 제어
+  // 관리자 페이지 접근 제어
   if (to.name === "admin" || to.path === "/admin") {
     const authStore = useAuthStore();
     
@@ -344,7 +344,7 @@ router.beforeEach(async (to, from, next) => {
     return next();
   }
 
-  // 🛠️ 제승 추가: 정책 메인 접근 전 조건 체크 네비게이션 가드
+  // 정책 메인 접근 전 조건 체크 네비게이션 가드
   if (to.path === '/policy' || to.path === '/policy/main') {
     const authStore = useAuthStore();
     // 비로그인: 조건 검사 생략하고 메인 탭으로 진입 허용
@@ -403,11 +403,8 @@ router.beforeEach(async (to, from, next) => {
 
   const authRequired = !publicPages.includes(to.path);
 
-  console.log(
-    `라우터 이동: ${from.path} → ${to.path}, 로그인 상태: ${authStore.isLogin}, 인증 필요: ${authRequired}`
-  );
 
-  // 🎵 유정
+  // 게스트 로직
 
   if (authRequired && !authStore.isLogin) {
     // 일반 보호 라우트만 게스트 페이지로 유도

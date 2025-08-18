@@ -147,7 +147,7 @@ import {
   updateAccountTransactionMemo,
 } from '@/api/assetApi';
 
-//👸🏻(은진) : 저장 토스트
+// 저장 토스트
 const toast = ref({ show: false, message: '', type: 'success' }); // type: 'success' | 'error'
 let toastTimer = null;
 function showToast(message, type = 'success', ms = 1800) {
@@ -212,7 +212,6 @@ const updateMemoCount = () => {
   // input 이벤트에서 자동으로 v-model이 업데이트됨
 };
 
-console.log(props.transaction);
 
 // 메모 저장 함수
 const saveMemo = async () => {

@@ -3,28 +3,27 @@ import { getToken, deleteToken } from 'firebase/messaging';
 import { messaging } from './initFirebase';
 import axios from '@/api';
 
-// 💪(상일) FCM 토큰 상태 정의
+// FCM 토큰 상태 정의
 const TOKEN_STATES = {
-  ACTIVE: 'active',                    // 권한O + 유효토큰O
-  NEED_PERMISSION: 'need_permission',  // 권한X
-  NEED_TOKEN: 'need_token',           // 권한O + 토큰X/무효
-  DISABLED: 'disabled'                // 명시적 비활성화
+  ACTIVE: 'active',
+  NEED_PERMISSION: 'need_permission',
+  NEED_TOKEN: 'need_token',
+  DISABLED: 'disabled'
 };
 
 /**
  * FCM 토큰 통합 관리자
- * 모든 토큰 관련 로직을 중앙집중식으로 관리
  */
 class FCMTokenManager {
   constructor() {
     this.tokenCache = null;
     this.lastValidation = null;
-    this.validationTTL = 30 * 60 * 1000; // 30분 캐싱으로 최적화
-    this.issuingPromise = null; // 동시성 제어용
+    this.validationTTL = 30 * 60 * 1000;
+    this.issuingPromise = null;
   }
 
   /**
-   * 앱 시작 시 초기화 - 최소한의 검증만 수행
+   * 앱 시작 시 초기화
    */
   async initialize() {
     try {
@@ -34,13 +33,11 @@ class FCMTokenManager {
       if (permission === 'denied') {
         const token = localStorage.getItem('fcm_token');
         if (token) {
-          console.log('🚫 권한 거부 - FCM 토큰 완전 정리');
           
           // 백엔드에 구독 해제 요청
           try {
             await axios.delete(`/api/push/subscriptions/${token}`);
-            console.log('✅ 백엔드 구독 해제 완료');
-          } catch (error) {
+            } catch (error) {
             console.warn('백엔드 구독 해제 실패:', error.message);
           }
           
@@ -82,7 +79,6 @@ class FCMTokenManager {
 
     // 동시성 제어: 이미 발급 중이면 기다리기
     if (this.issuingPromise) {
-      console.log('⏳ 토큰 발급 중 - 대기');
       return await this.issuingPromise;
     }
 
@@ -104,12 +100,9 @@ class FCMTokenManager {
       this.issuingPromise = this._issueToken();
       try {
         token = await this.issuingPromise;
-        console.log('✅ 새 토큰 발급 완료');
       } finally {
-        this.issuingPromise = null; // 발급 완료
+        this.issuingPromise = null;
       }
-    } else {
-      console.log('♻️ 기존 토큰 사용 (검증 생략)');
     }
 
     // 캐시 업데이트
@@ -120,7 +113,7 @@ class FCMTokenManager {
   }
 
   /**
-   * 토큰 완전 정리 (로그아웃/권한거부 시)
+   * 토큰 완전 정리
    */
   async cleanup() {
     try {
@@ -130,7 +123,6 @@ class FCMTokenManager {
         // 백엔드에 구독 해제 요청
         try {
           await axios.delete(`/api/push/subscriptions/${token}`);
-          console.log('✅ 백엔드 구독 해제 완료');
         } catch (error) {
           console.warn('백엔드 구독 해제 실패:', error.message);
         }
@@ -140,7 +132,7 @@ class FCMTokenManager {
       await this._deleteToken();
       this._clearCache();
       
-      console.log('✅ FCM 토큰 완전 정리 완료');
+      console.log('FCM 토큰 완전 정리 완료');
       return true;
     } catch (error) {
       console.error('FCM 정리 실패:', error);
@@ -153,14 +145,14 @@ class FCMTokenManager {
    */
   async refresh() {
     try {
-      console.log('🔄 FCM 토큰 갱신 시작');
+      console.log('FCM 토큰 갱신 시작');
       
       // 기존 토큰이 있으면 백엔드에서도 삭제
       const token = localStorage.getItem('fcm_token');
       if (token) {
         try {
           await axios.delete(`/api/push/subscriptions/${token}`);
-          console.log('✅ 백엔드 기존 토큰 삭제 완료');
+          console.log('백엔드 기존 토큰 삭제 완료');
         } catch (error) {
           console.warn('백엔드 기존 토큰 삭제 실패:', error.message);
         }
@@ -170,7 +162,7 @@ class FCMTokenManager {
       await this._deleteToken();
       this._clearCache();
       
-      console.log('✅ FCM 토큰 갱신 완료 - 다음 사용 시 자동 발급');
+      console.log('FCM 토큰 갱신 완료 - 다음 사용 시 자동 발급');
       return true;
     } catch (error) {
       console.error('FCM 토큰 갱신 실패:', error);
@@ -192,7 +184,7 @@ class FCMTokenManager {
       // 백엔드에 토큰 등록
       try {
         await axios.post('/api/push/subscriptions', { token });
-        console.log('✅ FCM 토큰 발급 및 등록 완료');
+        console.log('FCM 토큰 발급 및 등록 완료');
       } catch (error) {
         console.warn('백엔드 토큰 등록 실패:', error.message);
         // 토큰은 발급되었으므로 계속 진행
@@ -247,12 +239,12 @@ class FCMTokenManager {
     }
 
     try {
-      console.log('🧹 외부 토큰으로 FCM 정리 시작');
+      console.log('외부 토큰으로 FCM 정리 시작');
       
       // 백엔드에 구독 해제 요청
       try {
         await axios.delete(`/api/push/subscriptions/${token}`);
-        console.log('✅ 백엔드 구독 해제 완료');
+        console.log('백엔드 구독 해제 완료');
       } catch (error) {
         console.warn('백엔드 구독 해제 실패:', error.message);
       }
@@ -260,14 +252,14 @@ class FCMTokenManager {
       // Firebase에서 토큰 삭제
       try {
         await deleteToken(messaging);
-        console.log('✅ Firebase 토큰 삭제 완료');
+        console.log('Firebase 토큰 삭제 완료');
       } catch (error) {
         console.warn('Firebase 토큰 삭제 실패:', error);
       }
 
-      console.log('✅ 외부 토큰 FCM 정리 완료');
+      console.log('외부 토큰 FCM 정리 완료');
       
-      // 💪(상일) 인스턴스 캐시도 정리
+      // 인스턴스 캐시도 정리
       fcmTokenManager._clearCache();
       
       return true;

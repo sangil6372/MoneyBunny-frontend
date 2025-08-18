@@ -89,7 +89,7 @@ const props = defineProps({
   reviewRouteName: { type: String, default: 'policyReviewPage' },
 });
 
-// 💪(상일) 부모 컴포넌트로 이벤트 전달용
+// 부모 컴포넌트로 이벤트 전달용
 const emit = defineEmits(['showStatusModal']);
 
 const showApplyModal = ref(false);
@@ -159,7 +159,7 @@ function openApplyModal(policy) {
   selectedPolicy.value = {
     ...policy,
     applyUrl: fixedUrl,
-    policyId: policy.policyId || policy.id, // 💪(상일) policyId 확실히 전달
+    policyId: policy.policyId || policy.id, // policyId 확실히 전달
   };
   showApplyModal.value = true;
 }
@@ -168,7 +168,7 @@ function closeApplyModal() {
   showApplyModal.value = false;
 }
 
-// 💪(상일) 신청 후 즉시 상태 모달 표시 - 부모 컴포넌트로 전달
+// 신청 후 즉시 상태 모달 표시 - 부모 컴포넌트로 전달
 const handleShowStatusModal = (applicationData) => {
   // 신청 모달 닫기
   showApplyModal.value = false;

@@ -1,6 +1,6 @@
 import axios from './index';
 
-// 💪(상일) 알림 조회 API
+// 알림 조회 API
 export const notificationAPI = {
   // 전체 알림 목록 조회
   getNotifications: () => axios.get('/api/push/notifications'),
@@ -18,7 +18,7 @@ export const notificationAPI = {
   deleteNotification: (notificationId) => axios.delete(`/api/push/notifications/${notificationId}`),
 };
 
-// 💪(상일) 구독 관리 API
+// 구독 관리 API
 export const subscriptionAPI = {
   // FCM 토큰 등록 및 초기 알림 설정
   subscribe: (data) => axios.post('/api/push/subscriptions', data),

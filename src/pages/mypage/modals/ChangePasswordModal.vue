@@ -212,7 +212,6 @@ const handleChangePassword = async () => {
       { loginId: loginId.value, password: newPassword.value },
       { headers: { Authorization: `Bearer ${tokenRef.value}` } }
     );
-    console.log("password changed");
     showToast.value = true;
     setTimeout(async () => {
       showToast.value = false;

@@ -4,7 +4,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
 
-// 🎵(유정) 이메일 인증 코드 전송 후 인증코드 입력 for 아이디 찾기 페이지
+// 이메일 인증 코드 전송 후 인증코드 입력 for 아이디 찾기 페이지
 // 이메일 전송 및 인증 관련 변수
 const route = useRoute();
 const email = ref(route.query.email || "");

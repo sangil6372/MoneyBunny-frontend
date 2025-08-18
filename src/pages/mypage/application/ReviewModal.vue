@@ -15,7 +15,7 @@ const props = defineProps({
   },
 });
 
-//👸🏻(은진) : 토스트
+// 토스트
 const showToast = ref(false);
 const toastText = ref('');
 let toastTimer = null;
@@ -52,7 +52,7 @@ const benefitStatusText = computed(() => {
   return statusMap[props.benefitStatus] || props.benefitStatus;
 });
 
-// 💪(상일) 혜택 상태별 플레이스홀더 메시지
+// 혜택 상태별 플레이스홀더 메시지
 const placeholderText = computed(() => {
   const placeholderMap = {
     RECEIVED:
@@ -89,7 +89,7 @@ const save = () => {
   );
 };
 
-// 💪(상일) 리뷰 삭제 처리
+// 리뷰 삭제 처리
 const deleteReview = () => {
   if (confirm('후기를 삭제하시겠습니까?')) {
     emit('delete');
@@ -121,7 +121,7 @@ const deleteReview = () => {
         <div class="reviewSection">
           <div class="reviewHeader">
             <label class="reviewLabel">후기 내용</label>
-            <!-- 💪(상일) 수정 모드일 때만 삭제 버튼 표시 -->
+            <!-- 수정 모드일 때만 삭제 버튼 표시 -->
             <button v-if="isEdit" class="deleteSmallBtn" @click="deleteReview">
               삭제
             </button>
@@ -236,7 +236,7 @@ const deleteReview = () => {
   gap: 6px;
 }
 
-/* 💪(상일) 후기 헤더 - 라벨과 삭제 버튼 */
+/* 후기 헤더 - 라벨과 삭제 버튼 */
 .reviewHeader {
   display: flex;
   justify-content: space-between;
@@ -250,7 +250,7 @@ const deleteReview = () => {
   /* margin-bottom: 5px; */
 }
 
-/* 💪(상일) 작은 삭제 버튼 스타일 */
+/* 작은 삭제 버튼 스타일 */
 .deleteSmallBtn {
   background: none;
   border: none;
@@ -313,7 +313,7 @@ const deleteReview = () => {
   cursor: pointer;
 }
 
-/* 💪(상일) 모달 버튼은 작성/수정 관계없이 동일한 색상 */
+/* 모달 버튼은 작성/수정 관계없이 동일한 색상 */
 .applyBtn {
   flex: 2;
   padding: 10px 0;

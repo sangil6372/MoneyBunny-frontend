@@ -1,6 +1,6 @@
 <template>
   <div class="settingMain">
-    <!-- 💪(상일) 알림 설정 항목 수정 -->
+    <!-- 알림 설정 항목 수정 -->
     <div class="settingMain">
       <!-- <div class="settingItem" @click="goToNotificationSettings"> -->
       <div class="settingItem" @click="showNotificationModal = true">
@@ -78,7 +78,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useAssetStore } from '@/stores/asset';
 import LogoutConfirmModal from './LogoutConfirmModal.vue';
-// 👸🏻(은진) 알림 설정 모달창
+// 알림 설정 모달창
 import NotificationSettingsModal from '../modals/NotificationSettingsModal.vue';
 import ChangePasswordModal from '../modals/ChangePasswordModal.vue';
 // 정책 정보 조회 API import 추가
@@ -95,12 +95,12 @@ const showLogoutModal = ref(false);
 const showPrivacyModal = ref(false);
 const showTermsModal = ref(false);
 
-// 💪(상일) 알림 설정 페이지로 이동
+// 알림 설정 페이지로 이동
 const goToNotificationSettings = () => {
   router.push({ name: 'notificationSettings' });
 };
 
-// 👸🏻(은진) 알림 설정 모달창으로 이동
+// 알림 설정 모달창으로 이동
 const showNotificationModal = ref(false);
 
 const showChangePasswordModal = ref(false);
@@ -109,8 +109,8 @@ const handleLogout = () => {
   showLogoutModal.value = true;
 };
 
-// 💪(상일) auth store를 통한 실제 로그아웃 처리
-// 🎵(유정) router 변경
+// auth store를 통한 실제 로그아웃 처리
+// router 변경
 const confirmLogout = async () => {
   showLogoutModal.value = false;
   await authStore.logout();
@@ -121,7 +121,7 @@ const confirmLogout = async () => {
   await new Promise((resolve) => setTimeout(resolve)); // 상태 반영 기다림
 
   // 로그 확인
-  console.log('[Logout] isLogin 상태:', authStore.isLogin); // false 나와야 정상
+  // isLogin 상태 확인: false가 되어야 정상
 
   if (!authStore.isLogin) {
     router.replace({ path: '/' }); // 로그인 페이지로 이동
@@ -137,14 +137,11 @@ const goToChangePassword = () => {
 const goToPolicyRetest = async () => {
   try {
     const { data } = await policyAPI.getUserPolicy();
-    console.log('[정책재설정] 사용자 정책 데이터:', data);
     
     // 정책 데이터가 있으면 재설정 페이지로, 없으면 새로 검사
     if (data && Object.keys(data).length > 0) {
-      console.log('[정책재설정] 정책 데이터 있음 → 재설정 페이지로 이동');
       router.push({ name: 'myPageSettingsPolicy' });
     } else {
-      console.log('[정책재설정] 정책 데이터 없음 → 새로 검사');
       router.push({ path: '/policy' });
     }
   } catch (e) {

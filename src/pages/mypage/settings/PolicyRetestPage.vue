@@ -140,6 +140,8 @@ onMounted(async () => {
       .sort((a, b) => a[1] - b[1])
       .map(([label]) => label);
   } catch (e) {
+    console.error('Failed to load user policy data:', e);
+    // Set default values when API fails
     summary.value = {
       학력: "대학 졸업",
       "전공 요건": "공학계열",
@@ -172,38 +174,43 @@ const updatePriority = (list) => {
 };
 
 const save = async () => {
-  showToast.value = true;
+  try {
+    showToast.value = true;
 
-  // 우선순위 rank 객체 생성
-  const rankObj = {};
-  priorityOrder.value.forEach((label, idx) => {
-    if (label === "금액") rankObj.moneyRank = idx + 1;
-    if (label === "만료일") rankObj.periodRank = idx + 1;
-    if (label === "조회수") rankObj.popularityRank = idx + 1;
-  });
+    // 우선순위 rank 객체 생성
+    const rankObj = {};
+    priorityOrder.value.forEach((label, idx) => {
+      if (label === "금액") rankObj.moneyRank = idx + 1;
+      if (label === "만료일") rankObj.periodRank = idx + 1;
+      if (label === "조회수") rankObj.popularityRank = idx + 1;
+    });
 
-  // 실제 저장 로직 들어가면 이곳에 추가!
+    // 기존 값 유지, 수정된 값만 덮어쓰기
+    const payload = {
+      ...originalData.value,
+      educationLevels: [
+        labelToCode(educationLevelCodeMap, summary.value["학력"]),
+      ],
+      majors: [labelToCode(majorCodeMap, summary.value["전공 요건"])],
+      employmentStatuses: [
+        labelToCode(employmentStatusCodeMap, summary.value["현재 상황"]),
+      ],
+      ...rankObj,
+    };
+    
+    await policyAPI.updateUserPolicy(payload);
 
-  // 토스트 1.3초 후 닫고 페이지 이동
-  setTimeout(() => {
+    // 토스트 1.3초 후 닫고 페이지 이동
+    setTimeout(() => {
+      showToast.value = false;
+      router.push({ name: "mypage" });
+    }, 1300);
+  } catch (e) {
+    console.error('Failed to save user policy:', e);
     showToast.value = false;
+    // Navigate anyway on error
     router.push({ name: "mypage" });
-  }, 1300);
-
-  // 기존 값 유지, 수정된 값만 덮어쓰기
-  const payload = {
-    ...originalData.value,
-    educationLevels: [
-      labelToCode(educationLevelCodeMap, summary.value["학력"]),
-    ],
-    majors: [labelToCode(majorCodeMap, summary.value["전공 요건"])],
-    employmentStatuses: [
-      labelToCode(employmentStatusCodeMap, summary.value["현재 상황"]),
-    ],
-    ...rankObj,
-  };
-  await policyAPI.updateUserPolicy(payload);
-  router.push({ name: "mypage" });
+  }
 };
 
 const resetSummaryAndPriority = () => {
@@ -224,6 +231,7 @@ const redoQuiz = async () => {
     await new Promise((resolve) => setTimeout(resolve, 200));
     router.push({ path: "/policy" });
   } catch (e) {
+    console.error('Failed to delete user policy:', e);
     resetSummaryAndPriority();
     await new Promise((resolve) => setTimeout(resolve, 200));
     router.push({ path: "/policy" });

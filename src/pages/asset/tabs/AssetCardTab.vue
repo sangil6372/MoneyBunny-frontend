@@ -41,7 +41,6 @@ const onUpdateCards = (newCards) => {
 };
 
 const onAddCard = () => {
-  console.log('카드 추가 모달 열기');
 };
 </script>
 

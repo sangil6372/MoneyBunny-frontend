@@ -7,7 +7,7 @@ import ServiceTermsModal from "./components/ServiceTermsModal.vue";
 import PrivacyTermsModal from "./components/PrivacyTermsModal.vue";
 import MarketingTermsModal from "./components/MarketingTermsModal.vue";
 
-// 👸🏻(은진) : 약관동의 모달창
+// 약관동의 모달창
 const showTermsModal = ref(false);
 const showPrivacyModal = ref(false);
 const showMarketingModal = ref(false);
@@ -17,7 +17,7 @@ const openPrivacyModal = () => (showPrivacyModal.value = true);
 const openMarketingModal = () => (showMarketingModal.value = true);
 
 // 프로필 이미지들
-// 🎵(유정) 마이페이지 - 프사 연동을 위한 로직 변경
+// 마이페이지 - 프사 연동을 위한 로직 변경
 const profileImages = [
   {
     key: "sprout",
@@ -236,7 +236,6 @@ const goBack = () => router.back();
 const goLogin = () => router.push("/");
 
 // 회원가입 처리 (API는 실제 적용시 추가)
-// 🎵(유정)
 const handleSignUp = async () => {
   if (!canSignUp.value) return;
 

@@ -39,7 +39,7 @@
         v-for="policy in previewPolicies.slice(0, 2)"
         :key="policy.policyId"
       >
-        <!-- 🛠️ 제승 수정: 태그 하드코딩, 추후 API 값으로 대체 예정 -->
+        <!-- 태그 하드코딩, 추후 API 값으로 대체 예정 -->
         <div class="tag">주택</div>
         <p class="title font-bold">{{ policy.title }}</p>
         <p class="desc">{{ policy.policyBenefitDescription }}</p>
@@ -96,7 +96,7 @@ export default {
       return arr;
     });
 
-    // 🛠️ 항상 API로 정책 미리보기 조회
+    // 항상 API로 정책 미리보기 조회
     const previewPolicies = ref([]);
 
     onMounted(async () => {
@@ -108,7 +108,7 @@ export default {
       }
     });
 
-    // 🛠️ 신청기간 없을 경우 "상시" 반환하도록 formatDate 개선
+    // 신청기간 없을 경우 "상시" 반환하도록 formatDate 개선
     function formatDate(startDate, endDate) {
       // 둘 다 없으면 "상시"
       if (!startDate && !endDate) return '상시';
@@ -156,7 +156,7 @@ export default {
       redoQuiz,
       goToAllPolicies,
       priorityOrder,
-      formatDate, // 🛠️ 제승 수정: 템플릿에서 사용
+      formatDate, // 템플릿에서 사용
     };
   },
 };

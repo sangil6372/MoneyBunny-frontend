@@ -4,7 +4,7 @@ import { FCMTokenManager } from "@/firebase/FCMTokenManager";
 
 import axios from "axios"; // axios 임포트 // <- 추가
 
-// 💪(상일) 다른 Pinia 스토어들 import
+// 다른 Pinia 스토어들 import
 import { useBookmarkStore } from "@/stores/bookmark";
 import { useNotificationStore } from "@/stores/notification";
 import { useAssetStore } from "@/stores/asset";
@@ -61,14 +61,12 @@ export const useAuthStore = defineStore("auth", () => {
     //   email: member.username + '@test.com',
     // };
 
-    // 💪(상일) 백엔드 MemberController의 정확한 엔드포인트 사용
     const { data } = await axios.post("/api/auth/login", {
       username: member.username,
       password: member.password,
     });
 
-    // 💪(상일) AuthResultDTO 응답 구조에 맞춰 상태 업데이트
-    // 응답 형태: { token: "JWT토큰", user: { loginId, email, createdAt } }
+    // AuthResultDTO 응답 구조에 맞춰 상태 업데이트
     state.value.token = data.accessToken;
     state.value.user = {
       username: data.username,
@@ -81,100 +79,74 @@ export const useAuthStore = defineStore("auth", () => {
   };
 
   // 로그아웃 액션
-  // 🎵(유정) + 💪(상일) FCM 토큰 정리 개선
   const logout = async () => {
-    console.log("[Logout] 로그아웃 시작");
+    const authToken = state.value.token;
 
-    try {
-      // 💪(상일) 로그아웃 전 필요한 토큰들 미리 수집
-      const authToken = state.value.token;
-
-      console.log("[Logout] Auth 토큰 수집 완료:", !!authToken);
-
-      // 💪(상일) FCM 토큰은 유지 (로그아웃 후에도 알림 수신)
-      // FCM 토큰과 구독 정보는 삭제하지 않음
-
-      // 💪(상일) 백엔드 로그아웃 요청
-      if (authToken) {
-        try {
-          console.log("[Logout] 백엔드 로그아웃 요청 전송...");
-          await axios.post(
-            "/api/auth/logout",
-            {},
-            {
-              headers: {
-                Authorization: `Bearer ${authToken}`,
-              },
-            }
-          );
-          console.log("[Logout] 백엔드 로그아웃 완료");
-        } catch (err) {
-          console.warn(
-            "[Logout] 백엔드 로그아웃 실패:",
-            err.response?.data || err.message
-          );
-        }
-      } else {
-        console.warn("[Logout] 인증 토큰이 없어 백엔드 로그아웃 생략");
-      }
-    } catch (error) {
-      console.error("[Logout] 로그아웃 처리 중 예외 발생:", error);
-    } finally {
-      // 💪(상일) 모든 Pinia 스토어 초기화
+    // 서버에 로그아웃 요청 (실패해도 로컬 상태는 정리)
+    if (authToken) {
       try {
-        const bookmarkStore = useBookmarkStore();
-        const notificationStore = useNotificationStore();
-        const assetStore = useAssetStore();
-        const policyQuizStore = usePolicyQuizStore();
-        const policyMatchingStore = usePolicyMatchingStore();
-
-        // 각 스토어 초기 상태로 리셋
-        bookmarkStore.$reset();
-        notificationStore.resetStore(); // 수동 초기화 함수 사용
-        assetStore.$reset();
-        assetStore.clearSummary(); // 추가 초기화
-        policyQuizStore.$reset();
-        policyMatchingStore.$reset();
-
-        console.log("[Logout] 모든 Pinia 스토어 초기화 완료");
-      } catch (storeError) {
-        console.warn("[Logout] 일부 스토어 초기화 실패:", storeError);
+        await axios.post(
+          "/api/auth/logout",
+          {},
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+      } catch (err) {
+        console.error('로그아웃 API 호출 실패:', err);
+        // 서버 로그아웃 실패해도 로컬 상태는 정리
       }
-
-      // 💪(상일) FCM 토큰만 보존하고 나머지는 초기화
-      const fcmToken = localStorage.getItem("fcm_token");
-
-      // localStorage 완전 초기화
-      localStorage.clear();
-
-      // FCM 토큰만 영구 보존 (로그아웃 후에도 알림 수신을 위해)
-      if (fcmToken) {
-        localStorage.setItem("fcm_token", fcmToken);
-        console.log("[Logout] FCM 토큰 영구 보존");
-      }
-
-      state.value = { ...initState };
-      console.log("[Logout] 로컬 상태 초기화 완료 (FCM 토큰만 보존)");
     }
+
+    // 스토어 상태 초기화
+    try {
+      const bookmarkStore = useBookmarkStore();
+      const notificationStore = useNotificationStore();
+      const assetStore = useAssetStore();
+      const policyQuizStore = usePolicyQuizStore();
+      const policyMatchingStore = usePolicyMatchingStore();
+
+      // 각 스토어 초기 상태로 리셋
+      bookmarkStore.$reset();
+      notificationStore.resetStore(); // 수동 초기화 함수 사용
+      assetStore.$reset();
+      assetStore.clearSummary(); // 추가 초기화
+      policyQuizStore.$reset();
+      policyMatchingStore.$reset();
+    } catch (storeError) {
+      console.error('스토어 초기화 실패:', storeError);
+    }
+
+    // FCM 토큰 보존하면서 localStorage 정리
+    const fcmToken = localStorage.getItem("fcm_token");
+    localStorage.clear();
+    if (fcmToken) {
+      localStorage.setItem("fcm_token", fcmToken);
+    }
+
+    // 인증 상태 초기화
+    state.value = { ...initState };
   };
 
   // 토큰 얻어오기 액션
   const getToken = () => state.value.token;
 
-  // 💪(상일) JWT 토큰 만료 확인 함수
+  // JWT 토큰 만료 확인 함수
   const isTokenExpired = () => {
     if (!state.value.token) return true;
 
     try {
-      // JWT 토큰의 payload 부분 디코딩 (base64)
+      // JWT 토큰의 payload 부분 디코딩
       const payload = JSON.parse(atob(state.value.token.split(".")[1]));
-      const currentTime = Math.floor(Date.now() / 1000); // 현재 시간을 초 단위로 변환
+      const currentTime = Math.floor(Date.now() / 1000);
 
-      // exp 필드와 현재 시간 비교 (5분 여유 시간 고려)
+      // exp 필드와 현재 시간 비교
       return payload.exp && payload.exp < currentTime + 300;
     } catch (error) {
       console.error("토큰 디코딩 에러:", error);
-      return true; // 디코딩 실패 시 만료된 것으로 간주
+      return true;
     }
   };
 
@@ -183,15 +155,14 @@ export const useAuthStore = defineStore("auth", () => {
   const load = () => {
     const auth = localStorage.getItem("auth");
     if (auth != null) {
-      state.value = JSON.parse(auth); // JSON 문자열을 객체로 변환
-      console.log(state.value);
+      state.value = JSON.parse(auth);
     }
   };
 
   // 프로필 변경 후 로컬 상태 동기화 액션
   const changeProfile = (member) => {
-    state.value.user.email = member.email; // 이메일 업데이트
-    localStorage.setItem("auth", JSON.stringify(state.value)); // 로컬스토리지 동기화
+    state.value.user.email = member.email;
+    localStorage.setItem("auth", JSON.stringify(state.value));
   };
 
   // 스토어 초기화 시 자동 실행

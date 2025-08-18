@@ -47,7 +47,7 @@
 import { useRouter } from 'vue-router';
 import { useBookmarkStore } from '@/stores/bookmark';
 
-// 💪(상일) props 정의
+// props 정의
 const props = defineProps({
   item: {
     type: Object,
@@ -55,18 +55,18 @@ const props = defineProps({
   },
 });
 
-// 💪(상일) 라우터와 스토어 사용
+// 라우터와 스토어 사용
 const router = useRouter();
 const bookmarkStore = useBookmarkStore();
 
-// 💪(상일) 정책 상세 페이지로 이동
+// 정책 상세 페이지로 이동
 const handleDetailClick = () => {
   if (props.item.policyId) {
     router.push(`/policy/${props.item.policyId}`);
   }
 };
 
-// 💪(상일) 북마크 제거 처리
+// 북마크 제거 처리
 const handleRemoveBookmark = async () => {
   if (confirm('이 정책을 북마크에서 제거하시겠습니까?')) {
     const success = await bookmarkStore.removeBookmark(props.item.policyId);

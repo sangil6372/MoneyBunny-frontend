@@ -1,9 +1,9 @@
 import axios from './index';
 
-// 💪(상일) 정책 상호작용 API (북마크, 신청)
+// 정책 상호작용 API (북마크, 신청)
 export const policyInteractionAPI = {
   // ────────────────────────────────────────
-  // 📌 북마크 관련 API
+  // 북마크 관련 API
   // ────────────────────────────────────────
   
   // 사용자 북마크 목록 조회
@@ -16,7 +16,7 @@ export const policyInteractionAPI = {
   removeBookmark: (policyId) => axios.delete(`/api/policy-interaction/bookmark/${policyId}`),
 
   // ────────────────────────────────────────
-  // 📌 신청 관련 API  
+  // 신청 관련 API  
   // ────────────────────────────────────────
   
   // 정책 신청 등록
@@ -41,7 +41,7 @@ export const policyInteractionAPI = {
     }),
 
   // ────────────────────────────────────────
-  // 📌 리뷰 관련 API
+  // 리뷰 관련 API
   // ────────────────────────────────────────
   
   // 정책 리뷰 작성
@@ -58,7 +58,7 @@ export const policyInteractionAPI = {
       params: { benefitStatus }
     }),
   
-  // 💪(상일) 내 리뷰 조회 (404 에러 조용히 처리)
+  // 내 리뷰 조회 (404 에러 조용히 처리)
   getMyReview: async (policyId, benefitStatus) => {
     try {
       return await axios.get(`/api/policy-interaction/review/${policyId}/my`, {
@@ -77,7 +77,7 @@ export const policyInteractionAPI = {
   getPolicyReviews: (policyId) => 
     axios.get(`/api/policy-interaction/review/${policyId}/list`),
   
-  // 💪(상일) 정책별 리뷰 목록 조회 (좋아요 상태 포함)
+  // 정책별 리뷰 목록 조회 (좋아요 상태 포함)
   getPolicyReviewsWithLikeStatus: (policyId) => 
     axios.get(`/api/policy-interaction/review/${policyId}/list/with-like-status`),
   
@@ -85,7 +85,7 @@ export const policyInteractionAPI = {
   getMyReviews: () => axios.get('/api/policy-interaction/review/my-list'),
 
   // ────────────────────────────────────────
-  // 📌 좋아요 관련 API (Redis 기반)
+  // 좋아요 관련 API (Redis 기반)
   // ────────────────────────────────────────
   
   // 리뷰 좋아요 추가
@@ -101,7 +101,7 @@ export const policyInteractionAPI = {
     axios.get(`/api/policy-interaction/review/${reviewId}/like/count`)
 };
 
-// 💪(상일) 기존 bookmarkAPI 호환성 유지를 위한 export
+// 기존 bookmarkAPI 호환성 유지를 위한 export
 export const bookmarkAPI = {
   getBookmarks: policyInteractionAPI.getBookmarks,
   addBookmark: policyInteractionAPI.addBookmark,

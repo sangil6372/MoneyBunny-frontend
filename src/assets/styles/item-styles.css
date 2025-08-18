@@ -146,7 +146,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.7rem;
-  background: var(--base-lavender); /*🥕 대표 뱃지 색상*/
+  background: var(--base-lavender); /* 대표 뱃지 색상 */
   color: white;
   font-size: 0.75rem;
   font-weight: 600;

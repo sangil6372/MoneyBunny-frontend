@@ -1,10 +1,7 @@
-import axios, { codefInstance } from '@/api/index'; // 공통 axios 인스턴스
-
-console.log('🍀 assetApi.js에서 import된 axios:', axios);
+import axios, { codefInstance } from '@/api/index';
 
 // 자산 요약 불러오기
 export async function fetchAssetSummary() {
-  console.log('fetchAssetSummary 진입!');
   return await axios.get('/api/asset/summary');
 }
 

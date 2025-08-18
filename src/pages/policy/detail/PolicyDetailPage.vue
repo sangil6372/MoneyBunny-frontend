@@ -2,7 +2,7 @@
 import { ref, computed, watchEffect, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { policyAPI } from "@/api/policy"; // 변경: policyAPI import
-// 💪(상일) 정책 신청 기능
+// 정책 신청 기능
 import { policyInteractionAPI } from "@/api/policyInteraction";
 
 import PolicyHeader from "./PolicyHeader.vue";
@@ -10,11 +10,11 @@ import PolicyTab from "./PolicyTabs.vue";
 import PolicyTabContent from "./PolicyTabContent.vue";
 import PolicyConditionTab from "./PolicyConditionTab.vue";
 import PolicyApplyTab from "./PolicyApplyTab.vue";
-// 💪(상일) 신청 상태 모달
+// 신청 상태 모달
 import PolicyApplyStatusModal from "../component/PolicyApplyStatusModal.vue";
-// 💪(상일) Safari 안내 모달
+// Safari 안내 모달
 import SafariGuideModal from "./SafariGuideModal.vue";
-// 💪(상일) 조건 미충족 시 리뷰 작성용 모달
+// 조건 미충족 시 리뷰 작성용 모달
 import ReviewModal from "@/pages/mypage/application/ReviewModal.vue";
 
 // 실제 데이터(예시)
@@ -88,10 +88,10 @@ const policyData = ref(null);
 
 const totalReviews = ref(0);
 
-// 💪(상일) 미완료 신청 체크용
+// 미완료 신청 체크용
 const currentApplication = ref(null);
 const showStatusModal = ref(false);
-// 💪(상일) 리뷰 모달 상태
+// 리뷰 모달 상태
 const showReviewModal = ref(false);
 const reviewPolicyInfo = ref(null);
 
@@ -121,23 +121,13 @@ const policy = computed(() =>
     : ALL_POLICIES.find((p) => p.policyId === policyId.value)
 );
 
-// supportContent 값 로그 출력
-watchEffect(() => {
-  if (policy.value) {
-    console.log(
-      "PolicyDetailPage에서 넘기는 policy.supportContent:",
-      policy.value.supportContent
-    );
-  }
-});
 // 기간 문자열 추출 (endDate 필드)
 const period = computed(() => policy.value?.endDate || "");
 
-// 💪(상일) 미완료 신청 체크
+// 미완료 신청 체크
 const checkIncompleteApplication = async () => {
   // 비로그인 시 바로 종료
   if (!authStore.isLogin) {
-    console.log("비로그인 상태 → API 호출 생략");
     return;
   }
 
@@ -164,7 +154,7 @@ const checkIncompleteApplication = async () => {
   }
 };
 
-// 💪(상일) 모달 응답 처리
+// 모달 응답 처리
 const handleStatusSubmit = async (status) => {
   if (!currentApplication.value) return;
 
@@ -185,11 +175,11 @@ const handleStatusSubmit = async (status) => {
         break;
 
       case "notEligible":
-        // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제 후 리뷰 작성
+        // 조건 미충족으로 신청 불가한 경우 신청 기록 삭제 후 리뷰 작성
         await policyInteractionAPI.removeApplication(
           currentApplication.value.policyId
         );
-        // 💪(상일) 즉시 리뷰 모달 표시
+        // 즉시 리뷰 모달 표시
         reviewPolicyInfo.value = {
           policyId: currentApplication.value.policyId,
           policyTitle: currentApplication.value.title,
@@ -206,14 +196,14 @@ const handleStatusSubmit = async (status) => {
   }
 };
 
-// 💪(상일) 신청 후 즉시 상태 모달 표시
+// 신청 후 즉시 상태 모달 표시
 const handleShowStatusModal = (applicationData) => {
   // 현재 신청 정보 설정
   currentApplication.value = applicationData;
   showStatusModal.value = true;
 };
 
-// 💪(상일) iOS 카카오톡 인앱 Safari 안내 표시 상태
+// iOS 카카오톡 인앱 Safari 안내 표시 상태
 const showSafariGuide = ref(false);
 
 async function fetchReviewCount() {
@@ -235,14 +225,14 @@ async function fetchReviewCount() {
   }
 }
 
-// 💪(상일) 컴포넌트 마운트 시 카카오톡 인앱 브라우저 감지 및 처리
+// 컴포넌트 마운트 시 카카오톡 인앱 브라우저 감지 및 처리
 onMounted(async () => {
-  // 💪(상일) 공유 링크로 진입 + 카카오톡 인앱 브라우저인 경우
+  // 공유 링크로 진입 + 카카오톡 인앱 브라우저인 경우
   if (route.query.from === "share" && /KAKAOTALK/i.test(navigator.userAgent)) {
     // ?from=share 파라미터 제거한 URL
     const currentUrl = window.location.href.replace(/[?&]from=share/, "");
 
-    // 💪(상일) Android와 iOS 구분 처리
+    // Android와 iOS 구분 처리
     const isAndroid = /Android/i.test(navigator.userAgent);
     const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
@@ -262,7 +252,7 @@ onMounted(async () => {
   if (policyId.value) await fetchReviewCount();
 });
 
-// 💪(상일) 리뷰 저장 처리
+// 리뷰 저장 처리
 const handleReviewSave = async (reviewData) => {
   try {
     await policyInteractionAPI.addReview(
@@ -314,10 +304,10 @@ watch(policyId, (v) => {
   </div>
   <div v-else class="noData">정책 정보를 찾을 수 없습니다.</div>
 
-  <!-- 💪(상일) iOS Safari 안내 모달 -->
+  <!-- iOS Safari 안내 모달 -->
   <SafariGuideModal v-model="showSafariGuide" />
 
-  <!-- 💪(상일) 정책신청현황 모달 -->
+  <!-- 정책신청현황 모달 -->
   <PolicyApplyStatusModal
     v-model="showStatusModal"
     :policyTitle="currentApplication?.title || ''"
@@ -329,7 +319,7 @@ watch(policyId, (v) => {
     "
   />
 
-  <!-- 💪(상일) 조건 미충족 시 리뷰 작성 모달 -->
+  <!-- 조건 미충족 시 리뷰 작성 모달 -->
   <ReviewModal
     v-if="showReviewModal"
     :policy-id="reviewPolicyInfo?.policyId"

@@ -24,7 +24,7 @@ import { useNotificationStore } from '@/stores/notification';
 const emit = defineEmits(['open-settings']);
 const notificationStore = useNotificationStore();
 
-//💪(상일) 알림 설정 모달 열기
+// 알림 설정 모달 열기
 const openSettings = () => {
   emit('open-settings');
 };

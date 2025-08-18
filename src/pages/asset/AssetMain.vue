@@ -157,7 +157,8 @@ async function loadUserName() {
   try {
     const { data } = await axios.get('/api/member/information');
     userName.value = data?.name || '사용자';
-  } catch {
+  } catch (error) {
+    console.error('Failed to load user name:', error);
     userName.value = '사용자';
   }
 }
@@ -190,7 +191,8 @@ async function getUserRegionPolicyId() {
       return { policyId: 3167, title: '경기 K패스', calcType: 'specialKpass' };
     }
     return { policyId: 3589, title: 'K패스', calcType: 'kpass' };
-  } catch {
+  } catch (error) {
+    console.error('Failed to get user region policy:', error);
     return { policyId: 3589, title: 'K패스', calcType: 'kpass' };
   }
 }
@@ -264,7 +266,7 @@ async function loadRecommendBanners() {
       hasPolicyBanner = true;
     }
   } catch (e) {
-    // ignore
+    // Ignore transportation fee fetching errors
   }
 
   // 3. 월세 거래내역 있을 때만
@@ -283,7 +285,7 @@ async function loadRecommendBanners() {
       hasPolicyBanner = true;
     }
   } catch (e) {
-    // ignore
+    // Ignore transportation fee fetching errors
   }
 
   // 4. 한국산업인력공단 카드 결제내역 있을 때만
@@ -302,7 +304,7 @@ async function loadRecommendBanners() {
       hasPolicyBanner = true;
     }
   } catch (e) {
-    // ignore
+    // Ignore transportation fee fetching errors
   }
 
   // 정책 배너가 하나도 없으면 기본 배너도 제거
@@ -366,7 +368,6 @@ function sleep(ms) {
 }
 // 탭별 자동 동기화
 async function autoSyncForTab(tab) {
-  console.debug('[autoSyncForTab]', tab);
   if (tab === '계좌') {
     if (syncing.value.accounts) return;
     syncing.value.accounts = true;
@@ -385,6 +386,7 @@ async function autoSyncForTab(tab) {
       syncing.value.accounts = false;
     } catch (e) {
       console.error('[SYNC][계좌] 실패', e);
+      syncing.value.accounts = false;
     }
   } else if (tab === '카드') {
     if (syncing.value.cards) return;
@@ -433,36 +435,37 @@ const rightValueForCards = computed(() =>
   syncing.value.cards ? '동기화중…' : (summary.value.cards || []).length
 );
 
-// // 계좌/카드 관련 이벤트 핸들러들
-// const deleteAccount = (account) => {
-//   console.log('계좌 삭제:', account);
-//   // 실제 삭제 로직 구현 필요
-// };
+// Placeholder methods for child component handlers
+const deleteAccount = (accountId) => {
+  // Account deletion logic would be implemented here
+  console.log('Delete account:', accountId);
+};
 
-// const onUpdateAccounts = (accounts) => {
-//   console.log('계좌 업데이트:', accounts);
-//   // 실제 업데이트 로직 구현 필요
-// };
+const deleteCard = (cardId) => {
+  // Card deletion logic would be implemented here
+  console.log('Delete card:', cardId);
+};
 
-// const onAddAccount = () => {
-//   alert('계좌 추가 기능(모달)!');
-//   // 실제 모달 열기 로직 구현 필요
-// };
+const onUpdateAccounts = () => {
+  // Account update handler would be implemented here
+  assetStore.loadSummary(true);
+};
 
-// const deleteCard = (cardToDelete) => {
-//   console.log('카드 삭제:', cardToDelete);
-//   // 실제 삭제 로직 구현 필요
-// };
+const onUpdateCards = () => {
+  // Card update handler would be implemented here
+  assetStore.loadSummary(true);
+};
 
-// const onUpdateCards = (newCards) => {
-//   console.log('카드 업데이트:', newCards);
-//   // 실제 업데이트 로직 구현 필요
-// };
+const onAddAccount = () => {
+  // Add account handler would be implemented here
+  console.log('Add account clicked');
+};
 
-// const onAddCard = () => {
-//   console.log('카드 추가 모달 열기');
-//   // 실제 모달 열기 로직 구현 필요
-// };
+const onAddCard = () => {
+  // Add card handler would be implemented here
+  console.log('Add card clicked');
+};
+
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@
         <button @click="fetchNotifications" class="retry-btn">다시 시도</button>
       </div>
 
-      <!-- 💪(상일) 날짜별 그룹 알림 목록 -->
+      <!-- 날짜별 그룹 알림 목록 -->
       <div v-else-if="visibleGroups.length === 0">
         <NoNotification @open-settings="showSettingsModal = true" />
       </div>
@@ -35,7 +35,7 @@
       </div>
     </div>
 
-    <!-- 💪(상일) 알림 설정 모달 -->
+    <!-- 알림 설정 모달 -->
     <NotificationSettingsModal 
       v-if="showSettingsModal" 
       @close="showSettingsModal = false" 
@@ -58,7 +58,7 @@ import { useNotificationStore } from '@/stores/notification';
 // 현재 선택된 탭
 const selectedTab = ref('all');
 
-// 💪(상일) 알림 설정 모달 상태
+// 알림 설정 모달 상태
 const showSettingsModal = ref(false);
 
 // Pinia 스토어 사용
@@ -80,7 +80,7 @@ const mapNotificationType = (backendType) => {
   }
 };
 
-// 💪(상일) 날짜별 그룹핑을 위한 유틸리티 함수
+// 날짜별 그룹핑을 위한 유틸리티 함수
 const getDateGroup = (date) => {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -110,7 +110,7 @@ const getDateGroup = (date) => {
   }
 };
 
-// 💪(상일) 날짜별로 그룹핑된 알림 목록
+// 날짜별로 그룹핑된 알림 목록
 const groupedNotifications = computed(() => {
   const filtered =
     selectedTab.value === 'all'
@@ -145,7 +145,7 @@ const groupedNotifications = computed(() => {
   return groups;
 });
 
-// 💪(상일) 그룹별 제목 매핑
+// 그룹별 제목 매핑
 const getGroupTitle = (groupKey) => {
   const titles = {
     today: '오늘',
@@ -156,7 +156,7 @@ const getGroupTitle = (groupKey) => {
   return titles[groupKey] || '';
 };
 
-// 💪(상일) 표시할 그룹들 (빈 그룹 제외)
+// 표시할 그룹들 (빈 그룹 제외)
 const visibleGroups = computed(() => {
   return Object.keys(groupedNotifications.value).filter(
     (key) => groupedNotifications.value[key].length > 0
@@ -172,7 +172,7 @@ onMounted(async () => {
 <style scoped>
 .notification-center {
   min-height: 100vh;
-  padding: 0; /* 💪(상일) 패딩 제거 */
+  padding: 0; /* 패딩 제거 */
   background-color: #f8f9fa;
 }
 
@@ -241,7 +241,7 @@ onMounted(async () => {
   background-color: var(--base-blue);
 }
 
-/* 💪(상일) 날짜별 그룹 스타일 */
+/* 날짜별 그룹 스타일 */
 .grouped-notifications {
   display: flex;
   flex-direction: column;
@@ -254,7 +254,7 @@ onMounted(async () => {
   gap: 16px;
 }
 
-/* 💪(상일) 첫 번째 그룹 상단 여백 추가 */
+/* 첫 번째 그룹 상단 여백 추가 */
 .notification-group:first-child {
   margin-top: 20px;
 }

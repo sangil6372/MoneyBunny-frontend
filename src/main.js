@@ -26,21 +26,21 @@ app.mount('#app');
 const splash = document.getElementById('splash');
 if (splash) splash.style.display = 'none';
 
-// 💪(상일) 서비스 워커 등록
+// 서비스 워커 등록
 registerServiceWorker();
 
-// 💪(상일) 앱 시작 시 알림 권한 체크 및 토큰 정리
+// 앱 시작 시 알림 권한 체크 및 토큰 정리
 checkPermissionOnAppStart();
 
-// 💪(상일) 포그라운드 메시지 리스너 설정
+// 포그라운드 메시지 리스너 설정
 setupForegroundMessageListener();
 
-// 💪(상일) 페이지 포커스 시 미읽은 알림 개수 새로고침 - 특정 라우트에서만
+// 페이지 포커스 시 미읽은 알림 개수 새로고침 - 특정 라우트에서만
 window.addEventListener('focus', async () => {
   try {
     // 현재 라우트 확인
     const currentPath = window.location.pathname;
-    // 💪(상일) policy 메인 페이지만 포함, 하위 경로 제외
+    // policy 메인 페이지만 포함, 하위 경로 제외
     const targetRoutes = ['/home', '/asset', '/mypage'];
     const exactRoutes = ['/policy', '/policy/main'];
 
@@ -51,7 +51,7 @@ window.addEventListener('focus', async () => {
       const { useNotificationStore } = await import('@/stores/notification');
       const notificationStore = useNotificationStore();
       await notificationStore.fetchUnreadCount();
-      console.log('🔍 페이지 포커스 - 미읽은 알림 개수 새로고침');
+      console.log('페이지 포커스 - 미읽은 알림 개수 새로고침');
     }
   } catch (error) {
     console.error('미읽은 알림 개수 새로고침 실패:', error);

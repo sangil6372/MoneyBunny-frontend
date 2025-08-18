@@ -84,7 +84,6 @@ const visibleCards = computed(() =>
 
 // 금액 숨기기 토글 (store를 통해 이미 처리됨)
 const toggleCardAmount = (cardId, isHidden) => {
-  console.log(`카드 ${cardId} 금액 숨기기: ${isHidden} (store에서 처리됨)`);
   // store에서 이미 처리되었으므로 추가 작업 불필요
 };
 

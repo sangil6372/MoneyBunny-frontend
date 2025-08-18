@@ -95,7 +95,6 @@ const updateAccountNickname = (updatedAccount) => {
 
 // 잔액 숨기기 토글 (store를 통해 이미 처리됨)
 const toggleAccountBalance = (accountId, isHidden) => {
-  console.log(`계좌 ${accountId} 잔액 숨기기: ${isHidden} (store에서 처리됨)`);
   // store에서 이미 처리되었으므로 추가 작업 불필요
 };
 </script>

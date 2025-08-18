@@ -1,6 +1,6 @@
 <template>
   <div class="condition-card" :class="{ 'inactive': !condition.isActive }">
-    <!-- 💪(상일) 카드 헤더 -->
+    <!-- 카드 헤더 -->
     <div class="card-header-row">
       <div class="type-info">
         <span class="type-badge" :class="getTypeBadgeClass(condition.conditionType)">
@@ -13,7 +13,7 @@
       </span>
     </div>
 
-    <!-- 💪(상일) 카드 본문 -->
+    <!-- 카드 본문 -->
     <div class="card-body">
       <h4 class="condition-name">{{ condition.conditionName }}</h4>
       <div class="condition-details">
@@ -31,7 +31,7 @@
       </p>
     </div>
 
-    <!-- 💪(상일) 카드 액션 버튼 -->
+    <!-- 카드 액션 버튼 -->
     <div class="card-actions">
       <button class="action-btn edit-btn" @click="$emit('edit', condition)">
         EDIT
@@ -55,7 +55,7 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete'])
 
-// 💪(상일) 타입별 라벨 반환
+// 타입별 라벨 반환
 const getTypeLabel = (type) => {
   const labels = {
     'INCOME': 'INCOME',
@@ -66,7 +66,7 @@ const getTypeLabel = (type) => {
   return labels[type] || type
 }
 
-// 💪(상일) 타입별 배지 클래스 반환
+// 타입별 배지 클래스 반환
 const getTypeBadgeClass = (type) => {
   const classes = {
     'INCOME': 'type-income',
@@ -77,7 +77,7 @@ const getTypeBadgeClass = (type) => {
   return classes[type] || ''
 }
 
-// 💪(상일) 삭제 확인 후 이벤트 발생
+// 삭제 확인 후 이벤트 발생
 const handleDelete = () => {
   if (confirm('정말 이 조건을 삭제하시겠습니까?')) {
     emit('delete', props.condition.id)

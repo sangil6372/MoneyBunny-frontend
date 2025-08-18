@@ -35,7 +35,7 @@ const normalizeUrl = (raw) => {
   return null;
 };
 
-// 💪(상일) intent URL 및 Android Chrome 감지 제거 - 카카오톡 인앱에서 처리로 변경
+// intent URL 및 Android Chrome 감지 제거 - 카카오톡 인앱에서 처리로 변경
 
 const fetchPolicy = async () => {
   try {
@@ -43,7 +43,7 @@ const fetchPolicy = async () => {
     const parsed = savedAuth ? JSON.parse(savedAuth) : null;
     const token = parsed?.token;
 
-    console.log(token); // undefined: 로그인X
+    // token: 비로그인 시 undefined
 
     const headers = token ? { Authorization: `Bearer ${token}` } : {};
 
@@ -51,10 +51,9 @@ const fetchPolicy = async () => {
       headers,
     });
 
-    console.log("API 응답 데이터:", response.data);
     const data = response.data;
 
-    // 💪(상일) 공유 URL 생성 - 항상 HTTPS URL 사용, from=share 파라미터 추가
+    // 공유 URL 생성 - 항상 HTTPS URL 사용, from=share 파라미터 추가
     const targetUrl = `https://money-bunny-frontend.vercel.app/policy/${policyId.value}?from=share`;
 
     shareInfo.value = {
@@ -68,8 +67,6 @@ const fetchPolicy = async () => {
       url: targetUrl,
     };
 
-    console.log("applyUrl from API:", data.applyUrl);
-    console.log("공유할 정보:", shareInfo);
   } catch (error) {
     console.error("정책 정보 조회 실패:", error);
   }
@@ -99,7 +96,6 @@ onMounted(() => {
 
 const sendKakao = () => {
   const info = shareInfo.value;
-  console.log("✅ 공유할 정보:", info);
 
   const isInfoReady =
     typeof info.title === "string" &&

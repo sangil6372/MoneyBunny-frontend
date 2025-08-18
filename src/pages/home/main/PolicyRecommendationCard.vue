@@ -59,7 +59,6 @@ onMounted(async () => {
       (sum, item) => sum + (typeof item.amount === 'number' ? item.amount : 0),
       0
     );
-    // 필요하다면 console.log(top3TotalAmount.value);
   } catch (e) {
     policyList.value = [];
     top3TotalAmount.value = 0;

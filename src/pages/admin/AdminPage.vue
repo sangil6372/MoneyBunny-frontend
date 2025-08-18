@@ -1,11 +1,11 @@
 <template>
   <div class="admin-page">
-    <!-- 💪(상일) 관리자 페이지 헤더 -->
+    <!-- 관리자 페이지 헤더 -->
     <div class="admin-header">
       <h1>관리자 페이지</h1>
     </div>
 
-    <!-- 💪(상일) 탭 메뉴 -->
+    <!-- 탭 메뉴 -->
     <div class="admin-tabs">
       <button
         class="tab-button"
@@ -37,7 +37,7 @@
       </button>
     </div>
 
-    <!-- 💪(상일) 탭 콘텐츠 -->
+    <!-- 탭 콘텐츠 -->
     <div class="tab-content">
       <!-- 데이터 동기화 탭 -->
       <div v-if="activeTab === 'sync'" class="admin-cards">
@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <!-- 💪(상일) GPT 서브 탭 메뉴 -->
+        <!-- GPT 서브 탭 메뉴 -->
         <div class="prompt-sub-tabs">
           <button
             class="sub-tab-button"
@@ -168,7 +168,7 @@
             </div>
           </div>
 
-          <!-- 💪(상일) 조건 필터 버튼 -->
+          <!-- 조건 필터 버튼 -->
           <div class="filter-buttons" v-if="promptConditions.length > 0">
             <button
               @click="conditionFilter = 'POSITIVE'"
@@ -285,7 +285,7 @@
             </div>
           </div>
 
-          <!-- 💪(상일) 예시 필터 버튼 -->
+          <!-- 예시 필터 버튼 -->
           <div class="filter-buttons" v-if="promptExamples.length > 0">
             <button
               @click="exampleFilter = 'POSITIVE'"
@@ -448,7 +448,7 @@
         </div>
       </div>
 
-      <!-- 💪(상일) 리뷰 관리 탭 -->
+      <!-- 리뷰 관리 탭 -->
       <div v-if="activeTab === 'review'" class="review-management">
         <!-- 리뷰 서브 탭 네비게이션 -->
         <div class="review-sub-tabs">
@@ -653,7 +653,7 @@
 
       <!-- 알림 발송 탭 -->
       <div v-if="activeTab === 'notification'" class="notification-management">
-        <!-- 💪(상일) 알림 서브 탭 메뉴 -->
+        <!-- 알림 서브 탭 메뉴 -->
         <div class="notification-sub-tabs">
           <button
             class="sub-tab-button"
@@ -824,7 +824,7 @@
       </div>
     </div>
 
-    <!-- 💪(상일) 모달들 -->
+    <!-- 모달들 -->
     <!-- 조건 추가/수정 모달 (모바일 최적화) -->
     <div
       v-if="showConditionModal"
@@ -980,19 +980,19 @@
 import { ref, reactive, onMounted, computed } from "vue";
 import { adminAPI } from "@/api/admin";
 
-// 💪(상일) 탭 관리
+// 탭 관리
 const activeTab = ref("sync");
 
-// 💪(상일) GPT 서브 탭 관리
+// GPT 서브 탭 관리
 const activePromptTab = ref("conditions"); // conditions, examples, rules
 
-// 💪(상일) 알림 서브 탭 관리
+// 알림 서브 탭 관리
 const activeNotificationTab = ref("individual"); // individual, management
 
-// 💪(상일) 리뷰 서브 탭 관리
+// 리뷰 서브 탭 관리
 const activeReviewTab = ref("all"); // all, policy
 
-// 💪(상일) 로딩 상태 관리
+// 로딩 상태 관리
 const loading = reactive({
   policy: false,
   account: false,
@@ -1017,30 +1017,30 @@ const loading = reactive({
   singleReviewDelete: false,
 });
 
-// 💪(상일) 결과 메시지 상태 관리
+// 결과 메시지 상태 관리
 const results = reactive({
   policy: "",
   codef: "",
   notification: "",
 });
 
-// 💪(상일) 프롬프트 관련 데이터
+// 프롬프트 관련 데이터
 const promptConditions = ref([]);
 const promptExamples = ref([]);
 const calculationRules = ref([]);
 const previewSample = ref("");
 const previewResult = ref("");
 
-// 💪(상일) 리뷰 관련 데이터
+// 리뷰 관련 데이터
 const allReviews = ref([]);
 const policyReviews = ref([]);
 const selectedPolicyId = ref('');
 
-// 💪(상일) 필터 상태 관리
+// 필터 상태 관리
 const conditionFilter = ref("POSITIVE"); // POSITIVE, NEGATIVE
 const exampleFilter = ref("POSITIVE"); // POSITIVE, NEGATIVE
 
-// 💪(상일) 모달 관리
+// 모달 관리
 const showConditionModal = ref(false);
 const showExampleModal = ref(false);
 const showRuleModal = ref(false);
@@ -1063,7 +1063,7 @@ const ruleForm = reactive({
   ruleText: "",
 });
 
-// 💪(상일) 기존 동기화 함수들
+// 기존 동기화 함수들
 const syncPolicyData = async () => {
   loading.policy = true;
   results.policy = "";
@@ -1109,7 +1109,7 @@ const syncCardData = async () => {
   }
 };
 
-// 💪(상일) 프롬프트 관련 함수들
+// 프롬프트 관련 함수들
 const fetchPromptConditions = async () => {
   loading.promptConditions = true;
 
@@ -1164,7 +1164,7 @@ const previewPrompt = async () => {
   }
 };
 
-// 💪(상일) CRUD 함수들
+// CRUD 함수들
 const openAddConditionModal = () => {
   editingCondition.value = null;
   resetConditionForm();
@@ -1244,7 +1244,7 @@ const deleteRule = async (id) => {
   }
 };
 
-// 💪(상일) 알림 발송 함수들
+// 알림 발송 함수들
 const sendTestNotification = async () => {
   loading.testNotification = true;
   results.notification = "";
@@ -1350,13 +1350,13 @@ const sendAllNotifications = async () => {
   }
 };
 
-// 💪(상일) 유틸리티 함수들
+// 유틸리티 함수들
 const truncateText = (text, maxLength) => {
   if (!text) return "";
   return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
 };
 
-// 💪(상일) 조건 타입 라벨 변환
+// 조건 타입 라벨 변환
 const getTypeLabel = (type) => {
   const labels = {
     INCOME: "소득",
@@ -1367,7 +1367,7 @@ const getTypeLabel = (type) => {
   return labels[type] || type;
 };
 
-// 💪(상일) 예시 타입 라벨 변환
+// 예시 타입 라벨 변환
 const getExampleTypeLabel = (type) => {
   const labels = {
     POSITIVE: "긍정적",
@@ -1377,7 +1377,7 @@ const getExampleTypeLabel = (type) => {
   return labels[type] || type;
 };
 
-// 💪(상일) 날짜 포맷팅
+// 날짜 포맷팅
 const formatDate = (dateString) => {
   if (!dateString) return "";
   const date = new Date(dateString);
@@ -1390,7 +1390,7 @@ const formatDate = (dateString) => {
   });
 };
 
-// 💪(상일) 예시 관리 함수들
+// 예시 관리 함수들
 const openAddExampleModal = () => {
   editingExample.value = null;
   resetExampleForm();
@@ -1434,7 +1434,7 @@ const saveExample = async () => {
   }
 };
 
-// 💪(상일) 계산 규칙 관리 함수들
+// 계산 규칙 관리 함수들
 const openAddRuleModal = () => {
   editingRule.value = null;
   resetRuleForm();
@@ -1477,7 +1477,7 @@ const saveRule = async () => {
   }
 };
 
-// 💪(상일) 필터링된 데이터 계산
+// 필터링된 데이터 계산
 const filteredConditions = computed(() => {
   return promptConditions.value.filter(
     (condition) => condition.type === conditionFilter.value
@@ -1490,7 +1490,7 @@ const filteredExamples = computed(() => {
   );
 });
 
-// 💪(상일) 리뷰 관리 함수들
+// 리뷰 관리 함수들
 const fetchAllReviews = async () => {
   loading.reviews = true;
   allReviews.value = [];
@@ -1591,7 +1591,7 @@ const deleteAllPolicyReviews = async () => {
   }
 };
 
-// 💪(상일) 혜택 상태 라벨 변환
+// 혜택 상태 라벨 변환
 const getBenefitStatusLabel = (status) => {
   const labels = {
     RECEIVED: "수령 완료",
@@ -1601,7 +1601,7 @@ const getBenefitStatusLabel = (status) => {
   return labels[status] || status;
 };
 
-// 💪(상일) 혜택 상태별 CSS 클래스
+// 혜택 상태별 CSS 클래스
 const getBenefitStatusClass = (status) => {
   const classes = {
     RECEIVED: "received",
@@ -1718,7 +1718,7 @@ onMounted(() => {
   margin-bottom: 20px;
 }
 
-/* 💪(상일) 세로형 카드 헤더 스타일 */
+/* 세로형 카드 헤더 스타일 */
 .card-header-vertical {
   margin-bottom: 20px;
 }
@@ -2094,7 +2094,7 @@ onMounted(() => {
   font-size: 13px;
 }
 
-/* 💪(상일) 모바일 전용 스타일 */
+/* 모바일 전용 스타일 */
 .card-header-mobile {
   margin-bottom: 20px;
 }
@@ -2161,7 +2161,7 @@ onMounted(() => {
   color: white;
 }
 
-/* 💪(상일) 필터 버튼 스타일 */
+/* 필터 버튼 스타일 */
 .filter-buttons {
   display: flex;
   gap: 2px;
@@ -2199,7 +2199,7 @@ onMounted(() => {
   color: #495057;
 }
 
-/* 💪(상일) 새로운 조건 아이템 스타일 */
+/* 새로운 조건 아이템 스타일 */
 .conditions-table {
   display: flex;
   flex-direction: column;
@@ -2246,7 +2246,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 💪(상일) 조건 타입별 색상 구분 */
+/* 조건 타입별 색상 구분 */
 .condition-type.positive {
   background: #28a745;
 }
@@ -2352,7 +2352,7 @@ onMounted(() => {
   font-style: italic;
 }
 
-/* 💪(상일) 예시 테이블 스타일 */
+/* 예시 테이블 스타일 */
 .examples-table {
   display: flex;
   flex-direction: column;
@@ -2400,7 +2400,7 @@ onMounted(() => {
   font-weight: 500;
 }
 
-/* 💪(상일) 예시 타입별 색상 구분 */
+/* 예시 타입별 색상 구분 */
 .example-type.positive {
   background: #28a745;
 }
@@ -2428,7 +2428,7 @@ onMounted(() => {
   gap: 4px;
 }
 
-/* 💪(상일) 계산 규칙 테이블 스타일 */
+/* 계산 규칙 테이블 스타일 */
 .rules-table {
   display: flex;
   flex-direction: column;
@@ -2495,7 +2495,7 @@ onMounted(() => {
   word-break: break-all;
 }
 
-/* 💪(상일) 서브탭 공통 스타일 */
+/* 서브탭 공통 스타일 */
 .prompt-sub-tabs,
 .notification-sub-tabs,
 .review-sub-tabs {
@@ -2533,7 +2533,7 @@ onMounted(() => {
   color: #495057;
 }
 
-/* 💪(상일) 리뷰 테이블 스타일 */
+/* 리뷰 테이블 스타일 */
 .reviews-table {
   display: flex;
   flex-direction: column;
@@ -2781,7 +2781,7 @@ onMounted(() => {
   margin-top: 16px;
 }
 
-/* 💪(상일) 모바일 최적화 모달 */
+/* 모바일 최적화 모달 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -2985,7 +2985,7 @@ input:checked + .toggle-slider:before {
 }
 
 
-/* 💪(상일) 개별 발송 버튼 색상 스타일 */
+/* 개별 발송 버튼 색상 스타일 */
 .btn-bookmark,
 .btn-new-policy,
 .btn-top3,
@@ -3058,7 +3058,7 @@ input:checked + .toggle-slider:before {
   cursor: not-allowed;
 }
 
-/* 💪(상일) 리뷰 삭제 버튼 색상 구분 */
+/* 리뷰 삭제 버튼 색상 구분 */
 .btn-delete-single {
   background: white;
   color: #ffc107;
@@ -3081,7 +3081,7 @@ input:checked + .toggle-slider:before {
   color: white;
 }
 
-/* 💪(상일) 반응형 디스플레이 제어 */
+/* 반응형 디스플레이 제어 */
 .desktop-only {
   display: block;
 }
@@ -3113,7 +3113,7 @@ input:checked + .toggle-slider:before {
     flex-direction: column;
   }
 
-  /* 💪(상일) 모바일에서 테이블 숨기기 */
+  /* 모바일에서 테이블 숨기기 */
   .desktop-only {
     display: none !important;
   }

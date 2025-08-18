@@ -80,7 +80,7 @@
     <BottomNav />
   </div>
 
-  <!-- 💪(상일) 신청 모달 -->
+  <!-- 신청 모달 -->
   <PolicyApplyModal
     v-if="showApplyModal"
     :policyTitle="selectedPolicy?.title"
@@ -90,7 +90,7 @@
     @showStatusModal="handleShowStatusModal"
   />
 
-  <!-- 💪(상일) 정책신청현황 모달 -->
+  <!-- 정책신청현황 모달 -->
   <PolicyApplyStatusModal
     v-model="showStatusModal"
     :policyTitle="currentApplication?.title || ''"
@@ -102,7 +102,7 @@
     "
   />
   
-  <!-- 💪(상일) 조건 미충족 시 리뷰 작성 모달 -->
+  <!-- 조건 미충족 시 리뷰 작성 모달 -->
   <ReviewModal
     v-if="showReviewModal"
     :policy-id="reviewPolicyInfo?.policyId"
@@ -121,14 +121,14 @@ import BottomNav from '@/components/layouts/NavBar.vue';
 import PolicyApplyModal from './component/PolicyApplyModal.vue';
 import { usePolicyMatchingStore } from '@/stores/policyMatchingStore';
 import { policyAPI } from '@/api/policy';
-// 💪(상일) 정책 신청 기능
+// 정책 신청 기능
 import { policyInteractionAPI } from '@/api/policyInteraction';
 import PolicyApplyStatusModal from './component/PolicyApplyStatusModal.vue';
-// 💪(상일) 조건 미충족 시 리뷰 작성용 모달
+// 조건 미충족 시 리뷰 작성용 모달
 import ReviewModal from '@/pages/mypage/application/ReviewModal.vue';
 const showStatusModal = ref(false);
-const currentApplication = ref(null); // 💪(상일) 현재 처리 중인 신청
-// 💪(상일) 리뷰 모달 상태
+const currentApplication = ref(null); // 현재 처리 중인 신청
+// 리뷰 모달 상태
 const showReviewModal = ref(false);
 const reviewPolicyInfo = ref(null);
 
@@ -146,7 +146,7 @@ const goToSearchPage = () => {
   router.push({ name: 'policySearch' });
 };
 
-// 💪(상일) 신청 모달 열기
+// 신청 모달 열기
 const openApplyModal = (policy) => {
   selectedPolicy.value = policy;
   showApplyModal.value = true;
@@ -157,7 +157,7 @@ const closeApplyModal = () => {
   selectedPolicy.value = null;
 };
 
-// 💪(상일) 신청 후 즉시 상태 모달 표시
+// 신청 후 즉시 상태 모달 표시
 const handleShowStatusModal = (applicationData) => {
   // 신청 모달 닫고 상태 모달 표시
   showApplyModal.value = false;
@@ -178,10 +178,10 @@ const formatPeriod = (periodStr) => {
   return `${s} ~ ${e}`;
 };
 
-// 💪(상일) 정책 데이터를 computed로 관리하여 store 변경 즉시 반영
+// 정책 데이터를 computed로 관리하여 store 변경 즉시 반영
 const ALL_POLICIES = computed(() => policyMatchingStore.recommendedPolicies);
 
-// 💪(상일) 미완료 신청 체크
+// 미완료 신청 체크
 const checkIncompleteApplication = async () => {
   try {
     const response = await policyInteractionAPI.getIncompleteApplication();
@@ -197,7 +197,7 @@ const checkIncompleteApplication = async () => {
   }
 };
 
-// 💪(상일) 모달 응답 처리
+// 모달 응답 처리
 const handleStatusSubmit = async (status) => {
   if (!currentApplication.value) return;
 
@@ -208,7 +208,7 @@ const handleStatusSubmit = async (status) => {
         await policyInteractionAPI.completeApplication(
           currentApplication.value.policyId
         );
-        // 💪(상일) 신청 완료된 정책을 추천 목록에서 즉시 제거
+        // 신청 완료된 정책을 추천 목록에서 즉시 제거
         policyMatchingStore.removePolicyById(currentApplication.value.policyId);
         break;
 
@@ -220,11 +220,11 @@ const handleStatusSubmit = async (status) => {
         break;
 
       case 'notEligible':
-        // 💪(상일) 조건 미충족으로 신청 불가한 경우 신청 기록 삭제 후 리뷰 작성
+        // 조건 미충족으로 신청 불가한 경우 신청 기록 삭제 후 리뷰 작성
         await policyInteractionAPI.removeApplication(
           currentApplication.value.policyId
         );
-        // 💪(상일) 즉시 리뷰 모달 표시
+        // 즉시 리뷰 모달 표시
         reviewPolicyInfo.value = {
           policyId: currentApplication.value.policyId,
           policyTitle: currentApplication.value.title,
@@ -249,7 +249,7 @@ onMounted(async () => {
     policyMatchingStore.clearRecommendedPolicies();
   }
 
-  // 💪(상일) 미완료 신청 체크
+  // 미완료 신청 체크
   await checkIncompleteApplication();
 });
 
@@ -290,7 +290,7 @@ function getUniqueLargeCategories(policy) {
   return [];
 }
 
-// 💪(상일) 리뷰 저장 처리
+// 리뷰 저장 처리
 const handleReviewSave = async (reviewData) => {
   try {
     await policyInteractionAPI.addReview(reviewPolicyInfo.value.policyId, reviewData);

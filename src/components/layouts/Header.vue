@@ -1,13 +1,13 @@
 <template>
   <header class="top-header">
     <div class="header-inner">
-      <!-- 💪(상일) 숨겨진 관리자 접근 영역 -->
+      <!-- 숨겨진 관리자 접근 영역 -->
       <div class="admin-access-area" @click="handleAdminAccess"></div>
 
       <RouterLink to="/home" class="logo-link">
         <div class="logo-text font-28 font-extrabold">MoneyBunny</div>
       </RouterLink>
-      <!--💪(상일) 알림 이동 (미읽은 개수 배지 포함)-->
+      <!--알림 이동 (미읽은 개수 배지 포함)-->
       <RouterLink
         to="/notification"
         class="notification-link"
@@ -34,7 +34,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { useNotificationStore } from '@/stores/notification';
 import { useAuthStore } from '@/stores/auth';
 
-// 💪(상일) 알림 스토어 및 라우트 사용
+// 알림 스토어 및 라우트 사용
 const route = useRoute();
 const router = useRouter();
 const notificationStore = useNotificationStore();
@@ -42,21 +42,21 @@ const authStore = useAuthStore();
 const unreadCount = computed(() => notificationStore.unreadCount);
 const shouldShakeIcon = computed(() => notificationStore.shouldShakeIcon);
 
-// 🎵(유정) 로그인 여부 확인
+// 로그인 여부 확인
 const auth = useAuthStore();
 const isLoggedIn = computed(() => auth.isLogin);
 
-// 💪(상일) 관리자 페이지 접근을 위한 클릭 카운터
+// 관리자 페이지 접근을 위한 클릭 카운터
 const clickCount = ref(0);
 const clickTimeout = ref(null);
 
-// 💪(상일) 컴포넌트 마운트 시 미읽은 알림 개수 조회 - 특정 라우트에서만
+// 컴포넌트 마운트 시 미읽은 알림 개수 조회 - 특정 라우트에서만
 onMounted(async () => {
-  // 🎵(유정)
+  // 로그인 및 라우트 상태 확인
   // 비로그인: 알림 API 호출 X
   if (!isLoggedIn.value) return;
 
-  // 💪(상일) 미읽은 알림 개수가 필요한 페이지만 체크 (policy 메인만 포함)
+  // 미읽은 알림 개수가 필요한 페이지만 체크 (policy 메인만 포함)
   const targetRoutes = ['/home', '/asset', '/mypage'];
   const exactRoutes = ['/policy', '/policy/main'];
   if (
@@ -65,17 +65,13 @@ onMounted(async () => {
   ) {
     try {
       await notificationStore.fetchUnreadCount();
-      console.log(
-        '🔔 Header: 미읽은 알림 개수 조회 완료',
-        notificationStore.unreadCount
-      );
     } catch (error) {
-      console.error('❌ Header: 미읽은 알림 개수 조회 실패', error);
+      console.error('Header: 미읽은 알림 개수 조회 실패', error);
     }
   }
 });
 
-// 💪(상일) 숨겨진 관리자 접근 영역 클릭 핸들러
+// 숨겨진 관리자 접근 영역 클릭 핸들러
 const handleAdminAccess = async () => {
   clickCount.value++;
 
@@ -88,13 +84,13 @@ const handleAdminAccess = async () => {
   if (clickCount.value >= 5) {
     clickCount.value = 0;
 
-    // 💪(상일) 로그인 상태 확인
+    // 로그인 상태 확인
     if (!authStore.isLogin) {
       console.warn('로그인이 필요합니다.');
       return;
     }
 
-    // 💪(상일) API로 현재 사용자 정보 가져와서 이메일 확인
+    // API로 현재 사용자 정보 가져와서 이메일 확인
     try {
       const response = await fetch('/api/member/information', {
         headers: {
@@ -130,7 +126,7 @@ const handleAdminAccess = async () => {
 </script>
 
 <style scoped>
-/* 💪(상일) 헤더 화면 고정 + 상태바 영역 처리 */
+/* 헤더 화면 고정 + 상태바 영역 처리 */
 .top-header {
   position: fixed;
   top: 0;
@@ -189,7 +185,7 @@ const handleAdminAccess = async () => {
   opacity: 0.7;
 }
 
-/* 💪(상일) 알림 링크 및 이미지 스타일 */
+/* 알림 링크 및 이미지 스타일 */
 .notification-link {
   position: absolute;
   right: 20px;
@@ -210,7 +206,7 @@ const handleAdminAccess = async () => {
   display: block;
 }
 
-/* 💪(상일) 미읽은 알림 개수 배지 */
+/* 미읽은 알림 개수 배지 */
 .notification-badge {
   position: absolute;
   top: -5px;
@@ -231,7 +227,7 @@ const handleAdminAccess = async () => {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
-/* 💪(상일) 알림 아이콘 흔들기 애니메이션 */
+/* 알림 아이콘 흔들기 애니메이션 */
 @keyframes shake {
   0%,
   100% {
@@ -256,7 +252,7 @@ const handleAdminAccess = async () => {
   animation: shake 0.5s ease-in-out;
 }
 
-/* 💪(상일) 숨겨진 관리자 접근 영역 */
+/* 숨겨진 관리자 접근 영역 */
 .admin-access-area {
   position: absolute;
   top: 0;

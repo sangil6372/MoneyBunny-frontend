@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
-// 🎵(유정) 이메일 인증(이메일 입력) for 아이디 찾기 페이지
+// 이메일 인증(이메일 입력) for 아이디 찾기 페이지
 const router = useRouter();
 const email = ref("");
 const isCodeSent = ref(false);

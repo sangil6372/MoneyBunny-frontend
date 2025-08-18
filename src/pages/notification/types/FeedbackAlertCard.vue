@@ -32,14 +32,14 @@ const props = defineProps({ item: Object });
 const router = useRouter();
 const notificationStore = useNotificationStore();
 
-// 💪(상일) 날짜 포맷팅
+// 날짜 포맷팅
 const formatDate = (iso) => {
   if (!iso) return '';
   const date = new Date(iso);
   return isNaN(date) ? '' : `${date.getMonth() + 1}월 ${date.getDate()}일`;
 };
 
-// 💪(상일) 타입별 버튼 텍스트 결정
+// 타입별 버튼 텍스트 결정
 const getButtonText = (type) => {
   switch (type) {
     case 'BOOKMARK':
@@ -55,7 +55,7 @@ const getButtonText = (type) => {
   }
 };
 
-// 💪(상일) 타입별 라우팅 경로 결정
+// 타입별 라우팅 경로 결정
 const getRoutePath = (type, targetUrl) => {
   switch (type) {
     case 'BOOKMARK':
@@ -70,7 +70,7 @@ const getRoutePath = (type, targetUrl) => {
   }
 };
 
-// 💪(상일) 버튼 클릭 처리
+// 버튼 클릭 처리
 const handleButtonClick = async () => {
   try {
     if (!props.item.read) {
@@ -85,13 +85,12 @@ const handleButtonClick = async () => {
   }
 };
 
-// 💪(상일) 알림 삭제 처리
+// 알림 삭제 처리
 const handleDelete = async () => {
   try {
     await notificationStore.deleteNotification(props.item.id);
-    console.log('✅ 알림 삭제 완료');
   } catch (error) {
-    console.error('❌ 알림 삭제 실패:', error);
+    console.error('알림 삭제 실패:', error);
     alert('알림 삭제에 실패했습니다.');
   }
 };

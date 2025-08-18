@@ -1,21 +1,21 @@
 <template>
   <div class="bookmark-list">
-    <!-- 💪(상일) 로딩 상태 표시 -->
+    <!-- 로딩 상태 표시 -->
     <div v-if="bookmarkLoading" class="loading-container">
       <div class="loading-spinner"></div>
       <p class="loading-text">북마크를 불러오는 중...</p>
     </div>
 
-    <!-- 💪(상일) 에러 상태 표시 -->
+    <!-- 에러 상태 표시 -->
     <div v-else-if="bookmarkError" class="error-container">
       <p class="error-text">북마크를 불러오는데 실패했습니다.</p>
       <button @click="fetchBookmarks" class="retry-btn">다시 시도</button>
     </div>
 
-    <!-- 💪(상일) 북마크가 없는 경우 -->
+    <!-- 북마크가 없는 경우 -->
     <NoBookmarkCard v-else-if="!filteredBookmarks.length" />
 
-    <!-- 💪(상일) 북마크 목록 표시 -->
+    <!-- 북마크 목록 표시 -->
     <div v-else>
       <div class="bookmarkHeader">
         <span>북마크한 정책</span>
@@ -40,7 +40,7 @@ import { useBookmarkStore } from '@/stores/bookmark';
 import BookmarkCard from './BookmarkCard.vue';
 import NoBookmarkCard from './NoBookmarkCard.vue';
 
-// 💪(상일) 북마크 스토어에서 데이터 가져오기
+// 북마크 스토어에서 데이터 가져오기
 const bookmarkStore = useBookmarkStore();
 const {
   bookmarks,
@@ -78,7 +78,7 @@ const { fetchBookmarks } = bookmarkStore;
   margin-bottom: 0;
 }
 
-/* 💪(상일) 로딩 상태 스타일 */
+/* 로딩 상태 스타일 */
 .loading-container {
   display: flex;
   flex-direction: column;
@@ -112,7 +112,7 @@ const { fetchBookmarks } = bookmarkStore;
   }
 }
 
-/* 💪(상일) 에러 상태 스타일 */
+/* 에러 상태 스타일 */
 .error-container {
   display: flex;
   flex-direction: column;

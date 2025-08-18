@@ -31,7 +31,6 @@ onMounted(() => {
   assetStore.loadSummary();
 });
 
-console.log('setup 함수 진입!');
 
 const summary = computed(() => assetStore.summary || {});
 

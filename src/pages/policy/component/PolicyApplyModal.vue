@@ -28,7 +28,7 @@
 
 <script setup>
 import { defineProps, defineEmits } from "vue";
-// 💪(상일) 정책 신청 API 추가
+// 정책 신청 API 추가
 import { useAuthStore } from "@/stores/auth"; // ✅ 추가
 import { policyInteractionAPI } from "@/api/policyInteraction";
 
@@ -37,14 +37,14 @@ const auth = useAuthStore(); // ✅ 추가
 const props = defineProps({
   policyTitle: { type: String, required: true },
   applyUrl: { type: String, required: true },
-  policyId: { type: Number, required: true }, // 💪(상일) 신청 등록용 정책 ID 추가
+  policyId: { type: Number, required: true }, // 신청 등록용 정책 ID 추가
 });
-const emit = defineEmits(["close", "showStatusModal"]); // 💪(상일) 상태 모달 이벤트 추가
+const emit = defineEmits(["close", "showStatusModal"]); // 상태 모달 이벤트 추가
 
 function handleClose() {
   emit("close");
 }
-// 💪(상일) 신청 페이지로 이동 시 신청 등록 처리 및 즉시 상태 모달 표시
+// 신청 페이지로 이동 시 신청 등록 처리 및 즉시 상태 모달 표시
 async function handleGoApply() {
   // ✅ 비로그인: 서버에 신청등록 호출하지 않고 그냥 외부 페이지만 오픈
   if (!auth.isLogin) {

@@ -40,7 +40,8 @@ async function fetchPolicies() {
     filter = route.query.filter
       ? JSON.parse(decodeURIComponent(route.query.filter))
       : {};
-  } catch (_) {
+  } catch (error) {
+    console.error('Failed to parse filter query parameter:', error);
     filter = {};
   }
 

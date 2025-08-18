@@ -51,8 +51,6 @@ const availableItems = ref([]);
 
 // 메서드
 const handleLoginSuccess = async (loginData) => {
-  console.log('🚀 [AddItemModal] handleLoginSuccess loginData:', loginData);
-  console.log('로그인 성공:', loginData);
 
   // 기관 정보 저장
   institutionInfo.value = loginData;
@@ -68,7 +66,6 @@ const handleLoginSuccess = async (loginData) => {
 };
 
 const handleItemsSelected = async (selectedData) => {
-  console.log('선택된 항목:', selectedData);
 
   try {
     // 부모 컴포넌트로 데이터 전달

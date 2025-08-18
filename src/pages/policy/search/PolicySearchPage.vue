@@ -8,7 +8,6 @@ const searchQuery = ref('');
 const popularKeywords = ref([]);
 const recentKeywords = ref([]);
 
-// 👸🏻(은진)
 // 최근검색어 삭제
 const removeRecent = async (idx) => {
   const keyword = recentKeywords.value[idx];
@@ -16,7 +15,8 @@ const removeRecent = async (idx) => {
     await policyAPI.removeRecentKeyword(keyword);
     recentKeywords.value.splice(idx, 1);
   } catch (e) {
-    // 에러 무시, UI는 삭제
+    console.error('Failed to remove recent keyword:', e);
+    // Remove from UI even if API fails
     recentKeywords.value.splice(idx, 1);
   }
 };
@@ -26,6 +26,7 @@ const clearAllRecent = async () => {
     await policyAPI.clearAllRecentKeywords();
     recentKeywords.value = [];
   } catch (e) {
+    console.error('Failed to clear all recent keywords:', e);
     recentKeywords.value = [];
   }
 };
@@ -47,9 +48,7 @@ const goBack = () => {
   router.back();
 };
 
-const search = () => {
-  console.log(`검색어: ${searchQuery.value}`);
-};
+// Search function implementation removed - functionality handled by parent component
 
 const fetchPopularKeywords = async () => {
   try {
@@ -86,7 +85,7 @@ const fetchUserPolicyFilter = async () => {
     });
     Object.assign(filterData.value, filterInitial.value);
   } catch (e) {
-    // 에러 무시
+    console.error('Failed to fetch user policy filter:', e);
   }
 };
 

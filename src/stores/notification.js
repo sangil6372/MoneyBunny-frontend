@@ -3,11 +3,10 @@ import { ref, computed, reactive } from "vue";
 import { notificationAPI, subscriptionAPI } from "@/api/notification";
 
 export const useNotificationStore = defineStore("notification", () => {
-  // 💪(상일) 알림 관련 상태 관리
+  // 알림 관련 상태 관리
   const notifications = ref([]);
   const unreadCount = ref(0);
-  const shouldShakeIcon = ref(false); // 💪(상일) 아이콘 흔들기 트리거
-  // 💪(상일) reactive로 변경하여 반응성 보장
+  const shouldShakeIcon = ref(false);
   const subscriptionStatus = reactive({
     subscribed: false,
     isActiveBookmark: false,
@@ -20,7 +19,7 @@ export const useNotificationStore = defineStore("notification", () => {
   const loading = ref(false);
   const error = ref(null);
 
-  // 💪(상일) 계산된 속성들
+  // 계산된 속성들
   const hasUnread = computed(() => unreadCount.value > 0);
 
   const policyNotifications = computed(() =>
@@ -33,12 +32,12 @@ export const useNotificationStore = defineStore("notification", () => {
     notifications.value.filter((n) => n.type === "FEEDBACK")
   );
 
-  // 💪(상일) 날짜 변환 유틸리티 함수들
+  // 날짜 변환 유틸리티 함수들
   const transformDate = (dateArray) => {
     if (!dateArray || !Array.isArray(dateArray)) return null;
-    // [2025, 8, 4, 12, 0, 2] 형태를 Date 객체로 변환
+    // 배열 형태를 Date 객체로 변환
     const [year, month, day, hour = 0, minute = 0, second = 0] = dateArray;
-    return new Date(year, month - 1, day, hour, minute, second); // month는 0부터 시작
+    return new Date(year, month - 1, day, hour, minute, second);
   };
 
   const formatDateToString = (dateArray) => {
@@ -47,27 +46,26 @@ export const useNotificationStore = defineStore("notification", () => {
     return `${month}월 ${day}일`;
   };
 
-  // 💪(상일) 알림 목록 조회
+  // 알림 목록 조회
   const fetchNotifications = async () => {
     loading.value = true;
     error.value = null;
     try {
       const response = await notificationAPI.getNotifications();
 
-      // 💪(상일) API 응답을 컴포넌트가 기대하는 형태로 변환
+      // API 응답을 컴포넌트가 기대하는 형태로 변환
       const transformedData = response.data.map((notification) => ({
         id: notification.id,
-        type: notification.type, // BOOKMARK, TOP3, NEW_POLICY, FEEDBACK
+        type: notification.type,
         title: notification.title,
-        description: notification.message, // message → description 매핑
-        message: notification.message, // 기존 필드도 유지
-        target_url: notification.targetUrl, // targetUrl → target_url 매핑
-        targetUrl: notification.targetUrl, // 기존 필드도 유지
-        created_at: transformDate(notification.createdAt), // 배열을 Date로 변환
-        createdAt: notification.createdAt, // 원본도 유지
+        description: notification.message,
+        message: notification.message,
+        target_url: notification.targetUrl,
+        targetUrl: notification.targetUrl,
+        created_at: transformDate(notification.createdAt),
+        createdAt: notification.createdAt,
         read: notification.read,
         typeName: notification.typeName,
-        // 누락된 필드들 기본값 설정
         benefit: null,
         dday: null,
         date: formatDateToString(notification.createdAt),
@@ -82,7 +80,7 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 미읽은 알림 개수 조회
+  // 미읽은 알림 개수 조회
   const fetchUnreadCount = async () => {
     try {
       const response = await notificationAPI.getUnreadCount();
@@ -92,11 +90,10 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 알림 읽음 처리
+  // 알림 읽음 처리
   const markAsRead = async (notificationId) => {
     try {
       await notificationAPI.markAsRead(notificationId);
-      // 로컬 상태 업데이트
       const notification = notifications.value.find(
         (n) => n.id === notificationId
       );
@@ -109,21 +106,18 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 알림 삭제 처리
+  // 알림 삭제 처리
   const deleteNotification = async (notificationId) => {
     try {
       await notificationAPI.deleteNotification(notificationId);
-      // 로컬 상태에서 제거
       const notificationIndex = notifications.value.findIndex(
         (n) => n.id === notificationId
       );
       if (notificationIndex !== -1) {
         const notification = notifications.value[notificationIndex];
-        // 읽지 않은 알림인 경우 카운트 감소
         if (!notification.read) {
           unreadCount.value = Math.max(0, unreadCount.value - 1);
         }
-        // 배열에서 제거
         notifications.value.splice(notificationIndex, 1);
       }
       return true;
@@ -133,10 +127,9 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 구독 상태 조회 - FCMTokenManager 사용으로 간소화
+  // 구독 상태 조회
   const fetchSubscriptionStatus = async () => {
     try {
-      // FCMTokenManager를 통해 유효한 토큰 획득 (없으면 자동 발급)
       const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
       const token = await fcmTokenManager.getValidToken();
 
@@ -145,7 +138,6 @@ export const useNotificationStore = defineStore("notification", () => {
       if (response.data) {
         const data = response.data;
 
-        // 💪(상일) API 응답 구조에 맞게 정확한 필드명 사용
         subscriptionStatus.subscribed = data.subscribed ?? false;
         subscriptionStatus.status = data.status || "INACTIVE";
         subscriptionStatus.message = data.message || "";
@@ -157,17 +149,13 @@ export const useNotificationStore = defineStore("notification", () => {
     } catch (err) {
       console.error("구독 상태 조회 실패:", err);
 
-      // 💪(상일) 토큰 관련 오류 처리
+      // 토큰 관련 오류 처리
       if (err.response?.status === 404 || err.response?.status === 400) {
-        console.log("🔄 구독 데이터 없음 - 초기 구독 설정");
         await createInitialSubscription();
       } else if (err.response?.status === 401 || err.response?.status === 403) {
-        // 토큰이 무효한 경우 토큰 갱신 후 재시도
-        console.log("🔄 토큰 무효 - 토큰 갱신 후 재시도");
         const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
         await fcmTokenManager.refresh();
         
-        // 새 토큰으로 재시도
         try {
           const newToken = await fcmTokenManager.getValidToken();
           const response = await subscriptionAPI.getStatus(newToken);
@@ -191,7 +179,7 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 구독 설정 업데이트
+  // 구독 설정 업데이트
   const updateSubscription = async (data) => {
     try {
       await subscriptionAPI.subscribe(data);
@@ -202,7 +190,7 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 초기 구독 설정 생성 - FCMTokenManager 사용
+  // 초기 구독 설정 생성 - FCMTokenManager 사용
   const createInitialSubscription = async () => {
     try {
       const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
@@ -225,7 +213,7 @@ export const useNotificationStore = defineStore("notification", () => {
     }
   };
 
-  // 💪(상일) 알림 아이콘 흔들기 트리거
+  // 알림 아이콘 흔들기 트리거
   const triggerIconShake = () => {
     shouldShakeIcon.value = true;
     // 애니메이션 시간 후 자동으로 false로 리셋
@@ -234,7 +222,7 @@ export const useNotificationStore = defineStore("notification", () => {
     }, 600); // 0.6초 후 리셋
   };
 
-  // 💪(상일) 스토어 수동 초기화 (로그아웃 시 사용)
+  // 스토어 수동 초기화 (로그아웃 시 사용)
   const resetStore = () => {
     loading.value = true; // 초기화 중임을 표시
     
@@ -258,10 +246,9 @@ export const useNotificationStore = defineStore("notification", () => {
       loading.value = false;
     }, 0);
     
-    console.log("✅ NotificationStore 수동 초기화 완료");
   };
 
-  // 💪(상일) 개별 알림 타입 토글 - FCMTokenManager 사용
+  // 개별 알림 타입 토글
   const toggleNotificationType = async (type, enabled) => {
     const { fcmTokenManager } = await import("@/firebase/FCMTokenManager");
     const token = await fcmTokenManager.getValidToken();
@@ -269,7 +256,7 @@ export const useNotificationStore = defineStore("notification", () => {
     const data = { token, enabled };
 
     try {
-      // 💪(상일) 즉시 UI 업데이트 (낙관적 업데이트)
+      // 즉시 UI 업데이트
       switch (type) {
         case "bookmark":
           subscriptionStatus.isActiveBookmark = enabled;
@@ -285,7 +272,6 @@ export const useNotificationStore = defineStore("notification", () => {
           break;
       }
 
-      // API 호출
       switch (type) {
         case "bookmark":
           await subscriptionAPI.toggleBookmark(data);
@@ -303,14 +289,14 @@ export const useNotificationStore = defineStore("notification", () => {
     } catch (err) {
       console.error(`${type} 알림 토글 실패:`, err);
 
-      // 💪(상일) 구독 데이터가 없는 경우 초기 설정 후 재시도
+      // 구독 데이터가 없는 경우 초기 설정 후 재시도
       if (err.response?.status === 404 || err.response?.status === 400) {
         await createInitialSubscription();
         await toggleNotificationType(type, enabled);
         return;
       }
 
-      // 💪(상일) API 실패 시 로컬 상태를 이전으로 롤백
+      // API 실패 시 로컬 상태를 이전으로 롤백
       switch (type) {
         case "bookmark":
           subscriptionStatus.isActiveBookmark = !enabled;

@@ -1,5 +1,5 @@
 <template>
-  <!-- 💪(상일) iOS Safari 안내 모달 -->
+  <!-- iOS Safari 안내 모달 -->
   <div v-if="modelValue" class="modal-overlay" @click="closeModal">
     <div class="modal-content" @click.stop>
       <div class="modal-header">
@@ -31,7 +31,7 @@
 </template>
 
 <script setup>
-// 💪(상일) 모달 표시 상태
+// 모달 표시 상태
 const props = defineProps({
   modelValue: {
     type: Boolean,
@@ -41,14 +41,14 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-// 💪(상일) 모달 닫기
+// 모달 닫기
 const closeModal = () => {
   emit('update:modelValue', false)
 }
 </script>
 
 <style scoped>
-/* 💪(상일) 모달 오버레이 */
+/* 모달 오버레이 */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -63,7 +63,7 @@ const closeModal = () => {
   padding: 20px;
 }
 
-/* 💪(상일) 모달 콘텐츠 */
+/* 모달 콘텐츠 */
 .modal-content {
   background: white;
   border-radius: 16px;
@@ -73,7 +73,7 @@ const closeModal = () => {
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
-/* 💪(상일) 모달 헤더 */
+/* 모달 헤더 */
 .modal-header {
   padding: 24px 24px 16px 24px;
   text-align: center;
@@ -87,7 +87,7 @@ const closeModal = () => {
   color: var(--base-blue-dark);
 }
 
-/* 💪(상일) 모달 바디 */
+/* 모달 바디 */
 .modal-body {
   padding: 24px;
   text-align: center;
@@ -105,7 +105,7 @@ const closeModal = () => {
   line-height: 1.5;
 }
 
-/* 💪(상일) 가이드 스텝 */
+/* 가이드 스텝 */
 .guide-steps {
   text-align: left;
   background: #f8f9fa;
@@ -143,7 +143,7 @@ const closeModal = () => {
   color: #333;
 }
 
-/* 💪(상일) 모달 푸터 */
+/* 모달 푸터 */
 .modal-footer {
   padding: 16px 24px 24px 24px;
 }

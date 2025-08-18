@@ -84,7 +84,7 @@
       </button>
     </div>
 
-    <!-- 🎯 등록 중 로딩 오버레이 -->
+    <!-- 등록 중 로딩 오버레이 -->
     <div v-if="isRegistering" class="overlay">
       <div class="overlay-content">
         <img
@@ -135,7 +135,7 @@ const emit = defineEmits(['back', 'close', 'items-selected']);
 const items = ref([]);
 const selectedItems = ref([]);
 const isLoading = ref(true);
-const isRegistering = ref(false); // 🎯 등록 중 상태 추가
+const isRegistering = ref(false); // 등록 중 상태 추가
 
 const isAllSelected = computed(
   () =>
@@ -177,7 +177,6 @@ onMounted(() => {
       balance: item.balance || 0,
       raw: item,
     }));
-    console.log('🔥 [SelectItemsStep] items:', items.value);
     isLoading.value = false;
   } else {
     // 실수로 preloadedItems 없거나, 새로고침 등 예외 → API로 재호출
@@ -228,7 +227,7 @@ async function loadItems() {
   }
 }
 
-// 3. 선택 후 등록/추가 (등록 API 호출) - 🎯 로딩 처리 추가
+// 3. 선택 후 등록/추가 (등록 API 호출) - 로딩 처리 추가
 const submit = async () => {
   if (selectedItems.value.length === 0 || isRegistering.value) return;
 
@@ -236,7 +235,7 @@ const submit = async () => {
     selectedItems.value.includes(item.id)
   );
 
-  // 🎯 등록 로딩 시작
+  // 등록 로딩 시작
   isRegistering.value = true;
   let res = null;
 
@@ -263,7 +262,7 @@ const submit = async () => {
     console.error('등록 실패:', e);
     alert('등록 중 오류! 다시 시도해 주세요.');
   } finally {
-    // 🎯 등록 로딩 종료
+    // 등록 로딩 종료
     isRegistering.value = false;
   }
 };
@@ -499,7 +498,7 @@ const submit = async () => {
   cursor: not-allowed;
 }
 
-/* 🎯 버튼 스피너 */
+/* 버튼 스피너 */
 .btn-spinner {
   width: 1rem;
   height: 1rem;
@@ -509,7 +508,7 @@ const submit = async () => {
   animation: spin 1s linear infinite;
 }
 
-/* 🎯 등록 중 오버레이 */
+/* 등록 중 오버레이 */
 .overlay {
   position: absolute;
   top: 0;

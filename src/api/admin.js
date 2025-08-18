@@ -1,13 +1,13 @@
-// 💪(상일) 관리자 API 모듈
+// 관리자 API 모듈
 import apiClient from './index'
 
 export const adminAPI = {
-  // 💪(상일) 정책 데이터 동기화 API
+  // 정책 데이터 동기화 API
   syncPolicyData() {
     return apiClient.get('/api/policy/sync')
   },
 
-  // 💪(상일) GPT 프롬프트 관리 API들
+  // GPT 프롬프트 관리 API들
   // 조건 관리
   getPromptConditions() {
     return apiClient.get('/api/admin/prompt/conditions')
@@ -66,7 +66,7 @@ export const adminAPI = {
     })
   },
 
-  // 💪(상일) CODEF 동기화 API들
+  // CODEF 동기화 API들
   syncAccountData() {
     return apiClient.post('/api/codef/sync/accounts')
   },
@@ -75,7 +75,7 @@ export const adminAPI = {
     return apiClient.post('/api/codef/sync/cards')
   },
 
-  // 💪(상일) 알림 발송 API들
+  // 알림 발송 API들
   sendTestNotification() {
     return apiClient.post('/api/push/admin/send-test')
   },
@@ -104,7 +104,7 @@ export const adminAPI = {
     return apiClient.post('/api/push/admin/send-all')
   },
 
-  // 💪(상일) 리뷰 관리 API들
+  // 리뷰 관리 API들
   getAllReviews() {
     return apiClient.get('/api/policy-interaction/review/all')
   },

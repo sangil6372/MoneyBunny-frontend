@@ -17,7 +17,7 @@ const eyeHide = new URL(
   import.meta.url
 ).href;
 
-// 🎵(유정) 이메일 인증(FindPasswordPage) 후 비밀번호 재설정 페이지
+// 이메일 인증(FindPasswordPage) 후 비밀번호 재설정 페이지
 const router = useRouter();
 const route = useRoute(); // loginId
 

@@ -174,7 +174,8 @@ const formatTransactionDate = () => {
     const day = String(d.getDate()).padStart(2, '0');
     const t = localTx.value.time ? ` ${localTx.value.time}` : '';
     return `${y}-${m}-${day}${t}`;
-  } catch {
+  } catch (error) {
+    console.error('Failed to format transaction date:', error);
     return localTx.value.date || '';
   }
 };

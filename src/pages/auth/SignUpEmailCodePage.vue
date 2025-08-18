@@ -3,7 +3,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import axios from "axios";
 
-// 🎵(유정) 회원가입 - 이메일 인증코드 입력 페이지
+// 회원가입 - 이메일 인증코드 입력 페이지
 const route = useRoute();
 const email = ref(route.query.email || "");
 
@@ -11,7 +11,7 @@ const router = useRouter();
 const code = ref("");
 const errorMsg = ref("");
 const showToast = ref(false);
-const showSuccessToast = ref(false);  // 💪(상일) 이메일 발송 성공 토스트
+const showSuccessToast = ref(false);
 
 const time = 180; // 180초 == 3분
 const timeLeft = ref(time);
@@ -45,11 +45,11 @@ const verify = async () => {
       email: email.value,
       code: code.value,
     });
-    // 성공 토스트 → 다음 단계로 이동 (회원가입 폼 등)
+    // 성공 토스트 표시 후 다음 단계로 이동
     showToast.value = true;
     setTimeout(() => {
       showToast.value = false;
-      // 회원가입 입력폼(예: SignUpProfilePage)으로 이동
+      // 회원가입 입력폼으로 이동
       router.push({ name: "signUpProfile", query: { email: email.value } });
     }, 1000);
   } catch (err) {
@@ -72,7 +72,7 @@ const startTimer = () => {
   }, 1000);
 };
 onMounted(() => {
-  // 💪(상일) 이메일 발송 성공 시 토스트 표시
+  // 이메일 발송 성공 시 토스트 표시
   if (route.query.showSuccessToast === 'true') {
     showSuccessToast.value = true;
     setTimeout(() => {
@@ -91,10 +91,10 @@ const formattedTime = computed(() => {
   return `${minutes}:${seconds}`;
 });
 
-// 재전송(페이지로 돌아가기)
+// 재전송
 const goBackToEmailRequest = () => {
   if (timerInterval) clearInterval(timerInterval);
-  resetState(); // 초기화
+  resetState();
   router.push({
     name: "signUpEmailRequest",
     query: { email: email.value || "" },

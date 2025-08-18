@@ -1,5 +1,5 @@
 <template>
-  <!-- 💪(상일) 카드 전체를 클릭 가능하게 수정 (북마크와 동일) -->
+  <!-- 카드 전체를 클릭 가능하게 수정 (북마크와 동일) -->
   <div class="applicationCard" @click="handleDetailClick">
     <div class="headerRow">
       <span class="title">
@@ -29,7 +29,7 @@
           }}</strong></span
         >
         <span class="divider"></span>
-        <!-- 💪(상일) 클릭 가능한 상태 뱃지로 변경 -->
+        <!-- 클릭 가능한 상태 뱃지로 변경 -->
         <button
           :class="[
             'statusBadge',
@@ -51,7 +51,7 @@
     <div class="metaRow">
       <span>신청일 : {{ formatApplicationDate(application.appliedAt) }}</span>
       <div class="buttonGroup">
-        <!-- 💪(상일) 후기 버튼만 유지 (상태 변경은 뱃지 클릭으로 처리) -->
+        <!-- 후기 버튼만 유지 (상태 변경은 뱃지 클릭으로 처리) -->
         <button
           v-if="application.benefitStatus !== 'PENDING'"
           class="reviewBtn"
@@ -63,7 +63,7 @@
       </div>
     </div>
 
-    <!-- 💪(상일) 혜택 상태 선택 모달 (클릭 이벤트 전파 차단) -->
+    <!-- 혜택 상태 선택 모달 (클릭 이벤트 전파 차단) -->
     <BenefitStatusSelectModal
       v-if="showBenefitStatusModal"
       :policy-title="application.policyTitle"
@@ -73,7 +73,7 @@
       @click.stop
     />
 
-    <!-- 💪(상일) 후기 작성/수정 모달 (클릭 이벤트 전파 차단) -->
+    <!-- 후기 작성/수정 모달 (클릭 이벤트 전파 차단) -->
     <ReviewModal
       v-if="showReviewModal"
       :policy-id="application.policyId"
@@ -130,7 +130,7 @@ onMounted(async () => {
         existingReviewContent.value = response.data.content || '';
       }
     } catch (error) {
-      // 💪(상일) 404는 리뷰가 없는 정상 상황이므로 로그 출력 안함
+      // 404는 리뷰가 없는 정상 상황이므로 로그 출력 안함
       if (error.response?.status === 404) {
         hasReview.value = false;
       } else {
@@ -141,7 +141,7 @@ onMounted(async () => {
   }
 });
 
-// 💪(상일) 정책 상세 페이지로 이동 (모달 열린 상태에서는 차단)
+// 정책 상세 페이지로 이동 (모달 열린 상태에서는 차단)
 const handleDetailClick = () => {
   // 모달이 열려있으면 카드 클릭 차단
   if (showBenefitStatusModal.value || showReviewModal.value) {
@@ -181,7 +181,7 @@ const handleReviewEdit = async () => {
       existingReviewContent.value = '';
     }
   } catch (error) {
-    // 💪(상일) 404는 리뷰가 없는 정상 상황이므로 로그 출력 안함
+    // 404는 리뷰가 없는 정상 상황이므로 로그 출력 안함
     if (error.response?.status === 404) {
       hasReview.value = false;
       isEditMode.value = false;
@@ -230,7 +230,7 @@ const closeReviewModal = () => {
   showReviewModal.value = false;
 };
 
-// 💪(상일) 에러 메시지 매핑 함수
+// 에러 메시지 매핑 함수
 const getErrorMessage = (error) => {
   // 백엔드에서 ErrorResponse 형태로 에러를 반환하는 경우 (code 또는 errorCode 확인)
   const errorCode =
@@ -270,7 +270,7 @@ const handleReviewSave = async (reviewData) => {
         props.application.policyId,
         reviewData
       );
-      // 💪(상일) 수정 완료 알림
+      // 수정 완료 알림
       // alert('후기가 수정되었습니다!');
     } else {
       // 리뷰 신규 작성
@@ -278,7 +278,7 @@ const handleReviewSave = async (reviewData) => {
         props.application.policyId,
         reviewData
       );
-      // 💪(상일) 작성 완료 알림
+      // 작성 완료 알림
       // alert('후기 작성이 완료되었습니다!');
     }
 
@@ -288,8 +288,8 @@ const handleReviewSave = async (reviewData) => {
     // 저장 후 최신 리뷰 내용 업데이트
     existingReviewContent.value = reviewData.content;
   } catch (error) {
-    console.error('💪(상일) 후기 저장 실패:', error);
-    console.error('💪(상일) 에러 상세:', {
+    console.error('후기 저장 실패:', error);
+    console.error('에러 상세:', {
       status: error.response?.status,
       data: error.response?.data,
       code: error.response?.data?.code,
@@ -297,13 +297,13 @@ const handleReviewSave = async (reviewData) => {
       message: error.response?.data?.message,
     });
 
-    // 💪(상일) 에러 유형별 적절한 메시지 표시
+    // 에러 유형별 적절한 메시지 표시
     const errorMessage = getErrorMessage(error);
     alert(errorMessage);
   }
 };
 
-// 💪(상일) 리뷰 삭제 처리
+// 리뷰 삭제 처리
 const handleReviewDelete = async () => {
   try {
     await policyInteractionAPI.deleteReview(
@@ -367,11 +367,11 @@ const formatApplicationDate = (dateString) => {
   gap: 9px;
   background: none;
   position: relative;
-  /* 💪(상일) 카드 클릭 가능 표시 (북마크와 동일) */
+  /* 카드 클릭 가능 표시 (북마크와 동일) */
   cursor: pointer;
 }
 
-/* 💪(상일) 카드 호버 효과 (북마크와 동일) */
+/* 카드 호버 효과 (북마크와 동일) */
 /* .applicationCard:hover {
   background-color: #f8f9fa;
 } */
@@ -398,7 +398,7 @@ const formatApplicationDate = (dateString) => {
   color: var(--base-blue-dark);
 }
 
-/* 💪(상일) 클릭 가능한 상태 뱃지 스타일 */
+/* 클릭 가능한 상태 뱃지 스타일 */
 .statusBadge {
   font-size: 10px;
   border-radius: 6px;
@@ -518,7 +518,7 @@ const formatApplicationDate = (dateString) => {
   cursor: pointer;
 }
 
-/* 💪(상일) 후기 작성/수정 버튼 색상 차별화 */
+/* 후기 작성/수정 버튼 색상 차별화 */
 .reviewBtn {
   background-color: var(--top-rank-2); /* 기본: 작성 (#5b7bb0) */
   color: white;

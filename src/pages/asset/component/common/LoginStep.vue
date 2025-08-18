@@ -148,8 +148,6 @@ const handleLogin = async () => {
       });
     }
 
-    console.log('✅ [LoginStep] result:', result);
-    console.log('✅ [LoginStep] result.data:', result.data);
 
     // 성공 시 → 기관/아이디/목록 emit!
     emit('login-success', {

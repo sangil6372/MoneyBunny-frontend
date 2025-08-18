@@ -18,11 +18,7 @@ const policyId = computed(() =>
   Number(route.params.policyId || route.params.id)
 );
 
-// supportContent 값 로그 출력
-console.log(
-  'PolicyTabContent에서 넘기는 supportContent:',
-  supportContent.value
-);
+// supportContent 값 추적
 </script>
 
 <template>

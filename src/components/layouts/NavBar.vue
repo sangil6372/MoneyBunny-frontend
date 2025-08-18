@@ -19,7 +19,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import api from "@/api"; // 🛠️ 제승 수정: api import
+import api from "@/api"; // api import
 import { computed } from "vue";
 import { useAuthStore } from "@/stores/auth";
 

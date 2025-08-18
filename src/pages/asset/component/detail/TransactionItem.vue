@@ -57,7 +57,7 @@ const amountSign = computed(() => {
   return props.data.type === '입금' ? '+' : '-';
 });
 
-//🥕 거래내역 클릭 시 부모로 거래 데이터 전송
+/* 거래내역 클릭 시 부모로 거래 데이터 전송 */
 const handleClick = () => {
   emit('click', props.data);
 };
@@ -74,7 +74,7 @@ const handleClick = () => {
   min-height: 60px;
   gap: 0.5rem;
 
-  /* 🥕 클릭 가능하도록 추가 */
+  /* 클릭 가능하도록 추가 */
   cursor: pointer;
 }
 
@@ -82,7 +82,7 @@ const handleClick = () => {
   min-height: 68px;
 }
 
-/* 🥕 터치 시 피드백 */
+/* 터치 시 피드백 */
 .transaction-item:active {
   background-color: var(--input-bg-1);
 }

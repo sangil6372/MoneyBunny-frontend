@@ -56,7 +56,7 @@ const currentTab = ref("bookmark");
 const isModalOpen = ref(false);
 
 // 프사
-// 🎵(유정) 프사 연동(localStorage)
+// 프사 연동(localStorage)
 const profileImages = [imgSprout, imgBeard, imgEyelash, imgCarrot];
 const avatarMap = {
   sprout: imgSprout,
@@ -86,7 +86,8 @@ const getAuthHeaders = () => {
     const parsed = saved ? JSON.parse(saved) : {};
     const token = parsed.token || parsed.accessToken || parsed.access_token;
     return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch {
+  } catch (error) {
+    // Ignore JSON parsing errors and return empty headers
     return {};
   }
 };
@@ -135,7 +136,7 @@ const saveProfile = async (imageId) => {
   }
 };
 
-// 💪(상일) 북마크 스토어 연동
+// 북마크 스토어 연동
 const bookmarkStore = useBookmarkStore();
 const {
   bookmarks,
@@ -155,7 +156,7 @@ const openModal = () => {
 const changeTab = (tab) => {
   currentTab.value = tab;
 
-  // 💪(상일) 북마크 탭으로 전환 시 데이터 로드
+  // 북마크 탭으로 전환 시 데이터 로드
   if (tab === "bookmark" && bookmarks.value.length === 0) {
     fetchBookmarks();
   }
@@ -170,8 +171,8 @@ const handleUpdate = (data) => {
   userInfo.value = { ...userInfo.value, ...data };
 };
 
-// 💪(상일) 컴포넌트 마운트 시 북마크 데이터 미리 로드
-// 🎵(유정) 프로필 호출
+// 컴포넌트 마운트 시 북마크 데이터 미리 로드
+// 프로필 호출
 onMounted(async () => {
   // auth 토큰 꺼내기 (share 컴포넌트 참고)
   const savedAuth = localStorage.getItem("auth");
@@ -184,11 +185,10 @@ onMounted(async () => {
   // 프로필 API 호출
   try {
     const res = await axios.get("/api/member/information", { headers });
-    console.log(res);
     userInfo.value.name = res.data.name;
     userInfo.value.email = res.data.email;
 
-    // 🔄 DB profileImageId → 이미지 경로
+    // DB profileImageId → 이미지 경로
     const idx = Number(res.data.profileImageId);
     const safeIdx =
       Number.isInteger(idx) && idx >= 0 && idx < profileImages.length ? idx : 0;

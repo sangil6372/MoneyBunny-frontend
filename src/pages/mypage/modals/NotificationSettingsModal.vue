@@ -2,7 +2,7 @@
   <div class="notificationModalOverlay">
     <div class="notificationModal">
       <div class="notification-settings">
-        <!-- 💪(상일) 헤더 -->
+        <!-- 헤더 -->
         <div class="header">
           <div class="headerSpacer"></div>
           <h2 class="title font-18 font-bold">알림 설정</h2>
@@ -14,14 +14,14 @@
           />
         </div>
 
-        <!-- 💪(상일) 알림 권한 안내 -->
+        <!-- 알림 권한 안내 -->
         <div v-if="showPermissionNotice" class="permission-notice">
           <p class="font-13">{{ permissionMessage }}</p>
         </div>
 
-        <!-- 💪(상일) 알림 설정 리스트 -->
+        <!-- 알림 설정 리스트 -->
         <div class="settings-list" :class="{ 'loading-overlay': isTokenGenerating }">
-          <!-- 💪(상일) 로딩 스피너 -->
+          <!-- 로딩 스피너 -->
           <div v-if="isTokenGenerating" class="settings-loading-spinner"></div>
           <div class="setting-item">
             <div class="setting-info">
@@ -116,7 +116,7 @@ import { fcmTokenManager, TOKEN_STATES } from "@/firebase/FCMTokenManager";
 
 const emit = defineEmits(['close']);
 
-// 💪(상일) Pinia 스토어 사용 - reactive 객체는 직접 사용
+// Pinia 스토어 사용 - reactive 객체는 직접 사용
 const notificationStore = useNotificationStore();
 const subscriptionStatus = notificationStore.subscriptionStatus; // reactive 객체 직접 사용
 const { loading } = storeToRefs(notificationStore); // loading만 ref로 사용
@@ -130,14 +130,14 @@ const {
 const hasNotificationPermission = ref(false);
 const showPermissionNotice = ref(false);
 const permissionMessage = ref("");
-const isTokenGenerating = ref(false); // 💪(상일) 토큰 발급 중 상태
+const isTokenGenerating = ref(false); // 토큰 발급 중 상태
 
-// 💪(상일) 모달 닫기
+// 모달 닫기
 const goBack = () => {
   emit('close');
 };
 
-// 💪(상일) 알림 권한 확인 - FCMTokenManager 사용으로 간소화
+// 알림 권한 확인 - FCMTokenManager 사용으로 간소화
 const checkNotificationPermission = async () => {
   if (!('Notification' in window)) {
     showPermissionNotice.value = true;
@@ -163,7 +163,7 @@ const checkNotificationPermission = async () => {
           try {
             await requestPermission();
           } catch (error) {
-            console.log("사용자가 권한 거부:", error.message);
+            // 사용자가 권한 거부
             // 거부 후에는 안내 메시지 표시
             showPermissionNotice.value = true;
             permissionMessage.value = "기기의 알림 권한을 허용해주세요.";
@@ -183,7 +183,6 @@ const checkNotificationPermission = async () => {
           isTokenGenerating.value = true; // 로딩 시작
           await fcmTokenManager.getValidToken();
           await createInitialSubscription();
-          console.log("✅ 토큰 발급 및 초기 구독 완룜");
         } catch (error) {
           console.error("토큰 발급 실패:", error);
           showPermissionNotice.value = true;
@@ -205,7 +204,7 @@ const checkNotificationPermission = async () => {
   }
 };
 
-// 💪(상일) 알림 권한 요청 및 초기 구독 설정 - 간소화
+// 알림 권한 요청 및 초기 구독 설정 - 간소화
 const requestPermission = async () => {
   try {
     loading.value = true;
@@ -240,7 +239,7 @@ const requestPermission = async () => {
   }
 };
 
-// 💪(상일) 알림 타입별 토글
+// 알림 타입별 토글
 const toggleNotification = async (type) => {
   if (!hasNotificationPermission.value) {
     // 권한 요청 시도
@@ -256,7 +255,7 @@ const toggleNotification = async (type) => {
     }
   }
 
-  // 💪(상일) FCM 토큰 확인 (FCMTokenManager 사용)
+  // FCM 토큰 확인 (FCMTokenManager 사용)
   try {
     await fcmTokenManager.getValidToken(); // 토큰이 없으면 자동 발급
   } catch (error) {
@@ -268,7 +267,7 @@ const toggleNotification = async (type) => {
   try {
     loading.value = true;
 
-    // 💪(상일) reactive 객체는 .value 없이 접근
+    // reactive 객체는 .value 없이 접근
     let currentStatus = false;
     switch (type) {
       case 'bookmark':
@@ -286,7 +285,6 @@ const toggleNotification = async (type) => {
     }
 
     await toggleNotificationType(type, !currentStatus);
-    console.log(`✅ ${type} 알림 설정 변경 완료: ${!currentStatus}`);
   } catch (error) {
     console.error("알림 설정 변경 실패:", error);
     alert("알림 설정 변경에 실패했습니다. 다시 시도해주세요.");
@@ -295,13 +293,12 @@ const toggleNotification = async (type) => {
   }
 };
 
-// 💪(상일) 권한 변경 감지 및 상태 동기화
+// 권한 변경 감지 및 상태 동기화
 const setupPermissionWatcher = () => {
   let lastPermission = Notification.permission;
   
   const handlePermissionChange = async () => {
     if (Notification.permission !== lastPermission) {
-      console.log(`🔄 알림 권한 변경 감지: ${lastPermission} → ${Notification.permission}`);
       
       // 새로고침 대신 상태 동기화로 부드러운 전환
       lastPermission = Notification.permission;
@@ -333,14 +330,14 @@ const setupPermissionWatcher = () => {
   });
 };
 
-// 💪(상일) 컴포넌트 마운트 시 초기화
+// 컴포넌트 마운트 시 초기화
 onMounted(async () => {
   await checkNotificationPermission();
   
-  // 💪(상일) 권한 변경 감지 설정
+  // 권한 변경 감지 설정
   setupPermissionWatcher();
 
-  // 💪(상일) 알림 권한이 있을 때만 구독 상태 조회
+  // 알림 권한이 있을 때만 구독 상태 조회
   if (hasNotificationPermission.value) {
     try {
       await fetchSubscriptionStatus();
@@ -352,7 +349,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* 💪(상일) 모달 컨테이너 (기존 유지) */
+/* 모달 컨테이너 (기존 유지) */
 .notificationModalOverlay {
   position: fixed;
   inset: 0;
@@ -376,7 +373,7 @@ onMounted(async () => {
   -webkit-overflow-scrolling: touch;
 }
 
-/* 💪(상일) NotificationSettings.vue 스타일 이전 */
+/* NotificationSettings.vue 스타일 이전 */
 .notification-settings {
   background-color: #f8f9fa;
   border-radius: 12px;

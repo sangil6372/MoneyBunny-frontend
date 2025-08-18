@@ -17,12 +17,12 @@
     @mouseup="handleMouseUp"
     @mouseleave="handleMouseUp"
   >
-    <!-- 💪(상일) 미읽음 표시 -->
+    <!-- 미읽음 표시 -->
     <div v-if="!isRead" class="unread-indicator"></div>
     <div class="content">
       <slot />
     </div>
-    <!-- 💪(상일) 삭제 버튼 -->
+    <!-- 삭제 버튼 -->
     <button 
       class="delete-btn" 
       @click.stop="$emit('delete')"
@@ -40,7 +40,7 @@
 <script setup>
 import { ref } from 'vue';
 
-// 💪(상일) props 추가
+// props 추가
 const props = defineProps({
   isRead: {
     type: Boolean,
@@ -52,10 +52,10 @@ const props = defineProps({
   },
 });
 
-// 💪(상일) 삭제 및 카드 클릭 이벤트 정의
+// 삭제 및 카드 클릭 이벤트 정의
 const emit = defineEmits(['delete', 'card-click']);
 
-// 💪(상일) 스와이프 관련 상태
+// 스와이프 관련 상태
 const startX = ref(0);
 const currentX = ref(0);
 const translateX = ref(0);
@@ -65,7 +65,7 @@ const isDragging = ref(false);
 const startTime = ref(0);
 const hasMoved = ref(false);
 
-// 💪(상일) 터치 시작
+// 터치 시작
 const handleTouchStart = (e) => {
   startX.value = e.touches[0].clientX;
   startTime.value = Date.now();
@@ -73,7 +73,7 @@ const handleTouchStart = (e) => {
   hasMoved.value = false;
 };
 
-// 💪(상일) 터치 이동
+// 터치 이동
 const handleTouchMove = (e) => {
   if (!isDragging.value) return;
 
@@ -96,7 +96,7 @@ const handleTouchMove = (e) => {
   }
 };
 
-// 💪(상일) 터치 종료
+// 터치 종료
 const handleTouchEnd = () => {
   if (!isDragging.value) return;
 
@@ -117,7 +117,7 @@ const handleTouchEnd = () => {
     translateX.value = 0;
     opacity.value = 1;
     
-    // 💪(상일) 움직임이 거의 없고 빠른 탭이면 카드 클릭으로 간주
+    // 움직임이 거의 없고 빠른 탭이면 카드 클릭으로 간주
     const tapDuration = Date.now() - startTime.value;
     if (!hasMoved.value && tapDuration < 300) {
       emit('card-click');
@@ -128,7 +128,7 @@ const handleTouchEnd = () => {
   isSwiping.value = false;
 };
 
-// 💪(상일) 마우스 이벤트 (데스크톱 지원)
+// 마우스 이벤트 (데스크톱 지원)
 const handleMouseDown = (e) => {
   startX.value = e.clientX;
   startTime.value = Date.now();
@@ -172,7 +172,7 @@ const handleMouseUp = () => {
     translateX.value = 0;
     opacity.value = 1;
     
-    // 💪(상일) 움직임이 거의 없고 빠른 클릭이면 카드 클릭으로 간주
+    // 움직임이 거의 없고 빠른 클릭이면 카드 클릭으로 간주
     const clickDuration = Date.now() - startTime.value;
     if (!hasMoved.value && clickDuration < 300) {
       emit('card-click');
@@ -200,20 +200,20 @@ const handleMouseUp = () => {
   cursor: grab;
 }
 
-/* 💪(상일) 스와이프 중일 때 커서 변경 */
+/* 스와이프 중일 때 커서 변경 */
 .notification-card.swiping {
   cursor: grabbing;
   transition: none; /* 드래그 중에는 트랜지션 제거 */
 }
 
-/* 💪(상일) 미읽음 표시 */
+/* 미읽음 표시 */
 .unread-indicator {
   width: 3px;
   background-color: var(--base-blue-dark);
   flex-shrink: 0;
 }
 
-/* 💪(상일) 알림 타입별 색상 적용 */
+/* 알림 타입별 색상 적용 */
 .type-top3 .unread-indicator {
   background-color: var(--top-rank-1); /* TOP3: 진한 네이비 */
 }
@@ -238,7 +238,7 @@ const handleMouseUp = () => {
   gap: 5px;
 }
 
-/* 💪(상일) 읽은 알림 전체 흐림 효과 */
+/* 읽은 알림 전체 흐림 효과 */
 .notification-card.read {
   opacity: 0.48;
 }
@@ -255,7 +255,7 @@ const handleMouseUp = () => {
   font-size: 12px;
   color: var(--text-bluegray);
   margin: 0;
-  /* 💪(상일) 메시지 2줄 말줄임 처리 (북마크와 동일) */
+  /* 메시지 2줄 말줄임 처리 (북마크와 동일) */
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -263,7 +263,7 @@ const handleMouseUp = () => {
   /* line-height: 1.4; */
 }
 
-/* 💪(상일) 피드백 알림은 글자 제한 없음 + 줄바꿈 표기 */
+/* 피드백 알림은 글자 제한 없음 + 줄바꿈 표기 */
 .type-feedback ::v-deep(.message) {
   display: block;
   -webkit-line-clamp: unset;
@@ -277,7 +277,7 @@ const handleMouseUp = () => {
   color: #9ca3af;
 }
 
-/* 💪(상일) 삭제 버튼 스타일 */
+/* 삭제 버튼 스타일 */
 .delete-btn {
   position: absolute;
   top: 10px;
