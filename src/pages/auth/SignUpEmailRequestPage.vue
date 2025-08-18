@@ -8,7 +8,6 @@ const router = useRouter();
 const signUpEmail = ref('');
 const isRequesting = ref(false);
 const errorMsg = ref('');
-const showToast = ref(false);
 
 // 인증코드 전송
 const requestSignUpCode = async () => {
@@ -32,21 +31,19 @@ const requestSignUpCode = async () => {
     await axios.post('/api/auth/send-join-code', {
       email: signUpEmail.value,
     });
-    showToast.value = true;
-    setTimeout(() => {
-      showToast.value = false;
-      // 회원가입 인증코드 입력 페이지로 이동 (route 네임은 프로젝트에 맞게!)
-      router.push({
-        name: 'signUpEmailCode',
-        query: { email: signUpEmail.value },
-      });
-    }, 1200);
+    // 💪(상일) 즉시 다음 페이지로 이동하고 토스트는 다음 페이지에서 표시
+    router.push({
+      name: 'signUpEmailCode',
+      query: { 
+        email: signUpEmail.value,
+        showSuccessToast: 'true'  // 성공 토스트 표시 플래그
+      },
+    });
   } catch (err) {
     errorMsg.value =
       err.response?.data?.message ||
       '이미 가입된 이메일이거나 오류가 발생했습니다.';
-  } finally {
-    isRequesting.value = false;
+    isRequesting.value = false;  // 에러 발생 시에만 false로 변경
   }
 };
 </script>
@@ -54,10 +51,6 @@ const requestSignUpCode = async () => {
 <template>
   <div class="signUpAuthContainer">
     <div class="cardBox">
-      <transition name="fade">
-        <div v-if="showToast" class="toastMsg">인증코드가 발송되었습니다.</div>
-      </transition>
-
       <img
         src="@/assets/images/icons/signup/login_main.png"
         alt="login-bunny"
@@ -85,7 +78,7 @@ const requestSignUpCode = async () => {
           @click="requestSignUpCode"
           :disabled="isRequesting"
         >
-          인증코드 발송
+          {{ isRequesting ? '발송 중...' : '인증코드 발송' }}
         </button>
         <div class="loginLink font-11">
           이미 계정이 있으신가요? <a href="/">로그인</a>
@@ -169,6 +162,11 @@ input:focus {
   border: none;
   cursor: pointer;
   margin-top: 6px;
+  transition: opacity 0.3s ease;
+}
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 .loginLink {
   text-align: center;

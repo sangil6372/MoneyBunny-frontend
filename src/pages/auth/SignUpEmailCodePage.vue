@@ -11,6 +11,7 @@ const router = useRouter();
 const code = ref("");
 const errorMsg = ref("");
 const showToast = ref(false);
+const showSuccessToast = ref(false);  // 💪(상일) 이메일 발송 성공 토스트
 
 const time = 180; // 180초 == 3분
 const timeLeft = ref(time);
@@ -70,7 +71,16 @@ const startTimer = () => {
     }
   }, 1000);
 };
-onMounted(startTimer);
+onMounted(() => {
+  // 💪(상일) 이메일 발송 성공 시 토스트 표시
+  if (route.query.showSuccessToast === 'true') {
+    showSuccessToast.value = true;
+    setTimeout(() => {
+      showSuccessToast.value = false;
+    }, 2000);
+  }
+  startTimer();
+});
 onBeforeUnmount(() => {
   if (timerInterval) clearInterval(timerInterval);
 });
@@ -103,6 +113,11 @@ const goBackToEmailRequest = () => {
       <transition name="fade">
         <div v-if="showToast" class="toastMsg">
           이메일 인증이 완료되었습니다!
+        </div>
+      </transition>
+      <transition name="fade">
+        <div v-if="showSuccessToast" class="toastMsg">
+          인증코드가 발송되었습니다.
         </div>
       </transition>
       <div class="card">
