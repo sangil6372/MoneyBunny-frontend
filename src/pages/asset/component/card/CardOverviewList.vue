@@ -25,6 +25,8 @@
 import { computed } from 'vue';
 import CardOverviewItem from './CardOverviewItem.vue';
 import OverviewNoDataCard from '../common/OverviewNoDataCard.vue';
+// 카드 아이콘 import
+import coinIcon from '@/assets/images/icons/bunny/coin.png';
 
 const props = defineProps({
   cards: {
@@ -35,6 +37,9 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['add-card']);
+
+// 카드 아이콘
+const coinIconSrc = coinIcon;
 
 // 카드 추가 버튼 클릭 핸들러
 const handleAddCard = () => {

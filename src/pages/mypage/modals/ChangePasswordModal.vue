@@ -130,14 +130,10 @@ const showToast = ref(false);
 // 비밀번호 패턴
 const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
 
-// 로컬스토리지에서 auth 정보 로드
+// httpOnly Cookie 방식에서는 auth store에서 사용자 정보 가져오기
 onMounted(() => {
-  const saved = localStorage.getItem("auth");
-  if (saved) {
-    const { token, user } = JSON.parse(saved);
-    tokenRef.value = token;
-    loginId.value = user?.username || "";
-  }
+  const authStore = useAuthStore();
+  loginId.value = authStore.username || "";
 });
 
 // 실시간 유효성 검사
@@ -209,8 +205,7 @@ const handleChangePassword = async () => {
   try {
     await axios.post(
       "/api/auth/reset-password",
-      { loginId: loginId.value, password: newPassword.value },
-      { headers: { Authorization: `Bearer ${tokenRef.value}` } }
+      { loginId: loginId.value, password: newPassword.value }
     );
     showToast.value = true;
     setTimeout(async () => {

@@ -30,11 +30,19 @@ export const useAssetStore = defineStore('asset', () => {
     error.value = null;
   };
 
+  // 수동 리셋 함수
+  const $reset = () => {
+    summary.value = null;
+    loading.value = false;
+    error.value = null;
+  };
+
   return {
     summary,
     loading,
     error,
     loadSummary,
     clearSummary,
+    $reset,
   };
 });

@@ -39,17 +39,9 @@ const normalizeUrl = (raw) => {
 
 const fetchPolicy = async () => {
   try {
-    const savedAuth = localStorage.getItem("auth"); // "auth" 전체 객체 꺼냄
-    const parsed = savedAuth ? JSON.parse(savedAuth) : null;
-    const token = parsed?.token;
+    // httpOnly Cookie 방식에서는 axios 인터셉터가 자동으로 토큰을 처리
 
-    // token: 비로그인 시 undefined
-
-    const headers = token ? { Authorization: `Bearer ${token}` } : {};
-
-    const response = await axios.get(`/api/policy/detail/${policyId.value}`, {
-      headers,
-    });
+    const response = await axios.get(`/api/policy/detail/${policyId.value}`);
 
     const data = response.data;
 

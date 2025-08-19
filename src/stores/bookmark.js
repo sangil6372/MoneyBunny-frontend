@@ -183,6 +183,13 @@ export const useBookmarkStore = defineStore("bookmark", () => {
     return bookmarks.value.some((bookmark) => bookmark.policyId === policyId);
   };
 
+  // 수동 리셋 함수
+  const $reset = () => {
+    bookmarks.value = [];
+    loading.value = false;
+    error.value = null;
+  };
+
   return {
     // 상태
     bookmarks,
@@ -198,5 +205,8 @@ export const useBookmarkStore = defineStore("bookmark", () => {
     addBookmark,
     removeBookmark,
     isBookmarked,
+    
+    // 수동 리셋
+    $reset,
   };
 });

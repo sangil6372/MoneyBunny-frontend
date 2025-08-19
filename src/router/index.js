@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { policyAPI } from '@/api/policy';
+import axios from 'axios';
 // api import
 
 // ─── 레이아웃 ──────────────────────────────
@@ -282,6 +283,16 @@ const router = createRouter({
 
 // 인증 가드
 router.beforeEach(async (to, from, next) => {
+  // Auth Store 초기화 완료 대기
+  const authStore = useAuthStore();
+  
+  // Auth Store 초기화 완료까지 최대 3초 대기
+  let attempts = 0;
+  while (attempts < 30 && !authStore._isInitialized) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
+  
   // 인트로 1회 노출
   const seenIntro = localStorage.getItem('mb_seen_intro');
   if (!seenIntro && to.name !== 'intro') {
@@ -290,7 +301,6 @@ router.beforeEach(async (to, from, next) => {
 
   // 관리자 페이지 접근 제어
   if (to.name === "admin" || to.path === "/admin") {
-    const authStore = useAuthStore();
     
     // 로그인 확인
     if (!authStore.isLogin) {
@@ -298,20 +308,10 @@ router.beforeEach(async (to, from, next) => {
       return next("/");
     }
     
-    // 사용자 이메일 확인
+    // 사용자 이메일 확인 (axios 사용으로 변경하여 인터셉터 적용)
     try {
-      const response = await fetch("/api/member/information", {
-        headers: {
-          Authorization: `Bearer ${authStore.getToken()}`,
-        },
-      });
-      
-      if (!response.ok) {
-        console.warn("관리자 페이지: 사용자 정보 조회 실패");
-        return next("/home");
-      }
-      
-      const userData = await response.json();
+      const response = await axios.get("/api/member/information");
+      const userData = response.data;
       if (userData.email !== "sangil6372@naver.com") {
         console.warn("관리자 페이지: 접근 권한 없음");
         return next("/home");
@@ -346,7 +346,6 @@ router.beforeEach(async (to, from, next) => {
 
   // 정책 메인 접근 전 조건 체크 네비게이션 가드
   if (to.path === '/policy' || to.path === '/policy/main') {
-    const authStore = useAuthStore();
     // 비로그인: 조건 검사 생략하고 메인 탭으로 진입 허용
     if (!authStore.isLogin) {
       // 게스트는 전용 메인으로
@@ -369,8 +368,6 @@ router.beforeEach(async (to, from, next) => {
       return next();
     }
   }
-
-  const authStore = useAuthStore();
   const publicPages = [
     '/intro',
     '/',

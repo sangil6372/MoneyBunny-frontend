@@ -209,5 +209,6 @@ export const usePolicyQuizStore = defineStore('policyQuiz', () => {
     setSpecialConditions,
     getRequestPayload,
     resetQuiz,
+    $reset: resetQuiz, // resetQuiz 함수를 $reset으로도 사용
   };
 });

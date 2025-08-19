@@ -34,6 +34,7 @@ import { reactive, ref, onMounted } from "vue";
 import { storeToRefs } from "pinia";
 import { useBookmarkStore } from "@/stores/bookmark";
 import { useApplicationStore } from "@/stores/application";
+import { useAuthStore } from "@/stores/auth";
 import axios from "axios";
 
 // 컴포넌트 import
@@ -51,6 +52,9 @@ import imgSprout from "@/assets/images/icons/profile/profile_edit_sprout.png";
 import imgBeard from "@/assets/images/icons/profile/profile_edit_beard.png";
 import imgEyelash from "@/assets/images/icons/profile/profile_edit_eyelash.png";
 import imgCarrot from "@/assets/images/icons/profile/profile_edit_carrot.png";
+
+// Auth store 인스턴스
+const authStore = useAuthStore();
 
 const currentTab = ref("bookmark");
 const isModalOpen = ref(false);
@@ -79,18 +83,7 @@ const pickerRef = ref(null);
 // 초기값
 const tempImage = ref(0);
 
-// 🔐 토큰 헤더 헬퍼 (없으면 빈 헤더)
-const getAuthHeaders = () => {
-  try {
-    const saved = localStorage.getItem("auth");
-    const parsed = saved ? JSON.parse(saved) : {};
-    const token = parsed.token || parsed.accessToken || parsed.access_token;
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  } catch (error) {
-    // Ignore JSON parsing errors and return empty headers
-    return {};
-  }
-};
+// httpOnly Cookie 방식에서는 axios 인터셉터가 자동으로 토큰 처리하므로 헬퍼 함수 불필요
 
 // 열기
 const openPicker = () => {
@@ -120,9 +113,7 @@ const showToastOnce = (
 // 저장: 숫자 imageId 받아서 API 호출 -> 성공 시 UI 반영 + 토스트
 const saveProfile = async (imageId) => {
   try {
-    await axios.patch(`/api/member/profile-image/${imageId}`, null, {
-      headers: getAuthHeaders(),
-    });
+    await axios.patch(`/api/member/profile-image/${imageId}`);
     // DB 반영 성공 → 로컬 상태 동기화
     userInfo.value.profileImageId = imageId;
     userInfo.value.profileImage =
@@ -174,17 +165,17 @@ const handleUpdate = (data) => {
 // 컴포넌트 마운트 시 북마크 데이터 미리 로드
 // 프로필 호출
 onMounted(async () => {
-  // auth 토큰 꺼내기 (share 컴포넌트 참고)
-  const savedAuth = localStorage.getItem("auth");
-  const parsed = savedAuth ? JSON.parse(savedAuth) : {};
-  const token = parsed.token; // 로그인할 때 저장한 객체에 token 프로퍼티가 있어야 함
-
-  // 헤더 세팅
-  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  // Auth store 초기화 완료까지 최대 3초 대기
+  let attempts = 0;
+  while (attempts < 30 && !authStore._isInitialized) {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    attempts++;
+  }
 
   // 프로필 API 호출
   try {
-    const res = await axios.get("/api/member/information", { headers });
+    const res = await axios.get("/api/member/information");
+    
     userInfo.value.name = res.data.name;
     userInfo.value.email = res.data.email;
 

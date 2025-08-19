@@ -1,3 +1,4 @@
+
 <!-- CategoryTransactionDetailModal.vue -->
 <!-- 거래 상세 정보 모달 -->
 <template>

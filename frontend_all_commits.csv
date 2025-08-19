@@ -1,0 +1,176 @@
+2025-08-18,Refactor: 코드 정리 및 디버깅 로그 제거
+2025-08-18,Fix: 회원가입 이메일 전송 오류 수정
+2025-08-18,Fix: 알림 포그라운드 카운트 동시성 이슈 해결결
+2025-08-18,Fix: 기타 오류 수정
+2025-08-17,Fix: 인트로 이후 로그인 페이지로 이동
+2025-08-17,Design: PWA 아이콘 수정
+2025-08-17,Design: PWA 아이콘 수정
+2025-08-17,Merge remote-tracking branch 'origin/feature/mypage(0806)' into dev
+2025-08-17,Fix: 중복 라우트 제거
+2025-08-17,Fix: 임시 수정 추후 페이지네이션 적용
+2025-08-17,Merge remote-tracking branch 'origin/main' into dev
+2025-08-17,Design: 자산 탭 카드 세로 120px 고정
+2025-08-17,Revert "Fix: 세로선 안깨지도록 수정정"
+2025-08-17,Merge remote-tracking branch 'origin/main' into dev
+2025-08-17,Fix: 세로선 안깨지도록 수정정
+2025-08-17,Merge remote-tracking branch 'origin/main' into dev
+2025-08-17,Fix: 계좌 카드 개표 계좌 설정 해제 둘 다 가능하도록 수정
+2025-08-17,Fix: 카드 모달에서 대표 토글 형식으로 해제 가능
+2025-08-17,Merge pull request #157 from KB-MoneyBunny/main
+2025-08-17,Fix: 관리자 도구 제거
+2025-08-17,Fix : 중복 로직 수정정
+2025-08-17,Fix: 관리자 페이지 인증 가드드
+2025-08-17,Fix: 이미지 경로 하드 코딩 수정
+2025-08-17,Merge pull request #156 from KB-MoneyBunny/main
+2025-08-17,Fix: 정책 재설정 필드값 비어있어도 가능하도록 수정
+2025-08-17,Fix: 정책 재설정 캐시 무효화
+2025-08-17,Merge pull request #155 from KB-MoneyBunny/dev
+2025-08-17,Merge branch 'main' into dev
+2025-08-17,Update main.yml
+2025-08-17,Fix: 배포 오류 수정 (커밋 메세지 default 설정)
+2025-08-17,Delete directory
+2025-08-17,Update vite.config.js
+2025-08-17,Merge pull request #153 from KB-MoneyBunny/feature/policy_connect(0731)
+2025-08-16,Refactor: 기본 스타일 수정
+2025-08-16,Fix: 리뷰 없는 페이지 수정
+2025-08-16,Fix: 알림 센터 연동 및 UX 보완
+2025-08-16,Merge remote-tracking branch 'origin/dev' into feature/review_page(0810)
+2025-08-16,Feat: 관리자 헤더 이스터에그 추가
+2025-08-16,Feat: 관리자 페이지 리뷰 관리 구체화 (전체, 개별 조회)
+2025-08-16,Merge pull request #149 from KB-MoneyBunny/feature/mypage-link-user(0807)
+2025-08-14,fix: 알림 권한 허용 위치 수정
+2025-08-14,Fix: PWA 기본 캐시 사이즈 조정
+2025-08-13,test: 관리자 페이지
+2025-08-12,Merge remote-tracking branch 'origin/dev' into feature/review_page(0810)
+2025-08-12,Feat: 조건 미충족 시 리뷰 작성 기능 및 정책 목록 실시간 업데이트
+2025-08-12,Refactor: 스토어 캐싱 제거 및 정책 매칭 스토어 개선
+2025-08-12,Feat: 리뷰 모달에 삭제 기능 및 혜택 상태별 플레이스홀더 추가
+2025-08-12,Feat: 리뷰 작성/수정 시 욕설 필터링 에러 처리
+2025-08-12,Feat: 리뷰 조회 API 404 에러 처리 및 좋아요 상태 API 추가
+2025-08-12,Feat: 정책 리뷰 페이지에 필터 기능 추가
+2025-08-12,Merge remote-tracking branch 'origin/dev' into feature/review_page(0810)
+2025-08-12,Refactor: 캐싱 처리로 딜레이 감소
+2025-08-12,Feat: 북마크 카드 전체 클릭 시 상세 페이지 이동 #117
+2025-08-12,Feat: 후기 작성 모달 구현 #117
+2025-08-12,Feat: 혜택 상태 선택 모달 구현 #117
+2025-08-12,Feat: 신청 정책 카드 컴포넌트 구현 및 상태별 버튼 로직 추가 #117
+2025-08-12,Feat: 신청 정책 목록 및 빈 상태 컴포넌트 구현 #117
+2025-08-12,Feat: 마이페이지에 신청 정책 탭 추가 및 기본 탭 변경 #117
+2025-08-12,Feat: 신청 정책 관리를 위한 Pinia 스토어 추가 #117
+2025-08-12,Merge remote-tracking branch 'origin/dev' into feature/review_page(0810)
+2025-08-12,Feat: 리뷰 API 연동
+2025-08-12,Merge pull request #120 from KB-MoneyBunny/feature/asset(0808)
+2025-08-10,Merge pull request #116 from KB-MoneyBunny/main
+2025-08-10,Merge branch 'dev' into main
+2025-08-09,fix: 상단 화면색 변경
+2025-08-09,fix:  사파리 새로고침 취소 및 카카오 공유 내용만 보정
+2025-08-09,fix: 상태바 영역까지 확장 및 IOS 헤더 고정
+2025-08-09,fix: IOS 에선 사파리로 이용
+2025-08-09,fixL 크롬으로 명시
+2025-08-09,feat: 카카오 공유 시 외부 브라우저로 리다이렉트
+2025-08-09,fix: 카카오톡 공유 수정 인앱 대신 바로 가기 (딥링크 intent)
+2025-08-09,Merge branch 'main' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend
+2025-08-09,fix: 모바일 환경 토큰 정리 로직 추가
+2025-08-09,Merge pull request #109 from KB-MoneyBunny/dev
+2025-08-09,Add files via upload
+2025-08-09,fix:  공유 오류 수정
+2025-08-09,Add files via upload
+2025-08-09,Update manifest.json
+2025-08-09,Add files via upload
+2025-08-09,Add files via upload
+2025-08-09,Add files via upload
+2025-08-09,Update index.html
+2025-08-09,Merge pull request #108 from KB-MoneyBunny/dev
+2025-08-09,Merge pull request #107 from KB-MoneyBunny/main
+2025-08-09,Add files via upload
+2025-08-09,Merge pull request #106 from KB-MoneyBunny/dev
+2025-08-09,Merge pull request #105 from KB-MoneyBunny/feature/notification(0803)
+2025-08-09,fix: NavBar 컴포넌트에서 불필요한 클릭 핸들러 제거
+2025-08-09,feat: 피드백 알림 확인하기 버튼 및 레이아웃 개선
+2025-08-09,feat: 알림 카드 스와이프 삭제 및 타입별 색상 구분
+2025-08-09,feat: 알림 스토어 수동 초기화 함수 및 로딩 상태 개선
+2025-08-09,feat: 로그아웃 시 FCM 토큰 영구 보존 및 스토어 초기화 개선
+2025-08-09,fix: 새로고침 시 FCM 토큰 불필요한 갱신 방지
+2025-08-08,feat: 알림 별 색상 수정(성빈 요청) + 스와이프해서 삭제
+2025-08-08,fix: 경고 문구 없이 삭제제
+2025-08-08,fix: 라우터 이동시 페이지 최상단으로 고정정
+2025-08-08,Merge pull request #104 from KB-MoneyBunny/feature/policy_connect(0731)
+2025-08-08,Merge remote-tracking branch 'origin/dev' into feature/notification(0803)
+2025-08-08,fix: 고쳐쓰
+2025-08-08,Merge pull request #101 from KB-MoneyBunny/dev
+2025-08-08,Merge remote-tracking branch 'origin/dev' into feature/notification(0803)
+2025-08-08,fix: 기타 오류 수정
+2025-08-08,Merge remote-tracking branch 'origin/dev' into feature/notification(0803)
+2025-08-08,Merge pull request #95 from KB-MoneyBunny/feature/policy_connect(0731)
+2025-08-08,♻️refactor: bookmark API를 policyInteraction으로 통합
+2025-08-08,⚡️feat: 정책 상세 페이지에 미완료 신청 체크 및 policyId 전달 기능 추가
+2025-08-08,⚡️feat: 정책 메인 탭에 미완료 신청 체크 및 이벤트 전파 방지 기능 추가
+2025-08-08,⚡️feat: 신청 모달에서 신청 등록 API 호출 및 즉시 상태 모달 표시 기능 추가
+2025-08-08,🩹fix: 라우터 중복 경로 제거 및 NotificationCenter import 수정
+2025-08-08,⚡️feat: 정책 신청 API 추가
+2025-08-07,Merge branch 'dev' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend into feature/notification(0803)
+2025-08-07,fix:: 알림 미읽음 요청 고쳐쓰
+2025-08-07,fix: PWA 로고 변경
+2025-08-07,Merge pull request #81 from KB-MoneyBunny/dev
+2025-08-07,Merge pull request #80 from KB-MoneyBunny/feature/notification(0803)
+2025-08-07,Merge branch 'dev' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend into feature/notification(0803)
+2025-08-07,fix: 알림 설정 모달로 이전
+2025-08-07,Merge pull request #78 from KB-MoneyBunny/feature/join(0806)
+2025-08-07,fix: 로그아웃 시 pinia 초기화
+2025-08-07,Merge branch 'dev' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend into feature/notification(0803)
+2025-08-07,Merge remote-tracking branch 'origin' into feature/notification(0803)
+2025-08-07,⚡️feat: 알림 카드 삭제 기능 및 UI 개선
+2025-08-07,⚡️feat: 라우터 스크롤 동작 개선 및 헤더 로고 네비게이션
+2025-08-07,⚡️feat: 알림 권한 설정 UX 개선 및 자동 권한 변경 감지
+2025-08-07,⚡️feat: FCM 토큰 관리 중앙화 및 로그아웃 시퀀스 개선
+2025-08-06,feat: 임시 커밋
+2025-08-05,🩹fix: 매우 사소한 오류 수정
+2025-08-05,Merge branch 'dev' into feature/notification(0803)
+2025-08-05,⚡️feat: 서비스워커 재설치 감지 및 알림 권한 자동 체크 기능 추가 (FCM 토큰 관리 최적화)
+2025-08-05,Merge pull request #52 from KB-MoneyBunny/dev
+2025-08-05,Merge pull request #50 from KB-MoneyBunny/feature/asset_connect(0801)
+2025-08-05,Merge branch 'dev' into feature/notification(0803)
+2025-08-05,Merge remote-tracking branch 'origin' into feature/notification(0803)
+2025-08-05,♻️refactor: 북마크 및 알림 관련 불필요한 디버깅 로그 제거
+2025-08-05,🎨design: 알림 메시지 말줄임 처리 및 읽은 알림 시각적 구분 강화
+2025-08-05,🎨design: 북마크 카드 사이 구분선 추가 및 패딩 조정
+2025-08-04,🎨design: 알림센터 UI 개선 및 읽음 상태 시각적 표시 강화
+2025-08-04,🩹fix: FCM 토큰 필수 파라미터 추가 및 알림 상태 관리 개선
+2025-08-04,⚡️feat: 북마크 카드 제거 기능 및 정책 상세 라우팅 구현
+2025-08-04,⚡️feat: 마이페이지 북마크 스토어 연동 및 실시간 상태 관리
+2025-08-04,⚡️feat: 북마크 API 서비스 및 Pinia 스토어 구현
+2025-08-04,🩹fix: FCM 알림 시스템 보완 #42
+2025-08-04,⚡️feat: 알림 설정 페이지 및 API 연동 구현 #42
+2025-07-31,Update vite.config.js
+2025-07-31,Update vite.config.js
+2025-07-26,Merge pull request #21 from KB-MoneyBunny/dev
+2025-07-26,Merge branch 'main' into dev
+2025-07-26,Merge pull request #20 from KB-MoneyBunny/feature/login_jwt(0725)
+2025-07-26,Fix: 알림 엔드포인트 수정
+2025-07-26,Feat: JWT 토큰 만료 처리 및 로그아웃 기능 완성
+2025-07-26,Feat: 인증 가드 설정(로그인 관련 경로만 해제)
+2025-07-26,Feat: 로그인 페이지 실제 서버 연동 및 에러 처리 개선
+2025-07-26,Fix: 백엔드 API 엔드포인트 정확한 연동 (/api/member/login)
+2025-07-25,Update index.js
+2025-07-25,Merge pull request #18 from KB-MoneyBunny/dev
+2025-07-25,Fix: Router 수정 HomeMainPage 반영여부 확인필요
+2025-07-24,Feat: 백엔드 연동
+2025-07-24,Fix: 나중에 백엔드 배포 주소로 연결해야함!
+2025-07-24,Merge branch 'main' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend
+2025-07-24,Fix: Vercel 라우팅 관련 이슈
+2025-07-24,Fix: 용량 초과 자동 제외
+2025-07-24,Feat: 설정 페이지 알림 구독 반영
+2025-07-24,Merge branch 'main' of https://github.com/KB-MoneyBunny/MoneyBunny-frontend
+2025-07-23,Feat: FCM 토큰 LocalStorage 저장 및 알림 중복 수신 수정
+2025-07-23,Fix: 버그 수정
+2025-07-23,Update firebase-messaging-sw.js
+2025-07-23,Fix: 서비스 워커 자동 업데이트
+2025-07-23,Fix: service-worker 자동 업데이트
+2025-07-23,Update firebase-messaging-sw.js
+2025-07-23,Chore: FCM 설정
+2025-07-22,Feat: PWA 알림 기능 설정 추가
+2025-07-21,Fix: PWA 관련 설정 수정 (Vite-plugin-pwa로 변경)
+2025-07-17,chore: 초기 PWA 설정(manifest, 서비스워커, 아이콘 등)
+2025-07-16,Update vite.config.js
+2025-07-16,Create main.yml
+2025-07-16,Create build.sh

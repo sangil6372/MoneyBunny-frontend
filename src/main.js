@@ -8,9 +8,16 @@ import 'vue-awesome-paginate/dist/style.css'; // 페이지네이션 스타일
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
 import VueAwesomePaginate from 'vue-awesome-paginate'; // 페이지네이션 컴포넌트
+import axios from 'axios';
 
 import App from './App.vue';
 import router from './router';
+
+// Cookie 기반 인증을 위한 설정
+axios.defaults.withCredentials = true;
+
+// axios 인터셉터 등록
+import './api/http.js';
 import { registerServiceWorker } from './firebase/registerServiceWorker';
 import { checkPermissionOnAppStart } from './firebase/notificationPermission';
 import { setupForegroundMessageListener } from './firebase/foregroundMessage';
